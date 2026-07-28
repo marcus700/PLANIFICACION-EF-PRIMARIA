@@ -53,7 +53,7 @@ with tab1:
                     "4. Secuencia semanal de sesiones (Título y una breve descripción pedagógica de cada clase)."
                 )
                 pedido_u = f"Crea una unidad para {grado_u} con duración de {duracion_u}. Contexto: {problema_u}"
-                response = client.models.generate_content(model='gemini-2.5-flash', contents=pedido_u, config=types.GenerateContentConfig(system_instruction=instrucciones_u, temperature=0.7))
+                response = client.models.generate_content(model='gemini-1.5-flash', contents=pedido_u, config=types.GenerateContentConfig(system_instruction=instrucciones_u, temperature=0.7))
                 resultado_u = response.text
                 st.success("¡Unidad Curricular generada con éxito!")
                 st.markdown(resultado_u)
