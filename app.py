@@ -4,15 +4,18 @@ from google.genai import types
 from docx import Document
 import io
 
-# Configuración visual de la plataforma con su nuevo nombre
+# Configuración visual de la plataforma
 st.set_page_config(page_title="PlanificaEF", page_icon="🏃‍♂️", layout="centered")
 
 st.title("🏃‍♂️ PlanificaEF")
 st.subheader("Asistente Pedagógico de Educación Física (Primaria - CNEB)")
 st.write("Herramienta inteligente para diseñar tus documentos curriculares al instante.")
 
-# Enlace automático a la clave secreta guardada de forma segura
-api_key = st.secrets["GEMINI_API_KEY"]
+# Enlace automático a la clave secreta guardada en Streamlit
+api_key = st.secrets.get("GEMINI_API_KEY", None)
+
+if not api_key:
+    st.error("⚠️ No se encontró la GEMINI_API_KEY en los secretos de Streamlit.")
 
 # Función para convertir el texto en archivo de Word (.docx)
 def crear_archivo_word(texto_contenido):
@@ -23,6 +26,30 @@ def crear_archivo_word(texto_contenido):
     doc.save(buffer)
     buffer.seek(0)
     return buffer
+
+# Función inteligente para llamar a la IA con reintento de modelos
+def generar_con_gemini(client, system_instruction, user_prompt):
+    # Lista de modelos compatibles en orden de prioridad
+    modelos = ['gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-1.5-flash']
+    ultimo_error = None
+
+    for model in modelos:
+        try:
+            response = client.models.generate_content(
+                model=model,
+                contents=user_prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_instruction,
+                    temperature=0.7
+                )
+            )
+            if response and response.text:
+                return response.text
+        except Exception as e:
+            ultimo_error = e
+            continue
+            
+    raise ultimo_error
 
 # Creación de las 3 Pestañas de Trabajo
 tab1, tab2, tab3 = st.tabs([
@@ -49,12 +76,13 @@ with tab1:
                     "Diseña una Unidad de Aprendizaje completa que incluya estrictamente:\n"
                     "1. Título de la unidad (significativo).\n"
                     "2. Situación Significativa (Contexto, Reto en forma de pregunta y Producto esperado).\n"
-                    "3. Propósitos de Aprendizaje articulados con las competencias del área.\n"
+                    "3. Propósitos de Aprendizaje articulados con las competencias del área de Educación Física.\n"
                     "4. Secuencia semanal de sesiones (Título y una breve descripción pedagógica de cada clase)."
                 )
                 pedido_u = f"Crea una unidad para {grado_u} con duración de {duracion_u}. Contexto: {problema_u}"
-                response = client.models.generate_content(model='gemini-1.5-flash', contents=pedido_u, config=types.GenerateContentConfig(system_instruction=instrucciones_u, temperature=0.7))
-                resultado_u = response.text
+                
+                resultado_u = generar_con_gemini(client, instrucciones_u, pedido_u)
+                
                 st.success("¡Unidad Curricular generada con éxito!")
                 st.markdown(resultado_u)
                 
@@ -78,12 +106,13 @@ with tab2:
                 instrucciones = (
                     "Actúa como un Asistente Pedagógico experto en Educación Física para Primaria (CNEB Perú). "
                     "Diseña una Sesión de Aprendizaje que incluya: Datos informativos, Propósito, Momentos de la sesión "
-                    "(Inicio con saberes previos y motivación; Desarrollo con actividades físicas lúdicas, variantes de dificultad e hidratación; "
-                    "Cierre con vuelta a la calma, higiene corporal y preguntas de metacognición) y Materiales."
+                    "(Inicio con saberes previos, motivación y activación corporal; Desarrollo con actividades físicas lúdicas, variantes e hidratación; "
+                    "Cierre con vuelta a la calma, higiene corporal y metacognición) y Materiales."
                 )
                 pedido = f"Diseña una sesión para {grado_s}. Competencia: {competencia_s}. Detalles: {detalles_s}"
-                response = client.models.generate_content(model='gemini-2.5-flash', contents=pedido, config=types.GenerateContentConfig(system_instruction=instrucciones, temperature=0.7))
-                resultado_s = response.text
+                
+                resultado_s = generar_con_gemini(client, instrucciones, pedido)
+                
                 st.success("¡Sesión generada con éxito!")
                 st.markdown(resultado_s)
                 
@@ -110,8 +139,9 @@ with tab3:
                     "para el desempeño solicitado, utilizando criterios claros y observables alineados al CNEB."
                 )
                 pedido_r = f"Crea una rúbrica para {grado_r}. Competencia: {competencia_r}. Desempeño: {criterio_r}"
-                response = client.models.generate_content(model='gemini-2.5-flash', contents=pedido_r, config=types.GenerateContentConfig(system_instruction=instrucciones_r, temperature=0.7))
-                resultado_r = response.text
+                
+                resultado_r = generar_con_gemini(client, instrucciones_r, pedido_r)
+                
                 st.success("¡Rúbrica generada con éxito!")
                 st.markdown(resultado_r)
                 
