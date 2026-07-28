@@ -27,32 +27,8 @@ def crear_archivo_word(texto_contenido):
     buffer.seek(0)
     return buffer
 
-# Función inteligente que aprueba y prueba los modelos activos de Google
-def generar_respuesta_ia(client, system_instruction, prompt_usuario):
-    modelos_a_probar = [
-        'gemini-2.5-flash',
-        'gemini-2.0-flash',
-        'gemini-2.0-flash-lite'
-    ]
-    
-    ultimo_error = None
-    for modelo in modelos_a_probar:
-        try:
-            response = client.models.generate_content(
-                model=modelo,
-                contents=prompt_usuario,
-                config=types.GenerateContentConfig(
-                    system_instruction=system_instruction,
-                    temperature=0.7
-                )
-            )
-            if response and response.text:
-                return response.text
-        except Exception as err:
-            ultimo_error = err
-            continue
-            
-    raise RuntimeError(f"Error con todos los modelos: {ultimo_error}")
+# Modelo estable oficial
+MODELO_ACTIVO = 'gemini-2.0-flash'
 
 # Creación de las 3 Pestañas de Trabajo
 tab1, tab2, tab3 = st.tabs([
@@ -76,7 +52,7 @@ with tab1:
                 client = genai.Client(api_key=api_key)
                 instrucciones_u = (
                     "Actúa como un Especialista Curricular experto en Educación Física para Primaria bajo el enfoque del CNEB de Perú. "
-                    "Diseña una Unidad de Aprendizaje completa que incluya strictly:\n"
+                    "Diseña una Unidad de Aprendizaje completa que incluya estrictamente:\n"
                     "1. Título de la unidad (significativo).\n"
                     "2. Situación Significativa (Contexto, Reto en forma de pregunta y Producto esperado).\n"
                     "3. Propósitos de Aprendizaje articulados con las competencias del área de Educación Física.\n"
@@ -84,7 +60,12 @@ with tab1:
                 )
                 pedido_u = f"Crea una unidad para {grado_u} con duración de {duracion_u}. Contexto: {problema_u}"
                 
-                resultado_u = generar_respuesta_ia(client, instrucciones_u, pedido_u)
+                response = client.models.generate_content(
+                    model=MODELO_ACTIVO, 
+                    contents=pedido_u, 
+                    config=types.GenerateContentConfig(system_instruction=instrucciones_u, temperature=0.7)
+                )
+                resultado_u = response.text
                 
                 st.success("¡Unidad Curricular generada con éxito!")
                 st.markdown(resultado_u)
@@ -114,7 +95,12 @@ with tab2:
                 )
                 pedido = f"Diseña una sesión para {grado_s}. Competencia: {competencia_s}. Detalles: {detalles_s}"
                 
-                resultado_s = generar_respuesta_ia(client, instrucciones, pedido)
+                response = client.models.generate_content(
+                    model=MODELO_ACTIVO, 
+                    contents=pedido, 
+                    config=types.GenerateContentConfig(system_instruction=instrucciones, temperature=0.7)
+                )
+                resultado_s = response.text
                 
                 st.success("¡Sesión generada con éxito!")
                 st.markdown(resultado_s)
@@ -143,7 +129,12 @@ with tab3:
                 )
                 pedido_r = f"Crea una rúbrica para {grado_r}. Competencia: {competencia_r}. Desempeño: {criterio_r}"
                 
-                resultado_r = generar_respuesta_ia(client, instrucciones_r, pedido_r)
+                response = client.models.generate_content(
+                    model=MODELO_ACTIVO, 
+                    contents=pedido_r, 
+                    config=types.GenerateContentConfig(system_instruction=instrucciones_r, temperature=0.7)
+                )
+                resultado_r = response.text
                 
                 st.success("¡Rúbrica generada con éxito!")
                 st.markdown(resultado_r)
