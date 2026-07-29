@@ -2,7 +2,12 @@ import streamlit as st
 from google import genai
 from google.genai import types
 from docx import Document
+from docx.shared import Pt, RGBColor, Inches
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 import io
+import re
 
 # Configuración visual de la plataforma
 st.set_page_config(page_title="PlanificaEF", page_icon="🏃‍♂️", layout="centered")
@@ -17,11 +22,125 @@ api_key = st.secrets.get("GEMINI_API_KEY", None)
 if not api_key:
     st.error("⚠️ No se encontró la GEMINI_API_KEY en los secretos de Streamlit.")
 
-# Función para convertir el texto en archivo de Word (.docx)
-def crear_archivo_word(texto_contenido):
+# ==============================================================================
+# FUNCIÓN AVANZADA: CONVERTIDOR PROFESIONAL DE MARKDOWN A TABLAS Y FORMATO WORD
+# ==============================================================================
+def set_cell_background(cell, fill_color):
+    """Aplica color de fondo a una celda de tabla en Word."""
+    tcPr = cell._element.get_or_add_tcPr()
+    shd = OxmlElement('w:shd')
+    shd.set(qn('w:val'), 'clear')
+    shd.set(qn('w:color'), 'auto')
+    shd.set(qn('w:fill'), fill_color)
+    tcPr.append(shd)
+
+def crear_archivo_word_profesional(texto_markdown):
     doc = Document()
-    for linea in texto_contenido.split('\n'):
-        doc.add_paragraph(linea)
+    
+    # Configurar márgenes de página (0.75 pulgadas)
+    for section in doc.sections:
+        section.top_margin = Inches(0.75)
+        section.bottom_margin = Inches(0.75)
+        section.left_margin = Inches(0.75)
+        section.right_margin = Inches(0.75)
+
+    lineas = texto_markdown.split('\n')
+    i = 0
+    
+    while i < len(lineas):
+        linea = lineas[i].strip()
+        
+        if not linea:
+            i += 1
+            continue
+
+        # Encabezado Nivel 1 (#)
+        if linea.startswith('# '):
+            p = doc.add_paragraph()
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(linea.replace('# ', ''))
+            run.font.name = 'Arial'
+            run.font.size = Pt(15)
+            run.font.bold = True
+            run.font.color.rgb = RGBColor(27, 94, 32)
+            i += 1
+        # Encabezado Nivel 2 (##)
+        elif linea.startswith('## '):
+            p = doc.add_paragraph()
+            run = p.add_run(linea.replace('## ', ''))
+            run.font.name = 'Arial'
+            run.font.size = Pt(12)
+            run.font.bold = True
+            run.font.color.rgb = RGBColor(46, 125, 50)
+            i += 1
+        # Encabezado Nivel 3 (###)
+        elif linea.startswith('### '):
+            p = doc.add_paragraph()
+            run = p.add_run(linea.replace('### ', ''))
+            run.font.name = 'Arial'
+            run.font.size = Pt(10.5)
+            run.font.bold = True
+            run.font.color.rgb = RGBColor(27, 94, 32)
+            i += 1
+
+        # Tablas Markdown (| Col1 | Col2 |)
+        elif linea.startswith('|'):
+            filas_tabla = []
+            while i < len(lineas) and lineas[i].strip().startswith('|'):
+                l = lineas[i].strip()
+                if not re.match(r'^\|[\s\:\-]+\|', l):
+                    columnas = [c.strip() for c in l.split('|')[1:-1]]
+                    if columnas:
+                        filas_tabla.append(columnas)
+                i += 1
+
+            if filas_tabla:
+                num_filas = len(filas_tabla)
+                num_cols = max(len(r) for r in filas_tabla)
+                table = doc.add_table(rows=num_filas, cols=num_cols)
+                table.style = 'Table Grid'
+                
+                for r_idx, row_data in enumerate(filas_tabla):
+                    for c_idx, cell_value in enumerate(row_data):
+                        if c_idx < num_cols:
+                            cell = table.cell(r_idx, c_idx)
+                            p = cell.paragraphs[0]
+                            p.text = ""
+                            
+                            # Formatear texto en negrita dentro de celdas
+                            partes = re.split(r'(\*\*.*?\*\*)', cell_value)
+                            for parte in partes:
+                                if parte.startswith('**') and parte.endswith('**'):
+                                    run = p.add_run(parte[2:-2])
+                                    run.bold = True
+                                else:
+                                    run = p.add_run(parte)
+                                run.font.name = 'Arial'
+                                if r_idx == 0:
+                                    run.font.bold = True
+                                    run.font.color.rgb = RGBColor(255, 255, 255)
+                                    run.font.size = Pt(9.5)
+                                else:
+                                    run.font.size = Pt(8.5)
+                                    
+                            # Fondo verde institucional para la primera fila (Encabezado)
+                            if r_idx == 0:
+                                set_cell_background(cell, "2E7D32")
+                                
+                doc.add_paragraph()
+        else:
+            p = doc.add_paragraph()
+            partes = re.split(r'(\*\*.*?\*\*)', linea)
+            for parte in partes:
+                if parte.startswith('**') and parte.endswith('**'):
+                    run = p.add_run(parte[2:-2])
+                    run.bold = True
+                else:
+                    run = p.add_run(parte)
+                run.font.name = 'Arial'
+                run.font.size = Pt(10)
+            i += 1
+
     buffer = io.BytesIO()
     doc.save(buffer)
     buffer.seek(0)
@@ -113,7 +232,7 @@ with tab1:
                 st.success("¡Unidad Curricular generada con éxito!")
                 st.markdown(resultado_u)
                 
-                archivo_word_u = crear_archivo_word(resultado_u)
+                archivo_word_u = crear_archivo_word_profesional(resultado_u)
                 st.download_button(
                     label="📥 Descargar Unidad en Word (.docx)", 
                     data=archivo_word_u, 
@@ -125,7 +244,7 @@ with tab1:
 
 # --- PESTAÑA 2: SESIONES ---
 with tab2:
-    st.write("Genera el desarrollo de una sesión diaria paso a paso con 2 a 3 criterios de evaluación.")
+    st.write("Genera el desarrollo de una sesión diaria paso a paso con estándar resaltado y 2 a 3 criterios.")
     with st.form("form_sesion"):
         grado_s = st.selectbox("Grado de Primaria:", ["1° Grado", "2° Grado", "3° Grado", "4° Grado", "5° Grado", "6° Grado"], key="s1")
         competencia_s = st.selectbox("Competencia Principal:", ["Se desenvuelve de manera autónoma a través de su motricidad", "Asume una vida saludable", "Interactúa a través de sus habilidades sociomotrices"], key="s2")
@@ -133,29 +252,37 @@ with tab2:
         boton_sesion = st.form_submit_button("⚡ Generar Sesión en Word")
 
     if boton_sesion and detalles_s:
-        with st.spinner("Diseñando la sesión de aprendizaje con 2 a 3 criterios..."):
+        with st.spinner("Diseñando la sesión de aprendizaje completa con estándar y desempeños..."):
             try:
                 client = genai.Client(api_key=api_key)
                 instrucciones = (
-                    "Actúa como un Asistente Pedagógico experto en Educación Física para Primaria (CNEB Perú).\n"
-                    "Diseña una Sesión de Aprendizaje completa que incluya:\n"
-                    "1. DATOS INFORMATIVOS COMPLETOS (DRE/UGEL, IE, Grado/Sección, Docente, Fecha).\n"
-                    "2. PROPÓSITOS Y EVIDENCIAS DE APRENDIZAJE: Formula OBLIGATORIAMENTE ENTRE 2 Y 3 CRITERIOS DE EVALUACIÓN claros, precisos y observables para esta sesión (Estructura: Acción + Contenido + Condición).\n"
-                    "3. MOMENTOS DE LA SESIÓN:\n"
-                    "   - Inicio: Saberes previos, motivación y activación corporal (calentamiento lúdico y toma de pulso inicial).\n"
-                    "   - Desarrollo: Actividades físicas lúdicas en progresión, variantes de dificultad, hidratación y prevención de accidentes.\n"
-                    "   - Cierre: Vuelta a la calma (estiramientos, respiración, pulso final), hábitos de higiene (aseo y lavado de manos) y metacognición.\n"
-                    "4. MATERIALES Y RECURSOS.\n"
-                    "5. ANEXO: Tabla de Lista de Cotejo que contenga los 2 a 3 Criterios de Evaluación formulados."
+                    "Actúa como un Asistente Pedagógico experto en Educación Física para Nivel Primaria bajo el CNEB del MINEDU Perú.\n"
+                    "Diseña una Sesión de Aprendizaje completa con la siguiente estructura oficial:\n\n"
+                    "1. DATOS INFORMATIVOS COMPLETOS: Tabla con DRE/UGEL, I.E., Lugar, Grado/Sección, Docente, Fecha, Duración.\n\n"
+                    "2. PROPÓSITOS Y EVIDENCIAS DE APRENDIZAJE:\n"
+                    "Genera una TABLA en formato Markdown que contenga las siguientes 6 COLUMNAS:\n"
+                    "| COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | EVIDENCIA DE APRENDIZAJE | INSTRUMENTO DE EVALUACIÓN |\n\n"
+                    "REGLAS OBLIGATORIAS PARA ESTA TABLA:\n"
+                    "- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe el estándar oficial del CNEB del ciclo y **RESALTA EN NEGRITA (**texto resaltado**)** únicamente el aspecto o parte del estándar que se trabaja y evalúa específicamente en la sesión de hoy.\n"
+                    "- En 'DESEMPEÑO PRECISADO': Transcribe el desempeño del CNEB del grado y **RESALTA EN NEGRITA (**texto precisado**)** la parte precisada o adaptada para el tema de la sesión.\n"
+                    "- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE ENTRE 2 Y 3 CRITERIOS DE EVALUACIÓN claros y observables (Estructura: Acción + Contenido + Condición).\n"
+                    "- En 'EVIDENCIA DE APRENDIZAJE': Acción o producto práctico observable del estudiante.\n"
+                    "- En 'INSTRUMENTO DE EVALUACIÓN': Lista de cotejo.\n\n"
+                    "3. PREPARACIÓN DE LA SESIÓN Y MATERIALES.\n\n"
+                    "4. SECUENCIA DIDÁCTICA (MOMENTOS DE LA SESIÓN):\n"
+                    "   - Inicio: Motivación, saberes previos, problematización, propósito de la clase y ACTIVACIÓN CORPORAL (calentamiento lúdico y toma de pulso inicial).\n"
+                    "   - Desarrollo: 2 a 3 actividades lúdico-motrices en progresión, variante de dificultad, pausa de hidratación y reglas de seguridad.\n"
+                    "   - Cierre: Vuelta a la calma (estiramientos, respiración, pulso final), HÁBITOS DE HIGIENE (aseo y lavado de manos) y preguntas de metacognición.\n\n"
+                    "5. ANEXO: Tabla de Lista de Cotejo que contenga los 2 a 3 Criterios de Evaluación formulados y espacio para nombres de estudiantes."
                 )
-                pedido = f"Diseña una sesión para {grado_s}. Competencia: {competencia_s}. Detalles: {detalles_s}"
+                pedido = f"Diseña una sesión para {grado_s}. Competencia: {competencia_s}. Detalles del tema: {detalles_s}"
                 
                 resultado_s = generar_respuesta_ia(client, instrucciones, pedido)
                 
                 st.success("¡Sesión generada con éxito!")
                 st.markdown(resultado_s)
                 
-                archivo_word = crear_archivo_word(resultado_s)
+                archivo_word = crear_archivo_word_profesional(resultado_s)
                 st.download_button(
                     label="📥 Descargar Sesión en Word (.docx)", 
                     data=archivo_word, 
@@ -190,7 +317,7 @@ with tab3:
                 st.success("¡Rúbrica generada con éxito!")
                 st.markdown(resultado_r)
                 
-                archivo_word_r = crear_archivo_word(resultado_r)
+                archivo_word_r = crear_archivo_word_profesional(resultado_r)
                 st.download_button(
                     label="📥 Descargar Rúbrica en Word (.docx)", 
                     data=archivo_word_r, 
