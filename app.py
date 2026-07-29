@@ -17,7 +17,6 @@ except Exception as e:
 
 # Función auxiliar para conectar los nombres del menú con las claves de cneb_datos.py
 def mapear_grado_cneb(grado_str):
-    """Mapea '1° Grado' a '1° de Primaria' para consultar cneb_datos.py"""
     mapa = {
         "1° Grado": "1° de Primaria",
         "2° Grado": "2° de Primaria",
@@ -31,9 +30,75 @@ def mapear_grado_cneb(grado_str):
 # Configuración visual de la plataforma
 st.set_page_config(page_title="PlanificaEF", page_icon="🏃‍♂️", layout="centered")
 
+# ==============================================================================
+# CONFIGURACIÓN DE PAGO Y PINES VÁLIDOS (CAMBIA TU NÚMERO Y PINES AQUÍ)
+# ==============================================================================
+NUMERO_WHATSAPP = "51937287225"  # 👈 REEMPLAZA CON TU NÚMERO DE WHATSAPP (ej. 51987654321)
+NUMERO_YAPE_PLIN = "937 287 225" # 👈 REEMPLAZA CON TU NÚMERO DE YAPE / PLIN
+
+# Lista de PINES mensuales activos que les entregarás a los docentes que te paguen
+PINES_ACTIVOS = st.secrets.get("PINES_ACTIVOS", ["EF2026", "PLANIFICA15", "PROFE1", "MAESTRO2026"])
+
+# Estado de autenticación
+if "autenticado" not in st.session_state:
+    st.session_state["autenticado"] = False
+
+# ==============================================================================
+# PANTALLA DE BLOQUEO Y PAGO (PAYWALL)
+# ==============================================================================
+if not st.session_state["autenticado"]:
+    st.title("🔒 PlanificaEF - Acceso Suscriptores")
+    st.subheader("Plataforma Inteligente de Planificación para Educación Física Primaria CNEB")
+    
+    st.warning("⚠️ Esta plataforma es de acceso exclusivo para docentes suscriptores.")
+    
+    st.markdown("---")
+    
+    col_pago, col_login = st.columns(2)
+    
+    with col_pago:
+        st.markdown("### 📲 ¿Cómo suscribirte?")
+        st.write("💰 **Costo:** **S/ 15.00 soles al mes** (Acceso ilimitado).")
+        st.write(f"1. Realiza el Yape o Plin de **S/ 15.00** al número: **{NUMERO_YAPE_PLIN}**")
+        st.write("2. Envía la captura del pago por WhatsApp.")
+        st.write("3. Te enviaremos tu **PIN de Acceso Mensual** al instante.")
+        
+        # Enlace directo a WhatsApp
+        mensaje_wa = "Hola, deseo suscribirme a PlanificaEF por S/ 15 soles al mes. Adjunto mi voucher de pago."
+        link_wa = f"https://wa.me/{NUMERO_WHATSAPP}?text={re.sub(r' ', '%20', mensaje_wa)}"
+        
+        st.markdown(f'''
+            <a href="{link_wa}" target="_blank">
+                <button style="background-color:#25D366; color:white; border:none; padding:12px 20px; border-radius:8px; font-weight:bold; cursor:pointer; width:100%;">
+                    📲 Solicitar PIN por WhatsApp
+                </button>
+            </a>
+        ''', unsafe_allow_html=True)
+
+    with col_login:
+        st.markdown("### 🔑 Ingresar PIN de Acceso")
+        st.write("Si ya realizaste tu pago y tienes tu PIN, ingrésalo aquí:")
+        pin_usuario = st.text_input("Ingresa tu PIN mensual:", type="password", key="input_pin")
+        
+        if st.button("🔓 Desbloquear Plataforma", use_container_width=True):
+            if pin_usuario in PINES_ACTIVOS:
+                st.session_state["autenticado"] = True
+                st.success("¡PIN Correcto! Bienvenido a PlanificaEF.")
+                st.rerun()
+            else:
+                st.error("❌ PIN incorrecto o vencido. Si aún no te has suscrito, solicita tu PIN por WhatsApp.")
+
+    st.markdown("---")
+    st.info("💡 Con tu suscripción de S/ 15/mes generas Unidades de Aprendizaje, Sesiones diarias y Rúbricas oficiales del CNEB listas para descargar en Word.")
+    
+    # Detiene la ejecución para no mostrar las pestañas ni gastar API de IA si no ha pagado
+    st.stop()
+
+# ==============================================================================
+# CONTENIDO DE LA PLATAFORMA (SOLO SE MUESTRA SI YA INGRESÓ SU PIN VÁLIDO)
+# ==============================================================================
 st.title("🏃‍♂️ PlanificaEF")
-st.subheader("Asistente Pedagógico de Educación Física (Primaria - CNEB)")
-st.write("Herramienta inteligente para diseñar tus documentos curriculares al instante.")
+st.caption("✅ Sesión Activa de Suscriptor | Para cerrar sesión borra la caché del navegador.")
 
 # Enlace automático a la clave secreta guardada de forma segura
 api_key = st.secrets.get("GEMINI_API_KEY", None)
@@ -41,18 +106,13 @@ api_key = st.secrets.get("GEMINI_API_KEY", None)
 if not api_key:
     st.error("⚠️ No se encontró la GEMINI_API_KEY en los secretos de Streamlit.")
 
-# ==============================================================================
-# FUNCIONES AUXILIARES: LIMPIEZA Y CONVERTIDOR PROFESIONAL DE MARKDOWN A WORD
-# ==============================================================================
+# Funciones auxiliares de Word e IA
 def limpiar_texto(texto):
-    """Corrige concatenaciones y limpia formato de texto."""
     if not texto:
         return ""
-    texto_limpio = texto.replace('||', '|\n|')
-    return texto_limpio
+    return texto.replace('||', '|\n|')
 
 def set_cell_background(cell, fill_color):
-    """Aplica color de fondo a una celda de tabla en Word."""
     tcPr = cell._element.get_or_add_tcPr()
     shd = OxmlElement('w:shd')
     shd.set(qn('w:val'), 'clear')
@@ -62,8 +122,6 @@ def set_cell_background(cell, fill_color):
 
 def crear_archivo_word_profesional(texto_markdown):
     doc = Document()
-    
-    # Configurar márgenes de página (0.75 pulgadas)
     for section in doc.sections:
         section.top_margin = Inches(0.75)
         section.bottom_margin = Inches(0.75)
@@ -75,12 +133,10 @@ def crear_archivo_word_profesional(texto_markdown):
     
     while i < len(lineas):
         linea = lineas[i].strip()
-        
         if not linea:
             i += 1
             continue
 
-        # Encabezado Nivel 1 (#)
         if linea.startswith('# '):
             p = doc.add_paragraph()
             p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -90,7 +146,6 @@ def crear_archivo_word_profesional(texto_markdown):
             run.font.bold = True
             run.font.color.rgb = RGBColor(27, 94, 32)
             i += 1
-        # Encabezado Nivel 2 (##)
         elif linea.startswith('## '):
             p = doc.add_paragraph()
             run = p.add_run(linea.replace('## ', ''))
@@ -99,7 +154,6 @@ def crear_archivo_word_profesional(texto_markdown):
             run.font.bold = True
             run.font.color.rgb = RGBColor(46, 125, 50)
             i += 1
-        # Encabezado Nivel 3 (###)
         elif linea.startswith('### '):
             p = doc.add_paragraph()
             run = p.add_run(linea.replace('### ', ''))
@@ -108,8 +162,6 @@ def crear_archivo_word_profesional(texto_markdown):
             run.font.bold = True
             run.font.color.rgb = RGBColor(27, 94, 32)
             i += 1
-
-        # Tablas Markdown (| Col1 | Col2 |)
         elif linea.startswith('|'):
             filas_tabla = []
             while i < len(lineas) and lineas[i].strip().startswith('|'):
@@ -132,11 +184,7 @@ def crear_archivo_word_profesional(texto_markdown):
                             cell = table.cell(r_idx, c_idx)
                             p = cell.paragraphs[0]
                             p.text = ""
-                            
-                            # Convertir <br> interno en saltos de línea para el Word
                             valor_celda_limpio = cell_value.replace('<br>', '\n').replace('<br/>', '\n').replace('<BR>', '\n')
-                            
-                            # Formatear texto en negrita dentro de celdas
                             partes = re.split(r'(\*\*.*?\*\*)', valor_celda_limpio)
                             for parte in partes:
                                 if parte.startswith('**') and parte.endswith('**'):
@@ -151,11 +199,8 @@ def crear_archivo_word_profesional(texto_markdown):
                                     run.font.size = Pt(9.5)
                                 else:
                                     run.font.size = Pt(8.5)
-                                    
-                            # Fondo verde institucional para la primera fila (Encabezado)
                             if r_idx == 0:
                                 set_cell_background(cell, "2E7D32")
-                                
                 doc.add_paragraph()
         else:
             p = doc.add_paragraph()
@@ -175,7 +220,6 @@ def crear_archivo_word_profesional(texto_markdown):
     buffer.seek(0)
     return buffer
 
-# Función inteligente que detecta dinámicamente los modelos habilitados en tu cuenta
 def generar_respuesta_ia(client, system_instruction, prompt_usuario):
     modelos_disponibles = []
     try:
@@ -230,7 +274,6 @@ with tab1:
                 grado_cneb_u = mapear_grado_cneb(grado_u)
                 ciclo_u = obtener_ciclo_primaria(grado_cneb_u)
                 
-                # Extraer Estándares y Desempeños reales con su numeración exacta desde cneb_datos.py
                 matriz_estandares_u = ""
                 matriz_desempenos_u = ""
                 if CNEB_PRIMARIA:
@@ -284,7 +327,7 @@ Genera esta TABLA de 7 COLUMNAS con línea separadora:
 REGLAS ABSOLUTAS Y ESTRICTAS DE TRANSCRIPCIÓN DE CNEB_DATOS.PY:
 - En 'ESTÁNDAR DE LA COMPETENCIA': Copia PALABRA POR PALABRA el Estándar Oficial proporcionado arriba para la competencia correspondiente. Queda PROHIBIDO refrasear o cambiar palabras. Únicamente inserta **negrita** (`**texto**`) sobre las palabras del estándar original que se ejercitan en esa sesión.
 - En 'DESEMPEÑO PRECISADO': Copia PALABRA POR PALABRA el Desempeño Oficial del CNEB de la lista de {grado_u} provista arriba, conservando su NUMERACIÓN ORIGINAL EXACTA (ejemplo: `1.1.-`, `1.2.-`, `2.1.-`, `3.1.-`). PROHIBIDO alterar o resumir las palabras originales del CNEB. Inserta **negrita** (`**texto en negrita**`) ÚNICAMENTE en dos partes: 1) la frase tomada del CNEB original que se ejercita, y 2) lo que le agregas al final para precisarlo con el tema de la sesión.
-- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión usando `<br>` para separarlos (ej. `1. Criterio uno<br>2. Criterio dos<br>3. Criterio tres`). La redacción debe contemplar de forma implícita y natural los 3 elementos (Acción + Contenido + Condición), PERO QUEDA ESTRICTAMENTE PROHIBIDO ESCRIBIR O ETIQUETAR LAS PALABRAS '(Acción)' O '(Contenido)' EXPLÍCITAMENTE.
+- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión usando `<br>` para separarlos. La redacción debe contemplar de forma implícita los 3 elementos (Acción + Contenido + Condición) sin etiquetas explícitas.
 - En 'INSTRUMENTO DE EVALUACIÓN': Lista de cotejo / Rúbrica.
 
 5. ENFOQUES TRANSVERSALES PRIORIZADOS (Tabla con línea separadora).
@@ -295,7 +338,7 @@ REGLAS ABSOLUTAS Y ESTRICTAS DE TRANSCRIPCIÓN DE CNEB_DATOS.PY:
                 resultado_u = generar_respuesta_ia(client, instrucciones_u, pedido_u)
                 resultado_u = limpiar_texto(resultado_u)
                 
-                st.success("¡Unidad Curricular generada con éxito extrayendo cneb_datos.py!")
+                st.success("¡Unidad Curricular generada con éxito!")
                 st.markdown(resultado_u)
                 
                 archivo_word_u = crear_archivo_word_profesional(resultado_u)
@@ -332,7 +375,6 @@ with tab2:
                 grado_cneb_s = mapear_grado_cneb(grado_s)
                 ciclo_s = obtener_ciclo_primaria(grado_cneb_s)
                 
-                # Extraer Estándar y Desempeños reales con numeración exacta de cneb_datos.py
                 estandar_base = ""
                 desempenos_base = ""
                 if CNEB_PRIMARIA and competencia_s in CNEB_PRIMARIA:
@@ -361,7 +403,7 @@ Genera esta TABLA EXACTA de 2 columnas con línea separadora:
 | :--- | :--- |
 | **I.E N°** | {ie_s} |
 | **Grado y Sección** | {grado_s} |
-| **Area** | Educación física |
+| **Area** | Educación fisica |
 | **Docente** | {docente_s} |
 | **Fecha** | {fecha_s} |
 | **tiempo** | {tiempo_s} |
@@ -373,9 +415,9 @@ Genera esta TABLA EXACTA de 6 COLUMNAS en una sola fila por cada competencia con
 
 REGLAS ABSOLUTAS Y ESTRICTAS DE TRANSCRIPCIÓN DE CNEB_DATOS.PY:
 - **Columna 1:** Transcribe la competencia ({competencia_s}) y sus capacidades oficiales separadas con `<br>`.
-- **Columna 2 (ESTÁNDAR CNEB):** Transcribe PALABRA POR PALABRA Y DE MANERA COMPLETA el estándar oficial proporcionado arriba ("{estandar_base}"). Queda strictly PROHIBIDO refrasear, cambiar palabras o usar puntos suspensivos '...'. Únicamente **resalta en negrita (**texto**)** la frase exacta del estándar original que se aplica directamente en la clase de hoy.
+- **Columna 2 (ESTÁNDAR CNEB):** Transcribe PALABRA POR PALABRA Y DE MANERA COMPLETA el estándar oficial proporcionado arriba ("{estandar_base}"). Queda estrictamente PROHIBIDO refrasear, cambiar palabras o usar puntos suspensivos '...'. Únicamente **resalta en negrita (**texto**)** la frase exacta del estándar original que se aplica directamente en la clase de hoy.
 - **Columna 3 (DESEMPEÑO PRECISADO):** Selecciona el desempeño oficial del CNEB de la lista de {grado_s} arriba provista. CONSERVA SU NUMERACIÓN OFICIAL EXACTA (ejemplo: `1.1.-`, `1.2.-`, `2.1.-`, `3.1.-`), transcribe PALABRA POR PALABRA el texto original de cneb_datos.py sin modificar ninguna de sus palabras y **resalta en negrita (**texto en negrita**)** únicamente dos partes: 1) la frase o acción tomada del CNEB original que se ejercita hoy, y 2) la adición de la precisión agregada al final para el tema ({detalles_s}).
-- **Columna 4 (CRITERIOS DE EVALUACIÓN):** Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN separados con `<br>` dentro de la celda (ejemplo: `1. Criterio uno<br>2. Criterio dos<br>3. Criterio tres`). Cada criterio debe contener de forma implícita los 3 elementos pedagógicos (Acción + Contenido + Condición) en una oración fluida, PERO QUEDA ESTRICTAMENTE PROHIBIDO ESCRIBIR O ETIQUETAR LAS PALABRAS '(Acción)' O '(Contenido)' EXPLÍCITAMENTE.
+- **Columna 4 (CRITERIOS DE EVALUACIÓN):** Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN separados con `<br>` dentro de la celda. Cada criterio debe contener de forma implícita los 3 elementos pedagógicos (Acción + Contenido + Condición) en una oración fluida, PERO QUEDA ESTRICTAMENTE PROHIBIDO ESCRIBIR O ETIQUETAR LAS PALABRAS '(Acción)' O '(Contenido)' EXPLÍCITAMENTE.
 - **Columna 5:** Define la Evidencia de aprendizaje (producto o actuación medible).
 - **Columna 6:** Lista de cotejo.
 
@@ -420,7 +462,7 @@ Diseña una TABLA de **Lista de Cotejo** con línea separadora con los 3 criteri
                 resultado_s = generar_respuesta_ia(client, instrucciones, pedido)
                 resultado_s = limpiar_texto(resultado_s)
                 
-                st.success("¡Sesión generada extrayendo desempeño exacto de cneb_datos.py!")
+                st.success("¡Sesión generada con éxito!")
                 st.markdown(resultado_s)
                 
                 archivo_word = crear_archivo_word_profesional(resultado_s)
