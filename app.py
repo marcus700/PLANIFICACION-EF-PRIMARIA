@@ -68,33 +68,43 @@ tab1, tab2, tab3 = st.tabs([
 
 # --- PESTAÑA 1: UNIDADES ---
 with tab1:
-    st.write("Estructura una unidad didáctica completa para varias semanas con tabla de propósitos detallada.")
+    st.write("Estructura una unidad didáctica completa según el formato oficial MINEDU.")
     with st.form("form_unidad"):
         grado_u = st.selectbox("Grado de Primaria:", ["1° Grado", "2° Grado", "3° Grado", "4° Grado", "5° Grado", "6° Grado"], key="u1")
-        duracion_u = st.selectbox("Duración de la Unidad:", ["4 Semanas (4 sesiones)", "6 Semanas (6 sesiones)", "8 Semanas (8 sesiones)"], key="u2")
+        duracion_u = st.selectbox("Duración de la Unidad:", ["4 Semanas", "5 Semanas", "6 Semanas", "8 Semanas"], key="u2")
         problema_u = st.text_area("Describe el problema del contexto o interés de los niños:", placeholder="Ej. Los estudiantes muestran dificultades para trabajar en equipo y respetar reglas en los juegos del recreo.", key="u3")
         boton_unidad = st.form_submit_button("📂 Generar Unidad en Word")
 
     if boton_unidad and problema_u:
-        with st.spinner("Diseñando la Unidad de Aprendizaje con la tabla de 7 columnas..."):
+        with st.spinner("Diseñando la Unidad de Aprendizaje con 2 a 3 criterios de evaluación por sesión..."):
             try:
                 client = genai.Client(api_key=api_key)
                 instrucciones_u = (
                     "Actúa como un Especialista Curricular experto en Educación Física para Primaria bajo el enfoque del CNEB de Perú (MINEDU).\n"
-                    "Diseña una Unidad de Aprendizaje completa que incluya estrictamente:\n\n"
-                    "1. DATOS INFORMATIVOS Y TÍTULO DE LA UNIDAD (Significativo y motivador).\n"
-                    "2. SITUACIÓN SIGNIFICATIVA (Contexto del problema, Reto en forma de pregunta integradora y Producto esperado).\n"
-                    "3. PROPÓSITOS DE APRENDIZAJE Y SECUENCIA DE SESIONES:\n"
+                    "Diseña una UNIDAD DE APRENDIZAJE completa con la siguiente estructura oficial:\n\n"
+                    "1. DATOS INFORMATIVOS:\n"
+                    "Crea una TABLA bien organizada con los siguientes campos completados con puntos [.....] para rellenar:\n"
+                    "- DRE / UGEL: DRE [.....] / UGEL [.....]\n"
+                    "- Institución Educativa: I.E. N° [.....]\n"
+                    "- Lugar / Localidad: [.....]\n"
+                    "- Ciclo: Indicar automáticamente según el grado (III Ciclo para 1° y 2°; IV Ciclo para 3° y 4°; V Ciclo para 5° y 6°)\n"
+                    "- Grado y Sección: [Grado seleccionado], Secciones: [.....]\n"
+                    "- Docente del Área: [.....]\n"
+                    "- Director(a): [.....]\n"
+                    "- Duración y Periodo: [Duración seleccionada] (Del [Día/Mes] al [Día/Mes])\n\n"
+                    "2. TÍTULO DE LA UNIDAD DE APRENDIZAJE (Significativo, retador e innovador).\n\n"
+                    "3. SITUACIÓN SIGNIFICATIVA (Contexto del problema, Reto en forma de pregunta y Producto de la unidad).\n\n"
+                    "4. PROPÓSITOS DE APRENDIZAJE Y SECUENCIA DE SESIONES:\n"
                     "Genera una TABLA en formato Markdown que contenga ESTRICTAMENTE las siguientes 7 COLUMNAS:\n"
                     "| ACTIVIDAD (SESIÓN) | DESCRIPCIÓN PEDAGÓGICA | COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | INSTRUMENTO DE EVALUACIÓN |\n\n"
-                    "REGLAS OBLIGATORIAS PARA ESTA TABLA:\n"
-                    "- Cada fila de la tabla representa una sesión de la unidad (ej. Sesión 1, Sesión 2, etc.).\n"
-                    "- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe el estándar oficial del CNEB del ciclo correspondiente y **RESALTA EN NEGRITA (**texto resaltado**)** únicamente el fragmento o habilidad específica del estándar que se aborda en esa sesión.\n"
-                    "- En 'DESEMPEÑO PRECISADO': Redacta el desempeño precisado alineado a la actividad física del día.\n"
-                    "- En 'CRITERIOS DE EVALUACIÓN': Formula un criterio claro por sesión con la estructura: Acción + Contenido + Condición.\n"
-                    "- En 'INSTRUMENTO DE EVALUACIÓN': Coloca 'Lista de cotejo' o 'Rúbrica analítica'.\n\n"
-                    "4. ENFOQUES TRANSVERSALES PRIORIZADOS (Tabla con Enfoque, Valor y Actitud observable).\n"
-                    "5. MATERIALES Y RECURSOS DIDÁCTICOS."
+                    "REGLAS ESTRUCTURALES OBLIGATORIAS PARA ESTA TABLA:\n"
+                    "- Cada fila corresponde a una Sesión de la unidad.\n"
+                    "- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe el estándar oficial del CNEB correspondiente al ciclo y **RESALTA EN NEGRITA (**texto resaltado**)** únicamente la parte del estándar que se aplica en esa sesión.\n"
+                    "- En 'DESEMPEÑO PRECISADO': Transcribe el desempeño OFICIAL del CNEB tal como figura en el currículo nacional para el grado, pero **RESALTA EN NEGRITA (**texto precisado**)** la parte o aspecto del desempeño que ha sido precisado o adaptado para la sesión.\n"
+                    "- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE ENTRE 2 Y 3 CRITERIOS DE EVALUACIÓN por cada sesión. Cada criterio debe tener la estructura: Acción + Contenido + Condición.\n"
+                    "- En 'INSTRUMENTO DE EVALUACIÓN': Lista de cotejo / Rúbrica analítica.\n\n"
+                    "5. ENFOQUES TRANSVERSALES PRIORIZADOS (Tabla con Enfoque, Valor y Actitud observable).\n"
+                    "6. MATERIALES Y RECURSOS DIDÁCTICOS."
                 )
                 pedido_u = f"Crea una unidad para {grado_u} con duración de {duracion_u}. Contexto del problema: {problema_u}"
                 
@@ -115,7 +125,7 @@ with tab1:
 
 # --- PESTAÑA 2: SESIONES ---
 with tab2:
-    st.write("Genera el desarrollo de una sesión diaria paso a paso.")
+    st.write("Genera el desarrollo de una sesión diaria paso a paso con 2 a 3 criterios de evaluación.")
     with st.form("form_sesion"):
         grado_s = st.selectbox("Grado de Primaria:", ["1° Grado", "2° Grado", "3° Grado", "4° Grado", "5° Grado", "6° Grado"], key="s1")
         competencia_s = st.selectbox("Competencia Principal:", ["Se desenvuelve de manera autónoma a través de su motricidad", "Asume una vida saludable", "Interactúa a través de sus habilidades sociomotrices"], key="s2")
@@ -123,14 +133,20 @@ with tab2:
         boton_sesion = st.form_submit_button("⚡ Generar Sesión en Word")
 
     if boton_sesion and detalles_s:
-        with st.spinner("Diseñando la sesión de aprendizaje..."):
+        with st.spinner("Diseñando la sesión de aprendizaje con 2 a 3 criterios..."):
             try:
                 client = genai.Client(api_key=api_key)
                 instrucciones = (
-                    "Actúa como un Asistente Pedagógico experto en Educación Física para Primaria (CNEB Perú). "
-                    "Diseña una Sesión de Aprendizaje que incluya: Datos informativos, Propósito, Momentos de la sesión "
-                    "(Inicio con saberes previos, motivación y activación corporal; Desarrollo con actividades físicas lúdicas, variantes de dificultad e hidratación; "
-                    "Cierre con vuelta a la calma, higiene corporal y preguntas de metacognición) y Materiales."
+                    "Actúa como un Asistente Pedagógico experto en Educación Física para Primaria (CNEB Perú).\n"
+                    "Diseña una Sesión de Aprendizaje completa que incluya:\n"
+                    "1. DATOS INFORMATIVOS COMPLETOS (DRE/UGEL, IE, Grado/Sección, Docente, Fecha).\n"
+                    "2. PROPÓSITOS Y EVIDENCIAS DE APRENDIZAJE: Formula OBLIGATORIAMENTE ENTRE 2 Y 3 CRITERIOS DE EVALUACIÓN claros, precisos y observables para esta sesión (Estructura: Acción + Contenido + Condición).\n"
+                    "3. MOMENTOS DE LA SESIÓN:\n"
+                    "   - Inicio: Saberes previos, motivación y activación corporal (calentamiento lúdico y toma de pulso inicial).\n"
+                    "   - Desarrollo: Actividades físicas lúdicas en progresión, variantes de dificultad, hidratación y prevención de accidentes.\n"
+                    "   - Cierre: Vuelta a la calma (estiramientos, respiración, pulso final), hábitos de higiene (aseo y lavado de manos) y metacognición.\n"
+                    "4. MATERIALES Y RECURSOS.\n"
+                    "5. ANEXO: Tabla de Lista de Cotejo que contenga los 2 a 3 Criterios de Evaluación formulados."
                 )
                 pedido = f"Diseña una sesión para {grado_s}. Competencia: {competencia_s}. Detalles: {detalles_s}"
                 
@@ -165,7 +181,7 @@ with tab3:
                 instrucciones_r = (
                     "Actúa como un Evaluador Pedagógico experto en Educación Física para Primaria. "
                     "Diseña una rúbrica analítica estructurada con los niveles: En Inicio, En Proceso, Logrado y Logro Destacado "
-                    "para el desempeño solicitado, utilizando criterios claros y observables alineados al CNEB."
+                    "para el desempeño solicitado, utilizando entre 2 y 3 criterios claros y observables alineados al CNEB."
                 )
                 pedido_r = f"Crea una rúbrica para {grado_r}. Competencia: {competencia_r}. Desempeño: {criterio_r}"
                 
