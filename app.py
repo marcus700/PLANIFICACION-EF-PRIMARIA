@@ -15,6 +15,19 @@ try:
 except Exception as e:
     st.error(f"Error al cargar cneb_datos.py: {e}. Asegúrate de que el archivo se llame 'cneb_datos.py' sin punto al final.")
 
+# Función auxiliar para conectar los nombres del menú con las claves de cneb_datos.py
+def mapear_grado_cneb(grado_str):
+    """Mapea '1° Grado' a '1° de Primaria' para consultar cneb_datos.py"""
+    mapa = {
+        "1° Grado": "1° de Primaria",
+        "2° Grado": "2° de Primaria",
+        "3° Grado": "3° de Primaria",
+        "4° Grado": "4° de Primaria",
+        "5° Grado": "5° de Primaria",
+        "6° Grado": "6° de Primaria"
+    }
+    return mapa.get(grado_str, grado_str)
+
 # Configuración visual de la plataforma
 st.set_page_config(page_title="PlanificaEF", page_icon="🏃‍♂️", layout="centered")
 
@@ -214,7 +227,8 @@ with tab1:
         with st.spinner("Extrayendo matriz curricular oficial de cneb_datos.py..."):
             try:
                 client = genai.Client(api_key=api_key)
-                ciclo_u = obtener_ciclo_primaria(grado_u)
+                grado_cneb_u = mapear_grado_cneb(grado_u)
+                ciclo_u = obtener_ciclo_primaria(grado_cneb_u)
                 
                 # Extraer Estándares y Desempeños reales con su numeración exacta desde cneb_datos.py
                 matriz_estandares_u = ""
@@ -224,7 +238,7 @@ with tab1:
                     des_u_list = []
                     for comp_name, comp_data in CNEB_PRIMARIA.items():
                         est_val = comp_data.get("estandares", {}).get(ciclo_u, "")
-                        des_list = comp_data.get("desempenos", {}).get(grado_u, [])
+                        des_list = comp_data.get("desempenos", {}).get(grado_cneb_u, [])
                         if est_val:
                             est_u_list.append(f"• COMPETENCIA: {comp_name}\nESTÁNDAR OFICIAL: \"{est_val}\"")
                         if des_list:
@@ -235,16 +249,12 @@ with tab1:
                 instrucciones_u = f"""Actúa como un Especialista Curricular experto en Educación Física para Primaria bajo el enfoque del CNEB de Perú (MINEDU).
 Diseña una UNIDAD DE APRENDIZAJE completa estructurada EN TABLAS MARKDOWN CON LÍNEAS SEPARADORAS (|---|---|).
 
-REGLA SÚPER IMPORTANTE PARA TABLAS (PARA EVITAR QUE EL CONTENIDO SALGA DEL CUADRO):
-- Cada fila de la tabla `| ... | ... |` debe escribirse en UNA SOLA LÍNEA CONTINUA (sin dar Enter dentro de las celdas).
-- Para hacer saltos de línea dentro de una misma celda (por ejemplo, para enlistar Capacidades o los 3 Criterios de Evaluación 1., 2. y 3.), DEBES usar obligatoriamente la etiqueta `<br>` en lugar de presionar Enter.
-
-MATRIZ OFICIAL EXACTA Y PALABRA POR PALABRA DE CNEB_DATOS.PY PARA {grado_u} ({ciclo_u}):
+MATRIZ OFICIAL EXACTA Y PALABRA POR PALABRA EXTRAÍDA DE CNEB_DATOS.PY PARA {grado_u} ({ciclo_u}):
 
 ESTÁNDARES OFICIALES DEL CICLO ({ciclo_u}):
 {matriz_estandares_u}
 
-DESEMPEÑOS CON NUMERACIÓN OFICIAL DEL GRADO ({grado_u}):
+DESEMPEÑOS OFICIALES DEL GRADO ({grado_u}):
 {matriz_desempenos_u}
 
 ESTRUCTURA DE LA UNIDAD DE APRENDIZAJE:
@@ -271,17 +281,13 @@ Genera esta TABLA de 7 COLUMNAS con línea separadora:
 | ACTIVIDAD (SESIÓN) | DESCRIPCIÓN PEDAGÓGICA | COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | INSTRUMENTO DE EVALUACIÓN |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 
-REGLAS ABSOLUTAS Y ESTRICTAS DE TRANSCRIPCIÓN DEL CNEB:
-- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe la redacción LITERAL, EXACTA Y PALABRA POR PALABRA del Estándar Oficial proporcionado arriba. PROHIBIDO cambiar palabras o resumir. Únicamente inserta **negrita** (`**texto**`) sobre las palabras del estándar original que se ejercitan en esa sesión.
-- En 'DESEMPEÑO PRECISADO': Conserva la NUMERACIÓN OFICIAL EXACTA (ejemplo: `1.1.-`, `1.2.-`, `2.1.-`, `3.1.-`). Copia el texto original CNEB PALABRA POR PALABRA sin cambiar ninguna letra, e inserta **negrita** (`**texto en negrita**`) ÚNICAMENTE en dos partes: 1) la frase tomada del CNEB original que se ejercita hoy, y 2) la adición de la precisión agregada al final para el tema.
-- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión usando `<br>` para separarlos (ej. `1. Criterio uno<br>2. Criterio dos<br>3. Criterio tres`). La redacción debe contemplar de forma implícita y natural los 3 elementos (Acción + Contenido + Condición) como una oración fluida, PERO QUEDA ESTRICTAMENTE PROHIBIDO ESCRIBIR O ETIQUETAR LAS PALABRAS '(Acción)' O '(Contenido)' EXPLÍCITAMENTE.
+REGLAS ABSOLUTAS Y ESTRICTAS DE TRANSCRIPCIÓN DE CNEB_DATOS.PY:
+- En 'ESTÁNDAR DE LA COMPETENCIA': Copia PALABRA POR PALABRA el Estándar Oficial proporcionado arriba para la competencia correspondiente. Queda PROHIBIDO refrasear o cambiar palabras. Únicamente inserta **negrita** (`**texto**`) sobre las palabras del estándar original que se ejercitan en esa sesión.
+- En 'DESEMPEÑO PRECISADO': Copia PALABRA POR PALABRA el Desempeño Oficial del CNEB de la lista de {grado_u} provista arriba, conservando su NUMERACIÓN ORIGINAL EXACTA (ejemplo: `1.1.-`, `1.2.-`, `2.1.-`, `3.1.-`). PROHIBIDO alterar o resumir las palabras originales del CNEB. Inserta **negrita** (`**texto en negrita**`) ÚNICAMENTE en dos partes: 1) la frase tomada del CNEB original que se ejercita, y 2) lo que le agregas al final para precisarlo con el tema de la sesión.
+- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión usando `<br>` para separarlos (ej. `1. Criterio uno<br>2. Criterio dos<br>3. Criterio tres`). La redacción debe contemplar de forma implícita y natural los 3 elementos (Acción + Contenido + Condición), PERO QUEDA ESTRICTAMENTE PROHIBIDO ESCRIBIR O ETIQUETAR LAS PALABRAS '(Acción)' O '(Contenido)' EXPLÍCITAMENTE.
 - En 'INSTRUMENTO DE EVALUACIÓN': Lista de cotejo / Rúbrica.
 
-5. ENFOQUES TRANSVERSALES PRIORIZADOS:
-Genera esta TABLA con línea separadora:
-| Enfoque Transversal Priorizado | Valores | Actitudes / Comportamientos Observables |
-| :--- | :--- | :--- |
-
+5. ENFOQUES TRANSVERSALES PRIORIZADOS (Tabla con línea separadora).
 6. MATERIALES Y RECURSOS DIDÁCTICOS."""
 
                 pedido_u = f"Crea una unidad para {grado_u} con duración de {duracion_u}. Contexto del problema: {problema_u}"
@@ -312,31 +318,28 @@ with tab2:
         boton_sesion = st.form_submit_button("⚡ Generar Sesión en Word")
 
     if boton_sesion and detalles_s:
-        with st.spinner("Inyectando base de datos CNEB y diseñando la sesión..."):
+        with st.spinner("Extrayendo matriz oficial de cneb_datos.py y diseñando la sesión..."):
             try:
                 client = genai.Client(api_key=api_key)
-                ciclo_s = obtener_ciclo_primaria(grado_s)
+                grado_cneb_s = mapear_grado_cneb(grado_s)
+                ciclo_s = obtener_ciclo_primaria(grado_cneb_s)
                 
-                # Extraer Estándar y Desempeños reales con numeración de cneb_datos.py
+                # Extraer Estándar y Desempeños reales con numeración exacta de cneb_datos.py
                 estandar_base = ""
                 desempenos_base = ""
                 if CNEB_PRIMARIA and competencia_s in CNEB_PRIMARIA:
                     estandar_base = CNEB_PRIMARIA[competencia_s]["estandares"].get(ciclo_s, "")
-                    desempenos_lista = CNEB_PRIMARIA[competencia_s]["desempenos"].get(grado_s, [])
+                    desempenos_lista = CNEB_PRIMARIA[competencia_s]["desempenos"].get(grado_cneb_s, [])
                     desempenos_base = "\n".join(desempenos_lista)
 
                 instrucciones = f"""Actúa como un docente experto de Educación Física de nivel Primaria en Perú, especialista en el enfoque por competencias del CNEB de MINEDU.
 
-REGLA SÚPER IMPORTANTE PARA TABLAS (PARA EVITAR QUE EL CONTENIDO SALGA DEL CUADRO):
-- Cada fila de la tabla `| ... | ... |` debe escribirse en UNA SOLA LÍNEA CONTINUA (sin dar Enter dentro de las celdas).
-- Para hacer saltos de línea dentro de una misma celda (por ejemplo, para separar Capacidades o los 3 Criterios de Evaluación 1., 2. y 3.), DEBES usar obligatoriamente la etiqueta `<br>` en lugar de presionar Enter.
-
-DATOS OFICIALES CON NUMERACIÓN EXTRAÍDOS DIRECTAMENTE DE CNEB_DATOS.PY:
+MATRIZ OFICIAL LITERAL EXTRAÍDA DIRECTAMENTE DE CNEB_DATOS.PY:
 - Grado y Ciclo: {grado_s} ({ciclo_s})
 - Competencia principal: {competencia_s}
 - Tema / Propósito motriz: {detalles_s}
-- ESTÁNDAR CNEB OFICIAL LITERAL: "{estandar_base}"
-- DESEMPEÑOS CNEB OFICIALES CON NUMERACIÓN DISPONIBLES PARA {grado_s}:
+- ESTÁNDAR CNEB OFICIAL LITERAL PARA {ciclo_s}: "{estandar_base}"
+- DESEMPEÑOS CNEB OFICIALES CON NUMERACIÓN EXACTA PARA {grado_s} Y PARA LA COMPETENCIA "{competencia_s}":
 {desempenos_base}
 
 ESTRUCTURA OBLIGATORIA A GENERAR EN TABLAS CON LÍNEAS SEPARADORAS MARKDOWN (|---|---|):
@@ -361,10 +364,10 @@ Genera esta TABLA EXACTA de 6 COLUMNAS en una sola fila por cada competencia con
 | COMPETENCIA / CAPACIDADES | ESTÁNDAR CNEB | DESEMPEÑOS PRECISADO | CRITERIOS DE EVALUACIÓN | EVIDENCIA Y PRODUCTO | INSTRUMENTO DE EVALUACIÓN |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 
-REGLAS ABSOLUTAS Y ESTRICTAS DE TRANSCRIPCIÓN DEL CNEB:
+REGLAS ABSOLUTAS Y ESTRICTAS DE TRANSCRIPCIÓN DE CNEB_DATOS.PY:
 - **Columna 1:** Transcribe la competencia ({competencia_s}) y sus capacidades oficiales separadas con `<br>`.
 - **Columna 2 (ESTÁNDAR CNEB):** Transcribe PALABRA POR PALABRA Y DE MANERA COMPLETA el estándar oficial proporcionado arriba ("{estandar_base}"). Queda estrictamente PROHIBIDO refrasear, cambiar palabras o usar puntos suspensivos '...'. Únicamente **resalta en negrita (**texto**)** la frase exacta del estándar original que se aplica directamente en la clase de hoy.
-- **Columna 3 (DESEMPEÑO PRECISADO):** Selecciona el desempeño oficial del CNEB de la lista de {grado_s} arriba provista. CONSERVA SU NUMERACIÓN OFICIAL EXACTA (ejemplo: `1.1.-`, `1.2.-`, `2.1.-`, `3.1.-`), transcribe PALABRA POR PALABRA el texto original del CNEB sin modificar ninguna palabra y **resalta en negrita (**texto en negrita**)** únicamente dos partes: 1) la frase tomada del CNEB original que se ejercita hoy, y 2) la adición de la precisión agregada al final para el tema ({detalles_s}).
+- **Columna 3 (DESEMPEÑO PRECISADO):** Selecciona el desempeño oficial correspondiente de la lista de {grado_s} arriba provista. CONSERVA SU NUMERACIÓN OFICIAL EXACTA (ejemplo: `1.1.-`, `1.2.-`, `2.1.-`, `3.1.-`), transcribe PALABRA POR PALABRA el texto original de cneb_datos.py sin modificar ninguna de sus palabras y **resalta en negrita (**texto en negrita**)** ÚNICAMENTE DOS PARTES: 1) la frase o acción tomada del CNEB original que se ejercita hoy, y 2) la adición de la precisión agregada al final para el tema ({detalles_s}).
 - **Columna 4 (CRITERIOS DE EVALUACIÓN):** Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN separados con `<br>` dentro de la celda (ejemplo: `1. Criterio uno<br>2. Criterio dos<br>3. Criterio tres`). Cada criterio debe contener de forma implícita los 3 elementos pedagógicos (Acción + Contenido + Condición) en una oración fluida, PERO QUEDA ESTRICTAMENTE PROHIBIDO ESCRIBIR O ETIQUETAR LAS PALABRAS '(Acción)' O '(Contenido)' EXPLÍCITAMENTE.
 - **Columna 5:** Define la Evidencia de aprendizaje (producto o actuación medible).
 - **Columna 6:** Lista de cotejo.
