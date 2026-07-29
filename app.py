@@ -9,6 +9,12 @@ from docx.oxml.ns import qn
 import io
 import re
 
+# Importar la Base de Datos CNEB directamente del archivo cneb_datos.py
+try:
+    from cneb_datos import CNEB_PRIMARIA, obtener_ciclo_primaria
+except Exception as e:
+    st.error(f"Error al cargar cneb_datos.py: {e}. Asegúrate de que el archivo se llame 'cneb_datos.py' sin punto al final.")
+
 # Configuración visual de la plataforma
 st.set_page_config(page_title="PlanificaEF", page_icon="🏃‍♂️", layout="centered")
 
@@ -195,16 +201,16 @@ with tab1:
         boton_unidad = st.form_submit_button("📂 Generar Unidad en Word")
 
     if boton_unidad and problema_u:
-        with st.spinner("Diseñando la Unidad de Aprendizaje en tablas formateadas CNEB..."):
+        with st.spinner("Cargando matriz del CNEB y diseñando la Unidad..."):
             try:
                 client = genai.Client(api_key=api_key)
+                ciclo_u = obtener_ciclo_primaria(grado_u)
+                
                 instrucciones_u = f"""Actúa como un Especialista Curricular experto en Educación Física para Primaria bajo el enfoque del CNEB de Perú (MINEDU).
 Diseña una UNIDAD DE APRENDIZAJE completa estructurada EN TABLAS MARKDOWN con la siguiente estructura oficial:
 
-REGLA DE CICLOS Y GRADOS OFICIALES CNEB:
-- 1° y 2° Grado = III CICLO
-- 3° y 4° Grado = IV CICLO
-- 5° y 6° Grado = V CICLO
+REGISTRO CURRICULAR PARA ESTA UNIDAD:
+- Grado: {grado_u} ({ciclo_u})
 
 1. DATOS INFORMATIVOS:
 Genera una TABLA bien organizada con los campos completados con puntos [.....] para rellenar:
@@ -212,7 +218,7 @@ Genera una TABLA bien organizada con los campos completados con puntos [.....] p
 | DRE / UGEL | DRE [.....] / UGEL [.....] |
 | Institución Educativa | I.E. N° [.....] |
 | Lugar / Localidad | [.....] |
-| Ciclo | Indicar automáticamente el Ciclo correspondiente según el grado (III Ciclo para 1° y 2°; IV Ciclo para 3° y 4°; V Ciclo para 5° y 6°) |
+| Ciclo | {ciclo_u} |
 | Grado y Sección | {grado_u}, Secciones: [.....] |
 | Docente del Área | [.....] |
 | Director(a) | [.....] |
@@ -226,10 +232,10 @@ Genera una TABLA bien organizada con los campos completados con puntos [.....] p
 Genera una TABLA en formato Markdown de 7 COLUMNAS:
 | ACTIVIDAD (SESIÓN) | DESCRIPCIÓN PEDAGÓGICA | COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | INSTRUMENTO DE EVALUACIÓN |
 
-REGLAS ABSOLUTAS DE TRANSCRIPCIÓN LITERAL DEL CNEB (¡NO REFRASEAR NI CAMBIAR PALABRAS!):
-- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe la redacción LITERAL, EXACTA Y COMPLETA del Estándar Oficial del CNEB correspondiente al ciclo (III, IV o V Ciclo). Queda estrictamente PROHIBIDO refrasear, cambiar palabras, resumir o alterar la redacción original del CNEB. Únicamente debes **RESALTAR EN NEGRITA (**texto**)** la frase o parte del estándar original que se aplica en esa sesión.
-- En 'DESEMPEÑO PRECISADO': Transcribe la redacción LITERAL Y EXACTA del Desempeño Oficial del CNEB del grado seleccionado ({grado_u}) sin alterar su texto original, y **RESALTA EN NEGRITA (**texto precisado**)** la parte del desempeño que se enfatiza junto a lo que le agregas para precisarlo al tema.
-- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión. La redacción debe integrar fluidamente los 3 elementos pedagógicos (Acción + Contenido + Condición), pero NUNCA debes escribir ni figurar literalmente las palabras u etiquetas '(Acción)', '(Contenido)' o '(Condición)' en el texto.
+REGLAS ABSOLUTAS DE TRANSCRIPCIÓN LITERAL DEL CNEB:
+- En 'ESTÁNDAR DE LA COMPETENCIA': Copia y transcribe la redacción LITERAL, EXACTA Y COMPLETA del Estándar Oficial del CNEB correspondiente al {ciclo_u}. Queda PROHIBIDO refrasear, cambiar palabras o resumir. Únicamente **RESALTA EN NEGRITA (**texto**)** la frase original que se ejercita en esa sesión.
+- En 'DESEMPEÑO PRECISADO': Copia y transcribe la redacción LITERAL Y EXACTA del Desempeño Oficial del CNEB del grado {grado_u} sin alterar sus palabras originales, y **RESALTA EN NEGRITA (**texto precisado**)** la parte del desempeño tomada y la precisión del tema.
+- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión. Integran los 3 elementos pedagógicos (Acción + Contenido + Condición) de forma fluida, SIN escribir las palabras '(Acción)' ni '(Contenido)' explícitamente.
 - En 'INSTRUMENTO DE EVALUACIÓN': Lista de cotejo / Rúbrica analítica.
 
 5. ENFOQUES TRANSVERSALES PRIORIZADOS:
@@ -257,7 +263,7 @@ Genera una TABLA con las columnas:
 
 # --- PESTAÑA 2: SESIONES ---
 with tab2:
-    st.write("Genera el desarrollo de una sesión diaria paso a paso con tablas estructuradas.")
+    st.write("Genera el desarrollo de una sesión diaria paso a paso extrayendo datos reales del CNEB.")
     with st.form("form_sesion"):
         grado_s = st.selectbox("Grado de Primaria:", ["1° Grado", "2° Grado", "3° Grado", "4° Grado", "5° Grado", "6° Grado"], key="s1")
         competencia_s = st.selectbox("Competencia Principal:", ["Se desenvuelve de manera autónoma a través de su motricidad", "Asume una vida saludable", "Interactúa a través de sus habilidades sociomotrices"], key="s2")
@@ -265,16 +271,30 @@ with tab2:
         boton_sesion = st.form_submit_button("⚡ Generar Sesión en Word")
 
     if boton_sesion and detalles_s:
-        with st.spinner("Diseñando la sesión de aprendizaje en tablas formateadas CNEB..."):
+        with st.spinner("Inyectando base de datos CNEB y diseñando la sesión..."):
             try:
                 client = genai.Client(api_key=api_key)
+                ciclo_s = obtener_ciclo_primaria(grado_s)
+                
+                # Extraer Estándar y Desempeños reales del archivo cneb_datos.py si está disponible
+                estandar_base = ""
+                desempenos_base = ""
+                if CNEB_PRIMARIA and competencia_s in CNEB_PRIMARIA:
+                    estandar_base = CNEB_PRIMARIA[competencia_s]["estandares"].get(ciclo_s, "")
+                    desempenos_lista = CNEB_PRIMARIA[competencia_s]["desempenos"].get(grado_s, [])
+                    desempenos_base = "\n".join(desempenos_lista)
+
                 instrucciones = f"""Actúa como un Asistente Pedagógico experto en Educación Física para Nivel Primaria bajo el CNEB del MINEDU Perú.
 Diseña una Sesión de Aprendizaje completa formateada en TABLAS MARKDOWN con la siguiente estructura oficial:
 
-REGLA DE CICLOS Y GRADOS OFICIALES CNEB:
-- 1° y 2° Grado = III CICLO
-- 3° y 4° Grado = IV CICLO
-- 5° y 6° Grado = V CICLO
+DATOS OFICIALES EXTRAÍDOS DIRECTAMENTE DE LA BASE DE DATOS CNEB_DATOS.PY:
+- Grado y Ciclo: {grado_s} ({ciclo_s})
+- Competencia: {competencia_s}
+- ESTÁNDAR OFICIAL CNEB A TRANSCRIBIR DE MANERA COMPLETA Y LITERAL: "{estandar_base}"
+- DESEMPEÑOS OFICIALES CNEB DISPONIBLES PARA {grado_s}:
+{desempenos_base}
+
+ESTRUCTURA DE LA SESIÓN:
 
 1. DATOS INFORMATIVOS COMPLETOS:
 Genera una TABLA de 2 columnas:
@@ -282,7 +302,7 @@ Genera una TABLA de 2 columnas:
 | DRE / UGEL | DRE [.....] / UGEL [.....] |
 | Institución Educativa | I.E. N° [.....] |
 | Lugar / Localidad | [.....] |
-| Ciclo | Indicar automáticamente el Ciclo según el grado (III Ciclo para 1° y 2°; IV Ciclo para 3° y 4°; V Ciclo para 5° y 6°) |
+| Ciclo | {ciclo_s} |
 | Grado y Sección | {grado_s}, Secciones: [.....] |
 | Docente del Área | [.....] |
 | Fecha y Duración | Fecha: [.....] | Duración: 90 minutos |
@@ -291,10 +311,10 @@ Genera una TABLA de 2 columnas:
 Genera una TABLA en formato Markdown con las siguientes 6 COLUMNAS:
 | COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | EVIDENCIA DE APRENDIZAJE | INSTRUMENTO DE EVALUACIÓN |
 
-REGLAS ABSOLUTAS DE TRANSCRIPCIÓN LITERAL DEL CNEB (¡NO REFRASEAR NI CAMBIAR PALABRAS!):
-- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe la redacción LITERAL, EXACTA Y COMPLETA del Estándar Oficial del CNEB del ciclo correspondiente (III, IV o V Ciclo). Queda estrictamente PROHIBIDO refrasear, cambiar palabras o resumir el CNEB. Únicamente **RESALTA EN NEGRITA (**texto**)** el aspecto del estándar original que se trabaja hoy.
-- En 'DESEMPEÑO PRECISADO': Transcribe el texto LITERAL Y EXACTO del Desempeño Oficial del CNEB del grado seleccionado ({grado_s}) conservando sus palabras originales y **RESALTA EN NEGRITA (**texto precisado**)** la parte tomada y la precisión agregada para el tema.
-- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN. Deben contener de forma implícita los 3 elementos pedagógicos (Acción, Contenido y Condición) de manera fluida y natural, PERO NUNCA escribas ni etiquetes literalmente las palabras '(Acción)', '(Contenido)' o '(Condición)' en el texto.
+REGLAS ABSOLUTAS DE TRANSCRIPCIÓN LITERAL DEL CNEB:
+- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe la redacción LITERAL Y COMPLETA proporcionada arriba ("{estandar_base}"). Queda PROHIBIDO refrasear o cambiar palabras. Únicamente **RESALTA EN NEGRITA (**texto**)** el aspecto del estándar que se aborda en la sesión de hoy.
+- En 'DESEMPEÑO PRECISADO': Selecciona y transcribe el desempeño OFICIAL del CNEB de la lista de {grado_s} arriba proporcionada sin alterar sus palabras originales, y **RESALTA EN NEGRITA (**texto precisado**)** la parte del desempeño tomada y la precisión agregada para el tema.
+- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN. Integran de forma natural los 3 elementos pedagógicos (Acción, Contenido y Condición), PERO NUNCA escribas ni etiquetes literalmente las palabras '(Acción)' ni '(Contenido)'.
 
 3. ENFOQUES TRANSVERSALES PRIORIZADOS:
 Genera una TABLA de 3 columnas:
@@ -315,7 +335,7 @@ Genera una TABLA de ESTRICTAMENTE 2 COLUMNAS:
                 
                 resultado_s = generar_respuesta_ia(client, instrucciones, pedido)
                 
-                st.success("¡Sesión generada con éxito!")
+                st.success("¡Sesión generada con éxito extrayendo datos de cneb_datos.py!")
                 st.markdown(resultado_s)
                 
                 archivo_word = crear_archivo_word_profesional(resultado_s)
