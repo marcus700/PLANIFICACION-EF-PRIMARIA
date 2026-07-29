@@ -294,7 +294,10 @@ DATOS OFICIALES EXTRAÍDOS DIRECTAMENTE DE LA BASE DE DATOS CNEB_DATOS.PY:
 - DESEMPEÑOS OFICIALES CNEB DISPONIBLES PARA {grado_s}:
 {desempenos_base}
 
-ESTRUCTURA DE LA SESIÓN:
+ESTRUCTURA OBLIGATORIA DE LA SESIÓN:
+
+# SESIÓN DE APRENDIZAJE N° [.....]
+## TÍTULO DE LA SESIÓN: "¡[Crea un título pedagógico, motivador, lúdico y atractivo alineado al tema de la clase]!"
 
 1. DATOS INFORMATIVOS COMPLETOS:
 Genera una TABLA de 2 columnas:
@@ -310,11 +313,9 @@ Genera una TABLA de 2 columnas:
 2. PROPÓSITOS Y EVIDENCIAS DE APRENDIZAJE:
 Genera una TABLA en formato Markdown con las siguientes 6 COLUMNAS:
 | COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | EVIDENCIA DE APRENDIZAJE | INSTRUMENTO DE EVALUACIÓN |
-
-REGLAS ABSOLUTAS DE TRANSCRIPCIÓN LITERAL DEL CNEB:
 - En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe la redacción LITERAL Y COMPLETA proporcionada arriba ("{estandar_base}"). Queda PROHIBIDO refrasear o cambiar palabras. Únicamente **RESALTA EN NEGRITA (**texto**)** el aspecto del estándar que se aborda en la sesión de hoy.
 - En 'DESEMPEÑO PRECISADO': Selecciona y transcribe el desempeño OFICIAL del CNEB de la lista de {grado_s} arriba proporcionada sin alterar sus palabras originales, y **RESALTA EN NEGRITA (**texto precisado**)** la parte del desempeño tomada y la precisión agregada para el tema.
-- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN. Integran de forma natural los 3 elementos pedagógicos (Acción, Contenido y Condición), PERO NUNCA escribas ni etiquetes literalmente las palabras '(Acción)' ni '(Contenido)'.
+- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN. Deben contener de forma implícita los 3 elementos pedagógicos (Acción, Contenido y Condición) de manera fluida y natural, PERO NUNCA escribas ni etiquetes literalmente las palabras '(Acción)' ni '(Contenido)'.
 
 3. ENFOQUES TRANSVERSALES PRIORIZADOS:
 Genera una TABLA de 3 columnas:
