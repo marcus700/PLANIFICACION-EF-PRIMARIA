@@ -28,7 +28,7 @@ def mapear_grado_cneb(grado_str):
     }
     return mapa.get(grado_str, grado_str)
 
-# Función con los PINES ÚNICOS E IMPREDECIBLES para cada mes del año
+# Función para calcular el PIN del mes actual de forma automática
 def obtener_pin_mes_actual():
     pines_mensuales = {
         1:  "EF26-ENE#9482",
@@ -86,19 +86,19 @@ if "autenticado" not in st.session_state:
 # ==============================================================================
 def mostrar_bloqueo_pago(motivo=""):
     st.markdown("---")
-    st.error(f"🔒 **Acceso Restringido - Límite Gratuito Alcanzado**")
-    st.warning(f"Estimado docente, el DNI/Celular **{st.session_state['dni_usuario']}** o su dispositivo ya consumió la prueba gratuita (1 Unidad y 1 Sesión). Para seguir generando documentos sin límites, suscríbete por **S/ 15.00 soles al mes**.")
+    st.error("🔒 **Acceso Restringido - Límite Gratuito Alcanzado**")
+    st.warning("Estimado docente, el DNI/Celular " + str(st.session_state['dni_usuario']) + " o su dispositivo ya consumió la prueba gratuita (1 Unidad y 1 Sesión). Para seguir generando documentos sin límites, suscríbete por **S/ 15.00 soles al mes**.")
     
     col_pago, col_login = st.columns(2)
     
     with col_pago:
         st.markdown("### 📲 ¿Cómo suscribirte?")
-        st.write(f"1. Realiza el Yape o Plin de **S/ 15.00** al número: **{NUMERO_YAPE_PLIN}**")
+        st.write("1. Realiza el Yape o Plin de **S/ 15.00** al número: **" + str(NUMERO_YAPE_PLIN) + "**")
         st.write("2. Envía la captura del pago por WhatsApp.")
         st.write("3. Te enviaremos tu **PIN de Acceso Mensual** al instante.")
         
-        mensaje_wa = f"Hola, soy el docente con DNI {st.session_state['dni_usuario']}. Alcancé mi prueba gratuita en PlanificaEF y deseo suscribirme por S/ 15 soles al mes. Adjunto mi pago."
-        link_wa = f"https://wa.me/{NUMERO_WHATSAPP}?text={re.sub(r' ', '%20', mensaje_wa)}"
+        mensaje_wa = "Hola, soy el docente con DNI " + str(st.session_state['dni_usuario']) + ". Alcancé mi prueba gratuita en PlanificaEF y deseo suscribirme por S/ 15 soles al mes. Adjunto mi pago."
+        link_wa = "https://wa.me/" + str(NUMERO_WHATSAPP) + "?text=" + re.sub(r' ', '%20', mensaje_wa)
         
         st.markdown(f'''
             <a href="{link_wa}" target="_blank">
@@ -120,7 +120,7 @@ def mostrar_bloqueo_pago(motivo=""):
             else:
                 st.error("❌ PIN incorrecto o vencido. Solicita tu PIN mensual por WhatsApp.")
 
-# 1. PANTALLA DE IDENTIFICACIÓN OBLIGATORIA (EVITA TRAMPAS DESDE OTROS CELULARES/PCS)
+# PANTALLA DE IDENTIFICACIÓN OBLIGATORIA
 if not st.session_state["autenticado"] and not st.session_state["identificado"]:
     st.title("🏃‍♂️ PlanificaEF - Registro de Prueba")
     st.subheader("Asistente Pedagógico de Educación Física (Primaria - CNEB)")
@@ -134,7 +134,6 @@ if not st.session_state["autenticado"] and not st.session_state["identificado"]:
         dni_limpio = dni_input.strip()
         st.session_state["dni_usuario"] = dni_limpio
         
-        # Verificar si este DNI/Celular ya usó su prueba anteriormente
         if dni_limpio in st.session_state["dnis_bloqueados_servidor"]:
             st.session_state["unidades_generadas"] = MAX_UNIDADES_GRATIS
             st.session_state["sesiones_generadas"] = MAX_SESIONES_GRATIS
@@ -156,9 +155,7 @@ if not st.session_state["autenticado"] and not st.session_state["identificado"]:
             
     st.stop()
 
-# ==============================================================================
 # ENCABEZADO DE ESTADO
-# ==============================================================================
 st.title("🏃‍♂️ PlanificaEF")
 
 if st.session_state["autenticado"]:
@@ -166,7 +163,7 @@ if st.session_state["autenticado"]:
 else:
     u_usadas = st.session_state["unidades_generadas"]
     s_usadas = st.session_state["sesiones_generadas"]
-    st.info(f"👤 Docente: **{st.session_state['dni_usuario']}** | 💡 **Modo Prueba:** Unidades creadas: **{u_usadas}/{MAX_UNIDADES_GRATIS}** | Sesiones creadas: **{s_usadas}/{MAX_SESIONES_GRATIS}**")
+    st.info("👤 Docente: **" + str(st.session_state['dni_usuario']) + "** | 💡 **Modo Prueba:** Unidades creadas: **" + str(u_usadas) + "/" + str(MAX_UNIDADES_GRATIS) + "** | Sesiones creadas: **" + str(s_usadas) + "/" + str(MAX_SESIONES_GRATIS) + "**")
 
 # Enlace automático a la clave secreta guardada de forma segura
 api_key = st.secrets.get("GEMINI_API_KEY", None)
@@ -174,9 +171,7 @@ api_key = st.secrets.get("GEMINI_API_KEY", None)
 if not api_key:
     st.error("⚠️ No se encontró la GEMINI_API_KEY en los secretos de Streamlit.")
 
-# ==============================================================================
-# FUNCIONES AUXILIARES: LIMPIEZA Y CONVERTIDOR PROFESIONAL DE MARKDOWN A WORD
-# ==============================================================================
+# FUNCIONES AUXILIARES
 def limpiar_texto(texto):
     if not texto:
         return ""
@@ -339,7 +334,6 @@ with tab1:
         boton_unidad = st.form_submit_button("📂 Generar Unidad en Word")
 
     if boton_unidad and problema_u:
-        # VERIFICACIÓN RIGUROSA DE LÍMITE GRATUITO
         if not st.session_state["autenticado"] and st.session_state["unidades_generadas"] >= MAX_UNIDADES_GRATIS:
             st.session_state["dnis_bloqueados_servidor"].add(st.session_state["dni_usuario"])
             mostrar_bloqueo_pago("Unidad de Aprendizaje")
@@ -359,66 +353,49 @@ with tab1:
                             est_val = comp_data.get("estandares", {}).get(ciclo_u, "")
                             des_list = comp_data.get("desempenos", {}).get(grado_cneb_u, [])
                             if est_val:
-                                est_u_list.append(f"• COMPETENCIA: {comp_name}\nESTÁNDAR OFICIAL: \"{est_val}\"")
+                                est_u_list.append("• COMPETENCIA: " + str(comp_name) + "\nESTÁNDAR OFICIAL: \"" + str(est_val) + "\"")
                             if des_list:
-                                des_u_list.append(f"• COMPETENCIA: {comp_name}\nDESEMPEÑOS CON NUMERACIÓN OFICIAL CNEB PARA {grado_u}:\n" + "\n".join(des_list))
+                                des_u_list.append("• COMPETENCIA: " + str(comp_name) + "\nDESEMPEÑOS CON NUMERACIÓN OFICIAL CNEB PARA " + str(grado_u) + ":\n" + "\n".join(des_list))
                         matriz_estandares_u = "\n\n".join(est_u_list)
                         matriz_desempenos_u = "\n\n".join(des_u_list)
 
-                    instrucciones_u = f"""Actúa como un Especialista Curricular experto en Educación Física para Primaria bajo el enfoque del CNEB de Perú (MINEDU).
-Diseña una UNIDAD DE APRENDIZAJE completa estructurada EN TABLAS MARKDOWN CON LÍNEAS SEPARADORAS (|---|---|).
+                    instrucciones_u = (
+                        "Actúa como un Especialista Curricular experto en Educación Física para Primaria bajo el enfoque del CNEB de Perú (MINEDU).\n"
+                        "Diseña una UNIDAD DE APRENDIZAJE completa estructurada EN TABLAS MARKDOWN CON LÍNEAS SEPARADORAS (|---|---|).\n\n"
+                        "MATRIZ OFICIAL EXACTA Y PALABRA POR PALABRA EXTRAÍDA DE CNEB_DATOS.PY PARA " + str(grado_u) + " (" + str(ciclo_u) + "):\n\n"
+                        "ESTÁNDARES OFICIALES DEL CICLO (" + str(ciclo_u) + "):\n" + str(matriz_estandares_u) + "\n\n"
+                        "DESEMPEÑOS CON NUMERACIÓN OFICIAL DEL GRADO (" + str(grado_u) + "):\n" + str(matriz_desempenos_u) + "\n\n"
+                        "ESTRUCTURA DE LA UNIDAD DE APRENDIZAJE:\n\n"
+                        "1. DATOS INFORMATIVOS:\n"
+                        "| Campo | Detalle |\n"
+                        "| :--- | :--- |\n"
+                        "| **DRE / UGEL** | DRE [.....] / UGEL [.....] |\n"
+                        "| **Institución Educativa** | I.E. N° [.....] |\n"
+                        "| **Lugar / Localidad** | [.....] |\n"
+                        "| **Ciclo** | " + str(ciclo_u) + " |\n"
+                        "| **Grado y Sección** | " + str(grado_u) + ", Secciones: [.....] |\n"
+                        "| **Docente del Área** | [.....] |\n"
+                        "| **Director(a)** | [.....] |\n"
+                        "| **Duración y Periodo** | " + str(duracion_u) + " (Del [Día/Mes] al [Día/Mes]) |\n\n"
+                        "2. TÍTULO DE LA UNIDAD DE APRENDIZAJE (Significativo, retador e innovador).\n\n"
+                        "3. SITUACIÓN SIGNIFICATIVA (Contexto del problema, Reto en pregunta y Producto de la unidad).\n\n"
+                        "4. PROPÓSITOS DE APRENDIZAJE Y SECUENCIA DE SESIONES:\n"
+                        "| ACTIVIDAD (SESIÓN) | DESCRIPCIÓN PEDAGÓGICA | COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | INSTRUMENTO DE EVALUACIÓN |\n"
+                        "| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n\n"
+                        "REGLAS ABSOLUTAS DE TRANSCRIPCIÓN DE CNEB_DATOS.PY:\n"
+                        "- En 'ESTÁNDAR DE LA COMPETENCIA': Copia PALABRA POR PALABRA el Estándar Oficial proporcionado arriba. PROHIBIDO refrasear. Únicamente **resalta en negrita** (`**texto**`) la frase que se ejercita.\n"
+                        "- En 'DESEMPEÑO PRECISADO': Copia PALABRA POR PALABRA el Desempeño Oficial del CNEB conservando su NUMERACIÓN ORIGINAL (ejemplo: 1.1.-, 1.2.-). **Resalta en negrita** (`**texto en negrita**`) la frase del CNEB tomada y lo agregado al final para precisarlo.\n"
+                        "- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión separados con <br>.\n"
+                        "- En 'INSTRUMENTO DE EVALUACIÓN': Lista de cotejo / Rúbrica.\n\n"
+                        "5. ENFOQUES TRANSVERSALES PRIORIZADOS (Tabla con línea separadora).\n"
+                        "6. MATERIALES Y RECURSOS DIDÁCTICOS."
+                    )
 
-REGLA SÚPER IMPORTANTE PARA TABLAS (PARA EVITAR QUE EL CONTENIDO SALGA DEL CUADRO):
-- Cada fila de la tabla `| ... | ... |` debe escribirse en UNA SOLA LÍNEA CONTINUA (sin dar Enter dentro de las celdas).
-- Para hacer saltos de línea dentro de una misma celda (por ejemplo, para enlistar Capacidades o los 3 Criterios de Evaluación 1., 2. y 3.), DEBES usar obligatoriamente la etiqueta `<br>` en lugar de presionar Enter.
-
-MATRIZ OFICIAL EXACTA Y PALABRA POR PALABRA DE CNEB_DATOS.PY PARA {grado_u} ({ciclo_u}):
-
-ESTÁNDARES OFICIALES DEL CICLO ({ciclo_u}):
-{matriz_estandares_u}
-
-DESEMPEÑOS CON NUMERACIÓN OFICIAL DEL GRADO ({grado_u}):
-{matriz_desempenos_u}
-
-ESTRUCTURA DE LA UNIDAD DE APRENDIZAJE:
-
-1. DATOS INFORMATIVOS:
-Genera esta TABLA EXACTA en Markdown con línea separadora:
-| Campo | Detalle |
-| :--- | :--- |
-| **DRE / UGEL** | DRE [.....] / UGEL [.....] |
-| **Institución Educativa** | I.E. N° [.....] |
-| **Lugar / Localidad** | [.....] |
-| **Ciclo** | {ciclo_u} |
-| **Grado y Sección** | {grado_u}, Secciones: [.....] |
-| **Docente del Área** | [.....] |
-| **Director(a)** | [.....] |
-| **Duración y Periodo** | {duracion_u} (Del [Día/Mes] al [Día/Mes]) |
-
-2. TÍTULO DE LA UNIDAD DE APRENDIZAJE (Significativo, retador e innovador).
-
-3. SITUACIÓN SIGNIFICATIVA (Contexto del problema, Reto en pregunta y Producto de la unidad).
-
-4. PROPÓSITOS DE APRENDIZAJE Y SECUENCIA DE SESIONES:
-Genera esta TABLA de 7 COLUMNAS con línea separadora:
-| ACTIVIDAD (SESIÓN) | DESCRIPCIÓN PEDAGÓGICA | COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | INSTRUMENTO DE EVALUACIÓN |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-
-REGLAS ABSOLUTAS Y ESTRICTAS DE TRANSCRIPCIÓN DE CNEB_DATOS.PY:
-- En 'ESTÁNDAR DE LA COMPETENCIA': Copia PALABRA POR PALABRA el Estándar Oficial proporcionado arriba para la competencia correspondiente. Queda PROHIBIDO refrasear o cambiar palabras. Únicamente inserta **negrita** (`**texto**`) sobre las palabras del estándar original que se ejercitan en esa sesión.
-- En 'DESEMPEÑO PRECISADO': Copia PALABRA POR PALABRA el Desempeño Oficial del CNEB de la lista de {grado_u} provista arriba, conservando su NUMERACIÓN ORIGINAL EXACTA (ejemplo: `1.1.-`, `1.2.-`, `2.1.-`, `3.1.-`). PROHIBIDO alterar o resumir las palabras originales del CNEB. Inserta **negrita** (`**texto en negrita**`) ÚNICAMENTE en dos partes: 1) la frase tomada del CNEB original que se ejercita, y 2) lo que le agregas al final para precisarlo con el tema de la sesión.
-- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión usando `<br>` para separarlos. La redacción debe contemplar de forma implícita los 3 elementos (Acción + Contenido + Condición) sin etiquetas explícitas.
-- En 'INSTRUMENTO DE EVALUACIÓN': Lista de cotejo / Rúbrica.
-
-5. ENFOQUES TRANSVERSALES PRIORIZADOS (Tabla con línea separadora).
-6. MATERIALES Y RECURSOS DIDÁCTICOS."""
-
-                    pedido_u = f"Crea una unidad para {grado_u} con duración de {duracion_u}. Contexto del problema: {problema_u}"
+                    pedido_u = "Crea una unidad para " + str(grado_u) + " con duración de " + str(duracion_u) + ". Contexto del problema: " + str(problema_u)
                     
                     resultado_u = generar_respuesta_ia(client, instrucciones_u, pedido_u)
                     resultado_u = limpiar_texto(resultado_u)
                     
-                    # Incrementar contador y bloquear DNI si se usó la prueba gratis
                     if not st.session_state["autenticado"]:
                         st.session_state["unidades_generadas"] += 1
                         if st.session_state["unidades_generadas"] >= MAX_UNIDADES_GRATIS and st.session_state["sesiones_generadas"] >= MAX_SESIONES_GRATIS:
@@ -455,7 +432,6 @@ with tab2:
         boton_sesion = st.form_submit_button("⚡ Generar Sesión en Word")
 
     if boton_sesion and detalles_s:
-        # VERIFICACIÓN RIGUROSA DE LÍMITE GRATUITO
         if not st.session_state["autenticado"] and st.session_state["sesiones_generadas"] >= MAX_SESIONES_GRATIS:
             st.session_state["dnis_bloqueados_servidor"].add(st.session_state["dni_usuario"])
             mostrar_bloqueo_pago("Sesión de Aprendizaje")
@@ -473,107 +449,106 @@ with tab2:
                         desempenos_lista = CNEB_PRIMARIA[competencia_s]["desempenos"].get(grado_cneb_s, [])
                         desempenos_base = "\n".join(desempenos_lista)
 
-                    instrucciones = f"""Actúa como un docente experto de Educación Física de nivel Primaria en Perú, especialista en el enfoque por competencias del CNEB de MINEDU.
-
-MATRIZ OFICIAL LITERAL EXTRAÍDA DIRECTAMENTE DE CNEB_DATOS.PY:
-- Grado y Ciclo: {grado_s} ({ciclo_s})
-- Competencia principal: {competencia_s}
-- Tema / Propósito motriz: {detalles_s}
-- ESTÁNDAR CNEB OFICIAL LITERAL PARA {ciclo_s}: "{estandar_base}"
-- DESEMPEÑOS CNEB OFICIALES CON NUMERACIÓN EXACTA PARA {grado_s}:
-{desempenos_base}
-
-ESTRUCTURA OBLIGATORIA A GENERAR EN TABLAS CON LÍNEAS SEPARADORAS MARKDOWN (|---|---|):
-
-# SESIÓN DE APRENDIZAJE N°.......
-**Título:** [Crea un título motivador, lúdico e innovador sobre {detalles_s}]
-
-## 1. DATOS INFORMATIVOS
-Genera esta TABLA EXACTA de 2 columnas con línea separadora:
-| Campo | Detalle |
-| :--- | :--- |
-| **I.E N°** | {ie_s} |
-| **Grado y Sección** | {grado_s} |
-| **Area** | Educación física |
-| **Docente** | {docente_s} |
-| **Fecha** | {fecha_s} |
-| **tiempo** | {tiempo_s} |
-
-## 2. PROPÓSITOS Y EVIDENCIAS DE APRENDIZAJE
-Genera esta TABLA EXACTA de 6 COLUMNAS en una sola fila por cada competencia con línea separadora:
-| COMPETENCIA / CAPACIDADES | ESTÁNDAR CNEB | DESEMPEÑOS PRECISADO | CRITERIOS DE EVALUACIÓN | EVIDENCIA Y PRODUCTO | INSTRUMENTO DE EVALUACIÓN |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-
-REGLAS ABSOLUTAS Y ESTRICTAS DE TRANSCRIPCIÓN DE CNEB_DATOS.PY:
-- **Columna 1:** Transcribe la competencia ({competencia_s}) y sus capacidades oficiales separadas con `<br>`.
-- **Columna 2 (ESTÁNDAR CNEB):** Transcribe PALABRA POR PALABRA Y DE MANERA COMPLETA el estándar oficial proporcionado arriba ("{estandar_base}"). Queda estrictamente PROHIBIDO refrasear, cambiar palabras o usar puntos suspensivos '...'. Únicamente **resalta en negrita (**texto**)** la frase exacta del estándar original que se aplica directamente en la clase de hoy.
-- **Columna 3 (DESEMPEÑO PRECISADO):** Selecciona el desempeño oficial del CNEB de la lista de {grado_s} arriba provista. CONSERVA SU NUMERACIÓN OFICIAL EXACTA (ejemplo: `1.1.-`, `1.2.-`, `2.1.-`, `3.1.-`), transcribe PALABRA POR PALABRA el texto original de cneb_datos.py sin modificar ninguna de sus palabras y **resalta en negrita (**texto en negrita**)** únicamente dos partes: 1) la frase o acción tomada del CNEB original que se ejercita hoy, y 2) la adición de la precisión agregada al final para el tema ({detalles_s}).
-- **Columna 4 (CRITERIOS DE EVALUACIÓN):** Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN separados con `<br>` dentro de la celda. Cada criterio debe contener de forma implícita los 3 elementos pedagógicos (Acción + Contenido + Condición) en una oración fluida, PERO QUEDA ESTRICTAMENTE PROHIBIDO ESCRIBIR O ETIQUETAR LAS PALABRAS '(Acción)' O '(Contenido)' EXPLÍCITAMENTE.
-- **Columna 5:** Define la Evidencia de aprendizaje (producto o actuación medible).
-- **Columna 6:** Lista de cotejo.
-
-## 3. ENFOQUE TRANSVERSAL
-Genera esta TABLA con línea separadora:
-| Enfoque Transversal Priorizado | Valor | Actitud / Comportamiento Observable |
-| :--- | :--- | :--- |
-
-## 4. PREPARACIÓN DE LA SESIÓN
-Genera esta TABLA de ESTRICTAMENTE 2 COLUMNAS con línea separadora:
-| ¿Qué necesitamos hacer antes de la sesión? | Recursos o Materiales a utilizar |
-| :--- | :--- |
-
-## 5. SECUENCIA DIDÁCTICA (MOMENTOS DE LA SESIÓN)
-REGLA FUNDAMENTAL DE CNEB_DATOS.PY: Redacta TODAS las acciones de los momentos en **PRIMERA PERSONA** ("Recibo a mis estudiantes...", "Explico el juego...", "Organizo a las cuadrillas...") y en **TIEMPO PRESENTE**.
-
-### A) INICIO (Aprox. 20% del tiempo - 18 min):
-- **Motivación inicial:** Una historia corta, imagen o desafío relacionado con {detalles_s}.
-- **Recojo de saberes previos:** Preguntas abiertas sobre el tema.
-- **Problematización / Conflicto cognitivo:** Reto motriz o pregunta que despierte la curiosidad.
-- **Propósito y organización:** Comunicar claramente qué van a aprender hoy en {grado_s}.
-- **Acuerdos de convivencia:** 2 a 3 acuerdos para el campo o patio.
-- **Activación Corporal (Calentamiento dinámico):** Juego motivador relacionado al tema, movilidad articular y TOMA DE PULSO INICIAL.
-
-### B) DESARROLLO (Aprox. 60% del tiempo - 54 min) - Gestión y acompañamiento:
-- Diseña una secuencia metodológica de lo simple a lo complejo (progresión motriz adecuada para {grado_s}).
-- Incluye de 3 a 4 actividades prácticas explicadas con claridad para ejecutar en el patio (juegos tradicionales, circuitos, minitorneos o dinámicas de exploración).
-- Incluye pausa de HIDRATACIÓN y REGLAS DE SEGURIDAD para evitar accidentes.
-- Asegúrate de que las actividades promuevan la autonomía, el pensamiento estratégico y la interacción saludable.
-- Describe la estrategia de retroalimentación (feedback) que brindo como docente durante la práctica.
-
-### C) CIERRE (Aprox. 20% del tiempo - 18 min):
-- **Actividad de Vuelta a la Calma:** Juegos de baja intensidad, estiramientos, ejercicios de respiración o relajación y TOMA DE PULSO FINAL.
-- **Metacognición:** Preguntas de reflexión (¿Qué aprendimos hoy? ¿Cómo lo logramos? ¿En qué tuvimos dificultad? ¿Para qué nos sirve?).
-- **Cuidado e Higiene Personal:** Hábitos de lavado de manos, cara, hidratación y orden del material recolectado.
-
-## 6. ANEXO: INSTRUMENTO DE EVALUACIÓN
-Diseña una TABLA de **Lista de Cotejo** con línea separadora con los 3 criterios de evaluación planteados al inicio y filas para nombres de estudiantes."""
-
-                pedido = f"Diseña una sesión para {grado_s}. Competencia: {competencia_s}. Detalles del tema: {detalles_s}"
-                
-                resultado_s = generar_respuesta_ia(client, instrucciones, pedido)
-                resultado_s = limpiar_texto(resultado_s)
-                
-                # Incrementar contador y bloquear DNI si se usó la prueba gratis
-                if not st.session_state["autenticado"]:
-                    st.session_state["sesiones_generadas"] += 1
-                    if st.session_state["unidades_generadas"] >= MAX_UNIDADES_GRATIS and st.session_state["sesiones_generadas"] >= MAX_SESIONES_GRATIS:
-                        st.session_state["dnis_bloqueados_servidor"].add(st.session_state["dni_usuario"])
+                    instrucciones = (
+                        "Actúa como un docente experto de Educación Física de nivel Primaria en Perú, especialista en el CNEB de MINEDU.\n\n"
+                        "DATOS OFICIALES DE CNEB_DATOS.PY:\n"
+                        "- Grado y Ciclo: " + str(grado_s) + " (" + str(ciclo_s) + ")\n"
+                        "- Competencia principal: " + str(competencia_s) + "\n"
+                        "- Tema / Propósito motriz: " + str(detalles_s) + "\n"
+                        "- ESTÁNDAR CNEB OFICIAL LITERAL: \"" + str(estandar_base) + "\"\n"
+                        "- DESEMPEÑOS CNEB OFICIALES DISPONIBLES:\n" + str(desempenos_base) + "\n\n"
+                        "ESTRUCTURA OBLIGATORIA A GENERAR EN MARKDOWN:\n\n"
+                        "# SESIÓN DE APRENDIZAJE N°.......\n"
+                        "**Título:** [Crea un título motivador e innovador sobre " + str(detalles_s) + "]\n\n"
+                        "## 1. DATOS INFORMATIVOS\n"
+                        "| Campo | Detalle |\n"
+                        "| :--- | :--- |\n"
+                        "| **I.E N°** | " + str(ie_s) + " |\n"
+                        "| **Grado y Sección** | " + str(grado_s) + " |\n"
+                        "| **Area** | Educación física |\n"
+                        "| **Docente** | " + str(docente_s) + " |\n"
+                        "| **Fecha** | " + str(fecha_s) + " |\n"
+                        "| **tiempo** | " + str(tiempo_s) + " |\n\n"
+                        "## 2. PROPÓSITOS Y EVIDENCIAS DE APRENDIZAJE\n"
+                        "| COMPETENCIA / CAPACIDADES | ESTÁNDAR CNEB | DESEMPEÑOS PRECISADO | CRITERIOS DE EVALUACIÓN | EVIDENCIA Y PRODUCTO | INSTRUMENTO DE EVALUACIÓN |\n"
+                        "| :--- | :--- | :--- | :--- | :--- | :--- |\n"
+                        "REGLAS DE TRANSCRIPCIÓN:\n"
+                        "- Columna 1: Competencia (" + str(competencia_s) + ") y sus capacidades separadas con <br>.\n"
+                        "- Columna 2: Transcribe PALABRA POR PALABRA Y COMPLETO el estándar oficial (\"" + str(estandar_base) + "\"). **Resalta en negrita** solo la parte trabajada hoy.\n"
+                        "- Columna 3: Selecciona el desempeño de " + str(grado_s) + " de la lista provista arriba. Conserva su numeración exacta (ej. 1.1.-), transcribe palabra por palabra sin modificar, y **resalta en negrita** la frase tomada del CNEB original y lo que le agregas al final para precisarlo al tema (" + str(detalles_s) + ").\n"
+                        "- Columna 4: Formula EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN separados con <br>. Implícitos (Acción+Contenido+Condición) SIN escribir las palabras '(Acción)' ni '(Contenido)' por escrito.\n"
+                        "- Columna 5: Evidencia de aprendizaje.\n"
+                        "- Columna 6: Lista de cotejo.\n\n"
+                        "## 3. ENFOQUE TRANSVERSAL\n"
+                        "| Enfoque Transversal Priorizado | Valor | Actitud / Comportamiento Observable |\n"
+                        "| :--- | :--- | :--- |\n\n"
+                        "## 4. PREPARACIÓN DE LA SESIÓN\n"
+                        "| ¿Qué necesitamos hacer antes de la sesión? | Recursos o Materiales a utilizar |\n"
+                        "| :--- | :--- |\n\n"
+                        "## 5. SECUENCIA DIDÁCTICA (MOMENTOS DE LA SESIÓN)\n"
+                        "Redacta en PRIMERA PERSONA ('Recibo...', 'Explico...', 'Organizo...') y TIEMPO PRESENTE.\n"
+                        "### A) INICIO (20% - 18 min): Motivación, saberes previos, problematización, propósito, acuerdos, Activación Corporal (calentamiento y toma de pulso inicial).\n"
+                        "### B) DESARROLLO (60% - 54 min): 3 a 4 actividades en progresión, hidratación, normas de seguridad y retroalimentación.\n"
+                        "### C) CIERRE (20% - 18 min): Vuelta a la calma (estiramientos, respiración, pulso final), Hábitos de higiene (aseo y lavado de manos) y metacognición.\n\n"
+                        "## 6. ANEXO: INSTRUMENTO DE EVALUACIÓN\n"
+                        "Tabla de Lista de Cotejo con los 3 criterios formulados y filas para nombres de estudiantes."
+                    )
                     
-                st.success("¡Sesión generada con éxito!")
-                st.markdown(resultado_s)
-                
-                archivo_word = crear_archivo_word_profesional(resultado_s)
-                st.download_button(
-                    label="📥 Descargar Sesión en Word (.docx)", 
-                    data=archivo_word, 
-                    file_name=f"Sesion_PlanificaEF_{grado_s.replace(' ', '_')}.docx", 
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                )
-            except Exception as e:
-                st.error(f"Error al generar la Sesión: {e}")
+                    pedido = "Diseña una sesión para " + str(grado_s) + ". Competencia: " + str(competencia_s) + ". Detalles del tema: " + str(detalles_s)
+                    
+                    resultado_s = generar_respuesta_ia(client, instrucciones, pedido)
+                    resultado_s = limpiar_texto(resultado_s)
+                    
+                    if not st.session_state["autenticado"]:
+                        st.session_state["sesiones_generadas"] += 1
+                        if st.session_state["unidades_generadas"] >= MAX_UNIDADES_GRATIS and st.session_state["sesiones_generadas"] >= MAX_SESIONES_GRATIS:
+                            st.session_state["dnis_bloqueados_servidor"].add(st.session_state["dni_usuario"])
+                        
+                    st.success("¡Sesión generada con éxito!")
+                    st.markdown(resultado_s)
+                    
+                    archivo_word = crear_archivo_word_profesional(resultado_s)
+                    st.download_button(
+                        label="📥 Descargar Sesión en Word (.docx)", 
+                        data=archivo_word, 
+                        file_name=f"Sesion_PlanificaEF_{grado_s.replace(' ', '_')}.docx", 
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    )
+                except Exception as e:
+                    st.error(f"Error al generar la Sesión: {e}")
 
 # --- PESTAÑA 3: RÚBRICAS ---
 with tab3:
     st.write("Diseña instrumentos de evaluación con criterios claros.")
     with st.form("form_rubrica"):
         grado_r = st.selectbox("Grado de Primaria:", ["1° Grado", "2° Grado", "3° Grado", "4° Grado", "5° Grado", "6° Grado"], key="r1")
+        competencia_r = st.selectbox("Competencia a Evaluar:", ["Se desenvuelve de manera autónoma a través de su motricidad", "Asume una vida saludable", "Interactúa a través de sus habilidades sociomotrices"], key="r2")
+        criterio_r = st.text_input("Desempeño específico a evaluar:", placeholder="Ej. Control de la postura al saltar con un pie.")
+        boton_rubrica = st.form_submit_button("📊 Generar Rúbrica en Word")
+
+    if boton_rubrica and criterio_r:
+        with st.spinner("Estructurando la rúbrica..."):
+            try:
+                client = genai.Client(api_key=api_key)
+                instrucciones_r = (
+                    "Actúa como un Evaluador Pedagógico experto en Educación Física para Primaria.\n"
+                    "Diseña una rúbrica analítica estructurada con los niveles: En Inicio, En Proceso, Logrado y Logro Destacado para el desempeño solicitado, utilizando exactamente 3 criterios claros y observables alineados al CNEB sin etiquetar explícitamente '(Acción)' ni '(Contenido)'."
+                )
+
+                pedido_r = "Crea una rúbrica para " + str(grado_r) + ". Competencia: " + str(competencia_r) + ". Desempeño: " + str(criterio_r)
+                
+                resultado_r = generar_respuesta_ia(client, instrucciones_r, pedido_r)
+                resultado_r = limpiar_texto(resultado_r)
+                
+                st.success("¡Rúbrica generada con éxito!")
+                st.markdown(resultado_r)
+                
+                archivo_word_r = crear_archivo_word_profesional(resultado_r)
+                st.download_button(
+                    label="📥 Descargar Rúbrica en Word (.docx)", 
+                    data=archivo_word_r, 
+                    file_name=f"Rubrica_PlanificaEF_{grado_r.replace(' ', '_')}.docx", 
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                )
+            except Exception as e:
+                st.error(f"Error al generar la Rúbrica: {e}")
