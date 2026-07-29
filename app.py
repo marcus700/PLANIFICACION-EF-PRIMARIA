@@ -213,15 +213,15 @@ with tab1:
                     "| Director(a) | [.....] |\n"
                     "| Duración y Periodo | [Duración seleccionada] (Del [Día/Mes] al [Día/Mes]) |\n\n"
                     "2. TÍTULO DE LA UNIDAD DE APRENDIZAJE (Significativo, retador e innovador).\n\n"
-                    "3. SITUACIÓN SIGNIFICATIVA (Contexto del problema, Reto en pregunta e Y Producto de la unidad).\n\n"
+                    "3. SITUACIÓN SIGNIFICATIVA (Contexto del problema, Reto en pregunta y Producto de la unidad).\n\n"
                     "4. PROPÓSITOS DE APRENDIZAJE Y SECUENCIA DE SESIONES:\n"
                     "Genera una TABLA en formato Markdown de 7 COLUMNAS:\n"
                     "| ACTIVIDAD (SESIÓN) | DESCRIPCIÓN PEDAGÓGICA | COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | INSTRUMENTO DE EVALUACIÓN |\n\n"
                     "REGLAS ESTRUCTURALES OBLIGATORIAS PARA ESTA TABLA:\n"
                     "- Cada fila corresponde a una Sesión de la unidad.\n"
-                    "- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe el estándar oficial del CNEB y **RESALTA EN NEGRITA (**texto**)** la parte que se enfatiza en la sesión.\n"
+                    "- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe el estándar oficial del CNEB DE MANERA COMPLETA Y SIN CORTES (sin puntos suspensivos '...' ni abreviaciones) y **RESALTA EN NEGRITA (**texto**)** únicamente la parte del estándar que se aplica en esa sesión.\n"
                     "- En 'DESEMPEÑO PRECISADO': Transcribe el desempeño OFICIAL del CNEB del grado y **RESALTA EN NEGRITA (**texto precisado**)** la parte adaptada para el tema.\n"
-                    "- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE ENTRE 2 Y 3 CRITERIOS DE EVALUACIÓN por cada sesión (Estructura: Acción + Contenido + Condición).\n"
+                    "- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión. La redacción debe integrar fluidamente los 3 elementos pedagógicos (Acción + Contenido + Condición), pero NUNCA debes escribir ni figurar literalmente las palabras u etiquetas '(Acción)', '(Contenido)' o '(Condición)' en el texto.\n"
                     "- En 'INSTRUMENTO DE EVALUACIÓN': Lista de cotejo / Rúbrica analítica.\n\n"
                     "5. ENFOQUES TRANSVERSALES PRIORIZADOS:\n"
                     "Genera una TABLA con las columnas:\n"
@@ -273,9 +273,9 @@ with tab2:
                     "2. PROPÓSITOS Y EVIDENCIAS DE APRENDIZAJE:\n"
                     "Genera una TABLA en formato Markdown con las siguientes 6 COLUMNAS:\n"
                     "| COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | EVIDENCIA DE APRENDIZAJE | INSTRUMENTO DE EVALUACIÓN |\n"
-                    "- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe el estándar oficial del CNEB del ciclo y **RESALTA EN NEGRITA (**texto resaltado**)** el aspecto trabajado hoy.\n"
+                    "- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe el estándar oficial del CNEB del ciclo DE MANERA COMPLETA Y SIN CORTES (sin puntos suspensivos '...' ni abreviaciones) y **RESALTA EN NEGRITA (**texto resaltado**)** el aspecto trabajado hoy.\n"
                     "- En 'DESEMPEÑO PRECISADO': Transcribe el desempeño del CNEB y **RESALTA EN NEGRITA (**texto precisado**)** la parte adaptada para el tema.\n"
-                    "- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE ENTRE 2 Y 3 CRITERIOS DE EVALUACIÓN claros y observables.\n\n"
+                    "- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN. Deben contener de forma implícita los 3 elementos pedagógicos (Acción, Contenido y Condición) de manera fluida y natural, PERO NUNCA escribas ni etiquetes literalmente las palabras '(Acción)', '(Contenido)' o '(Condición)' en el texto.\n\n"
                     "3. ENFOQUES TRANSVERSALES PRIORIZADOS:\n"
                     "Genera una TABLA de 3 columnas:\n"
                     "| Enfoque Transversal Priorizado | Valores | Actitudes / Comportamientos Observables |\n\n"
@@ -286,7 +286,7 @@ with tab2:
                     "   - Inicio: Motivación, saberes previos, problematización, propósito de la clase y ACTIVACIÓN CORPORAL (calentamiento lúdico y toma de pulso inicial).\n"
                     "   - Desarrollo: 2 a 3 actividades lúdico-motrices en progresión, variante de dificultad, pausa de hidratación y reglas de seguridad.\n"
                     "   - Cierre: Vuelta a la calma (estiramientos, respiración, pulso final), HÁBITOS DE HIGIENE (aseo y lavado de manos) y preguntas de metacognición.\n\n"
-                    "6. ANEXO: TABLA DE LISTA DE COTEJO con los 2 a 3 Criterios de Evaluación formulados y filas para nombres de estudiantes."
+                    "6. ANEXO: TABLA DE LISTA DE COTEJO con los 3 Criterios de Evaluación formulados y filas para nombres de estudiantes."
                 )
                 pedido = f"Diseña una sesión para {grado_s}. Competencia: {competencia_s}. Detalles del tema: {detalles_s}"
                 
@@ -321,21 +321,8 @@ with tab3:
                 instrucciones_r = (
                     "Actúa como un Evaluador Pedagógico experto en Educación Física para Primaria. "
                     "Diseña una rúbrica analítica estructurada con los niveles: En Inicio, En Proceso, Logrado y Logro Destacado "
-                    "para el desempeño solicitado, utilizando entre 2 y 3 criterios claros y observables alineados al CNEB."
+                    "para el desempeño solicitado, utilizando exactamente 3 criterios claros y observables alineados al CNEB sin etiquetar explícitamente '(Acción)' ni '(Contenido)'."
                 )
                 pedido_r = f"Crea una rúbrica para {grado_r}. Competencia: {competencia_r}. Desempeño: {criterio_r}"
                 
                 resultado_r = generar_respuesta_ia(client, instrucciones_r, pedido_r)
-                
-                st.success("¡Rúbrica generada con éxito!")
-                st.markdown(resultado_r)
-                
-                archivo_word_r = crear_archivo_word_profesional(resultado_r)
-                st.download_button(
-                    label="📥 Descargar Rúbrica en Word (.docx)", 
-                    data=archivo_word_r, 
-                    file_name=f"Rubrica_PlanificaEF_{grado_r.replace(' ', '_')}.docx", 
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                )
-            except Exception as e:
-                st.error(f"Error al generar la Rúbrica: {e}")
