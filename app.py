@@ -271,7 +271,7 @@ with tab2:
         boton_sesion = st.form_submit_button("⚡ Generar Sesión en Word")
 
     if boton_sesion and detalles_s:
-        with st.spinner("Inyectando base de datos CNEB y diseñando la sesión..."):
+        with st.spinner("Inyectando base de datos CNEB y estructurando sesión..."):
             try:
                 client = genai.Client(api_key=api_key)
                 ciclo_s = obtener_ciclo_primaria(grado_s)
@@ -284,59 +284,83 @@ with tab2:
                     desempenos_lista = CNEB_PRIMARIA[competencia_s]["desempenos"].get(grado_s, [])
                     desempenos_base = "\n".join(desempenos_lista)
 
-                instrucciones = f"""Actúa como un Asistente Pedagógico experto en Educación Física para Nivel Primaria bajo el CNEB del MINEDU Perú.
-Diseña una Sesión de Aprendizaje completa formateada en TABLAS MARKDOWN con la siguiente estructura oficial:
+                instrucciones = f"""Actúa como un docente experto de Educación Física de nivel Primaria en Perú, especialista en el enfoque por competencias del Currículo Nacional de la Educación Básica (CNEB) de MINEDU.
 
 DATOS OFICIALES EXTRAÍDOS DIRECTAMENTE DE LA BASE DE DATOS CNEB_DATOS.PY:
 - Grado y Ciclo: {grado_s} ({ciclo_s})
-- Competencia: {competencia_s}
-- ESTÁNDAR OFICIAL CNEB A TRANSCRIBIR DE MANERA COMPLETA Y LITERAL: "{estandar_base}"
-- DESEMPEÑOS OFICIALES CNEB DISPONIBLES PARA {grado_s}:
+- Competencia principal: {competencia_s}
+- Tema / Propósito motriz: {detalles_s}
+- ESTÁNDAR CNEB OFICIAL A TRANSCRIBIR DE MANERA COMPLETA Y LITERAL: "{estandar_base}"
+- DESEMPEÑOS CNEB OFICIALES DISPONIBLES PARA {grado_s}:
 {desempenos_base}
 
-ESTRUCTURA OBLIGATORIA DE LA SESIÓN:
+ESTRUCTURA OBLIGATORIA A GENERAR EN FORMATO MARKDOWN:
 
-# SESIÓN DE APRENDIZAJE N° [.....]
-## TÍTULO DE LA SESIÓN: "¡[Crea un título pedagógico, motivador, lúdico y atractivo alineado al tema de la clase]!"
+# SESIÓN DE APRENDIZAJE N°.......
+**Título:** [Crea un título motivador, lúdico e innovador sobre {detalles_s}]
 
-1. DATOS INFORMATIVOS COMPLETOS:
+## 1. DATOS INFORMATIVOS
 Genera una TABLA de 2 columnas:
 | Campo | Detalle |
 | DRE / UGEL | DRE [.....] / UGEL [.....] |
 | Institución Educativa | I.E. N° [.....] |
 | Lugar / Localidad | [.....] |
-| Ciclo | {ciclo_s} |
+| Docente | [.....] |
 | Grado y Sección | {grado_s}, Secciones: [.....] |
-| Docente del Área | [.....] |
+| Área | Educación Física |
 | Fecha y Duración | Fecha: [.....] | Duración: 90 minutos |
 
-2. PROPÓSITOS Y EVIDENCIAS DE APRENDIZAJE:
-Genera una TABLA en formato Markdown con las siguientes 6 COLUMNAS:
-| COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | EVIDENCIA DE APRENDIZAJE | INSTRUMENTO DE EVALUACIÓN |
-- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe la redacción LITERAL Y COMPLETA proporcionada arriba ("{estandar_base}"). Queda PROHIBIDO refrasear o cambiar palabras. Únicamente **RESALTA EN NEGRITA (**texto**)** el aspecto del estándar que se aborda en la sesión de hoy.
-- En 'DESEMPEÑO PRECISADO': Selecciona y transcribe el desempeño OFICIAL del CNEB de la lista de {grado_s} arriba proporcionada sin alterar sus palabras originales, y **RESALTA EN NEGRITA (**texto precisado**)** la parte del desempeño tomada y la precisión agregada para el tema.
-- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN. Deben contener de forma implícita los 3 elementos pedagógicos (Acción, Contenido y Condición) de manera fluida y natural, PERO NUNCA escribas ni etiquetes literalmente las palabras '(Acción)' ni '(Contenido)'.
+## 2. PROPÓSITOS Y EVIDENCIAS DE APRENDIZAJE
+Genera una TABLA con exactamente las siguientes 6 columnas:
+| Competencia y Capacidades | Estándar CNEB | Desempeños Precisados | Criterios de Evaluación | Evidencia y Producto | Instrumento de Evaluación |
 
-3. ENFOQUES TRANSVERSALES PRIORIZADOS:
-Genera una TABLA de 3 columnas:
-| Enfoque Transversal Priorizado | Valores | Actitudes / Comportamientos Observables |
+Condiciones obligatorias para esta tabla:
+- **Columna 1:** Transcribe la competencia ({competencia_s}) y sus capacidades oficiales.
+- **Columna 2:** Transcribe EXACTAMENTE Y DE MANERA COMPLETA el estándar oficial proporcionado arriba ("{estandar_base}"). Queda PROHIBIDO refrasear o usar puntos suspensivos '...'. **Resalta en negrita (**texto**)** únicamente la frase del estándar que se aplica directamente hoy.
+- **Columna 3:** Transcribe el desempeño oficial del CNEB de la lista de {grado_s} de arriba, y **resalta en negrita (**texto precisado**)** la parte precisada para la sesión.
+- **Columna 4:** Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros. Deben integrar implícitamente Acción + Contenido + Condición, PERO NUNCA escribas literalmente las palabras '(Acción)' ni '(Contenido)'.
+- **Columna 5:** Define la Evidencia de aprendizaje (producto o actuación medible).
+- **Columna 6:** Lista de cotejo.
 
-4. PREPARACIÓN DE LA SESIÓN:
-Genera una TABLA de ESTRICTAMENTE 2 COLUMNAS:
-| ¿Qué necesitamos hacer antes de la sesión? | ¿Qué recursos o materiales se utilizarán en esta sesión? |
+## 3. ENFOQUE TRANSVERSAL
+Genera una TABLA con las columnas:
+| Enfoque Transversal Priorizado | Valor | Actitud / Comportamiento Observable |
 
-5. SECUENCIA DIDÁCTICA (MOMENTOS DE LA SESIÓN):
-   - Inicio: Motivación, saberes previos, problematización, propósito de la clase y ACTIVACIÓN CORPORAL (calentamiento lúdico y toma de pulso inicial).
-   - Desarrollo: 2 a 3 actividades lúdico-motrices en progresión, variante de dificultad, pausa de hidratación y reglas de seguridad.
-   - Cierre: Vuelta a la calma (estiramientos, respiración, pulso final), HÁBITOS DE HIGIENE (aseo y lavado de manos) y preguntas de metacognición.
+## 4. PREPARACIÓN DE LA SESIÓN
+Genera una TABLA estrictamente de 2 columnas:
+| ¿Qué necesitamos hacer antes de la sesión? | Recursos o Materiales a utilizar |
 
-6. ANEXO: TABLA DE LISTA DE COTEJO con los 3 Criterios de Evaluación formulados y filas para nombres de estudiantes."""
+## 5. SECUENCIA DIDÁCTICA (MOMENTOS DE LA SESIÓN)
+REGLA FUNDAMENTAL DE CNEB_DATOS.PY: Redacta TODAS las acciones de los momentos en **PRIMERA PERSONA** ("Recibo a mis estudiantes...", "Explico el juego...", "Organizo a las cuadrillas...") y en **TIEMPO PRESENTE**.
+
+### A) INICIO (Aprox. 20% del tiempo - 18 min):
+- **Motivación inicial:** Una historia corta, imagen o desafío relacionado con {detalles_s}.
+- **Recojo de saberes previos:** Preguntas abiertas sobre el tema.
+- **Problematización / Conflicto cognitivo:** Reto motriz o pregunta que despierte la curiosidad.
+- **Propósito y organización:** Comunicar claramente qué van a aprender hoy en {grado_s}.
+- **Acuerdos de convivencia:** 2 a 3 acuerdos para el campo o patio.
+- **Activación Corporal (Calentamiento dinámico):** Juego motivador relacionado al tema, movilidad articular y TOMA DE PULSO INICIAL.
+
+### B) DESARROLLO (Aprox. 60% del tiempo - 54 min) - Gestión y acompañamiento:
+- Diseña una secuencia metodológica de lo simple a lo complejo (progresión motriz adecuada para {grado_s}).
+- Incluye de 3 a 4 actividades prácticas explicadas con claridad para ejecutar en el patio (juegos tradicionales, circuitos, minitorneos o dinámicas de exploración).
+- Incluye pausa de HIDRATACIÓN y REGLAS DE SEGURIDAD para evitar accidentes.
+- Asegúrate de que las actividades promuevan la autonomía, el pensamiento estratégico y la interacción saludable.
+- Describe la estrategia de retroalimentación (feedback) que brindo como docente durante la práctica.
+
+### C) CIERRE (Aprox. 20% del tiempo - 18 min):
+- **Actividad de Vuelta a la Calma:** Juegos de baja intensidad, estiramientos, ejercicios de respiración o relajación y TOMA DE PULSO FINAL.
+- **Metacognición:** Preguntas de reflexión (¿Qué aprendimos hoy? ¿Cómo lo logramos? ¿En qué tuvimos dificultad? ¿Para qué nos sirve?).
+- **Cuidado e Higiene Personal:** Hábitos de lavado de manos, cara, hidratación y orden del material recolectado.
+
+## 6. ANEXO: INSTRUMENTO DE EVALUACIÓN
+Diseña una TABLA de **Lista de Cotejo** con los 3 criterios de evaluación planteados al inicio y filas con espacio para los nombres de los estudiantes."""
 
                 pedido = f"Diseña una sesión para {grado_s}. Competencia: {competencia_s}. Detalles del tema: {detalles_s}"
                 
                 resultado_s = generar_respuesta_ia(client, instrucciones, pedido)
                 
-                st.success("¡Sesión generada con éxito extrayendo datos de cneb_datos.py!")
+                st.success("¡Sesión generada con éxito siguiendo cneb_datos.py!")
                 st.markdown(resultado_s)
                 
                 archivo_word = crear_archivo_word_profesional(resultado_s)
