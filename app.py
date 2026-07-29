@@ -32,11 +32,12 @@ if not api_key:
 # FUNCIONES AUXILIARES: LIMPIEZA Y CONVERTIDOR PROFESIONAL DE MARKDOWN A WORD
 # ==============================================================================
 def limpiar_texto(texto):
-    """Elimina etiquetas HTML indeseadas como <br> del texto generado."""
+    """Elimina etiquetas HTML indeseadas y corrige separadores de tablas en Markdown."""
     if not texto:
         return ""
-    # Reemplaza <br>, <br/>, <br /> por saltos de línea normales
     texto_limpio = re.sub(r'<br\s*/?>', '\n', texto, flags=re.IGNORECASE)
+    # Corrige concatenaciones accidentales de tubos dobles '||'
+    texto_limpio = texto_limpio.replace('||', '|\n|')
     return texto_limpio
 
 def set_cell_background(cell, fill_color):
@@ -231,7 +232,7 @@ with tab1:
                     matriz_desempenos_u = "\n\n".join(des_u_list)
 
                 instrucciones_u = f"""Actúa como un Especialista Curricular experto en Educación Física para Primaria bajo el enfoque del CNEB de Perú (MINEDU).
-Diseña una UNIDAD DE APRENDIZAJE completa estructurada EN TABLAS MARKDOWN.
+Diseña una UNIDAD DE APRENDIZAJE completa estructurada EN TABLAS MARKDOWN CON LÍNEAS SEPARADORAS (|---|---|).
 
 PROHIBICIÓN STRICTA DE ETIQUETAS Y INTROS:
 - PROHIBIDO usar la etiqueta HTML `<br>`. Usa únicamente saltos de línea normales.
@@ -248,8 +249,9 @@ DESEMPEÑOS CON NUMERACIÓN OFICIAL DEL GRADO ({grado_u}):
 ESTRUCTURA DE LA UNIDAD DE APRENDIZAJE:
 
 1. DATOS INFORMATIVOS:
-Genera una TABLA bien organizada:
+Genera esta TABLA EXACTA en Markdown con línea separadora:
 | Campo | Detalle |
+| :--- | :--- |
 | DRE / UGEL | DRE [.....] / UGEL [.....] |
 | Institución Educativa | I.E. N° [.....] |
 | Lugar / Localidad | [.....] |
@@ -264,16 +266,21 @@ Genera una TABLA bien organizada:
 3. SITUACIÓN SIGNIFICATIVA (Contexto del problema, Reto en pregunta y Producto de la unidad).
 
 4. PROPÓSITOS DE APRENDIZAJE Y SECUENCIA DE SESIONES:
-Genera una TABLA en formato Markdown de 7 COLUMNAS:
+Genera esta TABLA de 7 COLUMNAS con línea separadora:
 | ACTIVIDAD (SESIÓN) | DESCRIPCIÓN PEDAGÓGICA | COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | INSTRUMENTO DE EVALUACIÓN |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 
 REGLAS ABSOLUTAS DE TRANSCRIPCIÓN DE CNEB_DATOS.PY:
 - En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe la redacción LITERAL, EXACTA Y PALABRA POR PALABRA del Estándar Oficial proporcionado arriba. PROHIBIDO cambiar palabras o resumir. Únicamente inserta **negrita** (`**texto**`) sobre las palabras del estándar original que se ejercitan en esa sesión.
 - En 'DESEMPEÑO PRECISADO': Incluye OBLIGATORIAMENTE la NUMERACIÓN OFICIAL del desempeño (ejemplo: `1.1.-`, `1.2.-`, `2.1.-`, `3.1.-`). Transcribe el texto original PALABRA POR PALABRA del CNEB proporcionado arriba para {grado_u} e inserta **negrita** (`**texto en negrita**`) únicamente en la frase tomada del CNEB original y en la adición del tema con que se precisa.
-- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por sesión (Acción + Contenido + Condición) sin etiquetas explícitas '(Acción)' ni '(Contenido)'.
+- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión (Acción + Contenido + Condición) sin etiquetas explícitas '(Acción)' ni '(Contenido)'.
 - En 'INSTRUMENTO DE EVALUACIÓN': Lista de cotejo / Rúbrica.
 
-5. ENFOQUES TRANSVERSALES PRIORIZADOS (Tabla de 3 columnas).
+5. ENFOQUES TRANSVERSALES PRIORIZADOS:
+Genera esta TABLA con línea separadora:
+| Enfoque Transversal Priorizado | Valores | Actitudes / Comportamientos Observables |
+| :--- | :--- | :--- |
+
 6. MATERIALES Y RECURSOS DIDÁCTICOS."""
 
                 pedido_u = f"Crea una unidad para {grado_u} con duración de {duracion_u}. Contexto del problema: {problema_u}"
@@ -331,25 +338,27 @@ DATOS OFICIALES CON NUMERACIÓN EXTRAÍDOS DIRECTAMENTE DE CNEB_DATOS.PY:
 - DESEMPEÑOS CNEB OFICIALES CON NUMERACIÓN DISPONIBLES PARA {grado_s}:
 {desempenos_base}
 
-ESTRUCTURA OBLIGATORIA A GENERAR EN FORMATO MARKDOWN:
+ESTRUCTURA OBLIGATORIA A GENERAR EN TABLAS CON LÍNEAS SEPARADORAS MARKDOWN (|---|---|):
 
 # SESIÓN DE APRENDIZAJE N°.......
 **Título:** [Crea un título motivador, lúdico e innovador sobre {detalles_s}]
 
 ## 1. DATOS INFORMATIVOS
-Genera una TABLA de 2 columnas:
+Genera esta TABLA de 2 columnas con línea separadora:
 | Campo | Detalle |
+| :--- | :--- |
 | DRE / UGEL | DRE [.....] / UGEL [.....] |
 | Institución Educativa | I.E. N° [.....] |
 | Lugar / Localidad | [.....] |
-| Docente | [.....] |
+| Docente del Área | [.....] |
 | Grado y Sección | {grado_s}, Secciones: [.....] |
 | Área | Educación Física |
 | Fecha y Duración | Fecha: [.....] | Duración: 90 minutos |
 
 ## 2. PROPÓSITOS Y EVIDENCIAS DE APRENDIZAJE
-Genera una TABLA con exactamente las siguientes 6 columnas:
+Genera esta TABLA con exactamente las 6 columnas y línea separadora:
 | Competencia y Capacidades | Estándar CNEB | Desempeños Precisados | Criterios de Evaluación | Evidencia y Producto | Instrumento de Evaluación |
+| :--- | :--- | :--- | :--- | :--- | :--- |
 
 REGLAS ABSOLUTAS DE TRANSCRIPCIÓN Y NUMERACIÓN DE CNEB_DATOS.PY:
 - **Columna 1:** Transcribe la competencia ({competencia_s}) y sus capacidades oficiales.
@@ -360,12 +369,14 @@ REGLAS ABSOLUTAS DE TRANSCRIPCIÓN Y NUMERACIÓN DE CNEB_DATOS.PY:
 - **Columna 6:** Lista de cotejo.
 
 ## 3. ENFOQUE TRANSVERSAL
-Genera una TABLA con las columnas:
+Genera esta TABLA con línea separadora:
 | Enfoque Transversal Priorizado | Valor | Actitud / Comportamiento Observable |
+| :--- | :--- | :--- |
 
 ## 4. PREPARACIÓN DE LA SESIÓN
-Genera una TABLA estrictamente de 2 columnas:
+Genera esta TABLA de ESTRICTAMENTE 2 COLUMNAS con línea separadora:
 | ¿Qué necesitamos hacer antes de la sesión? | Recursos o Materiales a utilizar |
+| :--- | :--- |
 
 ## 5. SECUENCIA DIDÁCTICA (MOMENTOS DE LA SESIÓN)
 REGLA FUNDAMENTAL DE CNEB_DATOS.PY: Redacta TODAS las acciones de los momentos en **PRIMERA PERSONA** ("Recibo a mis estudiantes...", "Explico el juego...", "Organizo a las cuadrillas...") y en **TIEMPO PRESENTE**.
@@ -391,7 +402,7 @@ REGLA FUNDAMENTAL DE CNEB_DATOS.PY: Redacta TODAS las acciones de los momentos e
 - **Cuidado e Higiene Personal:** Hábitos de lavado de manos, cara, hidratación y orden del material recolectado.
 
 ## 6. ANEXO: INSTRUMENTO DE EVALUACIÓN
-Diseña una TABLA de **Lista de Cotejo** con los 3 criterios de evaluación planteados al inicio y filas para nombres de estudiantes."""
+Diseña una TABLA de **Lista de Cotejo** con línea separadora con los 3 criterios de evaluación planteados al inicio y filas para nombres de estudiantes."""
 
                 pedido = f"Diseña una sesión para {grado_s}. Competencia: {competencia_s}. Detalles del tema: {detalles_s}"
                 
