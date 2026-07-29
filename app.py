@@ -263,14 +263,14 @@ ESTRUCTURA DE LA UNIDAD DE APRENDIZAJE:
 Genera esta TABLA EXACTA en Markdown con línea separadora:
 | Campo | Detalle |
 | :--- | :--- |
-| DRE / UGEL | DRE [.....] / UGEL [.....] |
-| Institución Educativa | I.E. N° [.....] |
-| Lugar / Localidad | [.....] |
-| Ciclo | {ciclo_u} |
-| Grado y Sección | {grado_u}, Secciones: [.....] |
-| Docente del Área | [.....] |
-| Director(a) | [.....] |
-| Duración y Periodo | {duracion_u} (Del [Día/Mes] al [Día/Mes]) |
+| **DRE / UGEL** | DRE [.....] / UGEL [.....] |
+| **Institución Educativa** | I.E. N° [.....] |
+| **Lugar / Localidad** | [.....] |
+| **Ciclo** | {ciclo_u} |
+| **Grado y Sección** | {grado_u}, Secciones: [.....] |
+| **Docente del Área** | [.....] |
+| **Director(a)** | [.....] |
+| **Duración y Periodo** | {duracion_u} (Del [Día/Mes] al [Día/Mes]) |
 
 2. TÍTULO DE LA UNIDAD DE APRENDIZAJE (Significativo, retador e innovador).
 
@@ -312,8 +312,16 @@ REGLAS ABSOLUTAS Y ESTRICTAS DE TRANSCRIPCIÓN DE CNEB_DATOS.PY:
 with tab2:
     st.write("Genera el desarrollo de una sesión diaria paso a paso extrayendo datos reales del CNEB.")
     with st.form("form_sesion"):
-        grado_s = st.selectbox("Grado de Primaria:", ["1° Grado", "2° Grado", "3° Grado", "4° Grado", "5° Grado", "6° Grado"], key="s1")
-        competencia_s = st.selectbox("Competencia Principal:", ["Se desenvuelve de manera autónoma a través de su motricidad", "Asume una vida saludable", "Interactúa a través de sus habilidades sociomotrices"], key="s2")
+        col1, col2 = st.columns(2)
+        with col1:
+            grado_s = st.selectbox("Grado de Primaria:", ["1° Grado", "2° Grado", "3° Grado", "4° Grado", "5° Grado", "6° Grado"], index=2, key="s1")
+            ie_s = st.text_input("I.E. N°:", value="22314 Vicenta Aquije de Huamán", key="s_ie")
+            docente_s = st.text_input("Docente:", value="Mario Garcia Torres", key="s_doc")
+        with col2:
+            competencia_s = st.selectbox("Competencia Principal:", ["Se desenvuelve de manera autónoma a través de su motricidad", "Asume una vida saludable", "Interactúa a través de sus habilidades sociomotrices"], key="s2")
+            fecha_s = st.text_input("Fecha:", value="29/07/2026", key="s_fec")
+            tiempo_s = st.selectbox("Tiempo:", ["45 minutos", "90 minutos", "135 minutos"], index=1, key="s_time")
+
         detalles_s = st.text_area("Tema de la clase o materiales disponibles:", placeholder="Ej. Coordinación óculo-manual lanzando y recibiendo pelotas de plástico.", key="s3")
         boton_sesion = st.form_submit_button("⚡ Generar Sesión en Word")
 
@@ -348,16 +356,15 @@ ESTRUCTURA OBLIGATORIA A GENERAR EN TABLAS CON LÍNEAS SEPARADORAS MARKDOWN (|--
 **Título:** [Crea un título motivador, lúdico e innovador sobre {detalles_s}]
 
 ## 1. DATOS INFORMATIVOS
-Genera esta TABLA de 2 columnas con línea separadora:
+Genera esta TABLA EXACTA de 2 columnas con línea separadora:
 | Campo | Detalle |
 | :--- | :--- |
-| DRE / UGEL | DRE [.....] / UGEL [.....] |
-| Institución Educativa | I.E. N° [.....] |
-| Lugar / Localidad | [.....] |
-| Docente del Área | [.....] |
-| Grado y Sección | {grado_s}, Secciones: [.....] |
-| Área | Educación Física |
-| Fecha y Duración | Fecha: [.....] | Duración: 90 minutos |
+| **I.E N°** | {ie_s} |
+| **Grado y Sección** | {grado_s} |
+| **Area** | Educación física |
+| **Docente** | {docente_s} |
+| **Fecha** | {fecha_s} |
+| **tiempo** | {tiempo_s} |
 
 ## 2. PROPÓSITOS Y EVIDENCIAS DE APRENDIZAJE
 Genera esta TABLA EXACTA de 6 COLUMNAS en una sola fila por cada competencia con línea separadora:
@@ -366,8 +373,8 @@ Genera esta TABLA EXACTA de 6 COLUMNAS en una sola fila por cada competencia con
 
 REGLAS ABSOLUTAS Y ESTRICTAS DE TRANSCRIPCIÓN DE CNEB_DATOS.PY:
 - **Columna 1:** Transcribe la competencia ({competencia_s}) y sus capacidades oficiales separadas con `<br>`.
-- **Columna 2 (ESTÁNDAR CNEB):** Transcribe PALABRA POR PALABRA Y DE MANERA COMPLETA el estándar oficial proporcionado arriba ("{estandar_base}"). Queda estrictamente PROHIBIDO refrasear, cambiar palabras o usar puntos suspensivos '...'. Únicamente **resalta en negrita (**texto**)** la frase exacta del estándar original que se aplica directamente en la clase de hoy.
-- **Columna 3 (DESEMPEÑO PRECISADO):** Selecciona el desempeño oficial correspondiente de la lista de {grado_s} arriba provista. CONSERVA SU NUMERACIÓN OFICIAL EXACTA (ejemplo: `1.1.-`, `1.2.-`, `2.1.-`, `3.1.-`), transcribe PALABRA POR PALABRA el texto original de cneb_datos.py sin modificar ninguna de sus palabras y **resalta en negrita (**texto en negrita**)** ÚNICAMENTE DOS PARTES: 1) la frase o acción tomada del CNEB original que se ejercita hoy, y 2) la adición de la precisión agregada al final para el tema ({detalles_s}).
+- **Columna 2 (ESTÁNDAR CNEB):** Transcribe PALABRA POR PALABRA Y DE MANERA COMPLETA el estándar oficial proporcionado arriba ("{estandar_base}"). Queda strictly PROHIBIDO refrasear, cambiar palabras o usar puntos suspensivos '...'. Únicamente **resalta en negrita (**texto**)** la frase exacta del estándar original que se aplica directamente en la clase de hoy.
+- **Columna 3 (DESEMPEÑO PRECISADO):** Selecciona el desempeño oficial del CNEB de la lista de {grado_s} arriba provista. CONSERVA SU NUMERACIÓN OFICIAL EXACTA (ejemplo: `1.1.-`, `1.2.-`, `2.1.-`, `3.1.-`), transcribe PALABRA POR PALABRA el texto original de cneb_datos.py sin modificar ninguna de sus palabras y **resalta en negrita (**texto en negrita**)** únicamente dos partes: 1) la frase o acción tomada del CNEB original que se ejercita hoy, y 2) la adición de la precisión agregada al final para el tema ({detalles_s}).
 - **Columna 4 (CRITERIOS DE EVALUACIÓN):** Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN separados con `<br>` dentro de la celda (ejemplo: `1. Criterio uno<br>2. Criterio dos<br>3. Criterio tres`). Cada criterio debe contener de forma implícita los 3 elementos pedagógicos (Acción + Contenido + Condición) en una oración fluida, PERO QUEDA ESTRICTAMENTE PROHIBIDO ESCRIBIR O ETIQUETAR LAS PALABRAS '(Acción)' O '(Contenido)' EXPLÍCITAMENTE.
 - **Columna 5:** Define la Evidencia de aprendizaje (producto o actuación medible).
 - **Columna 6:** Lista de cotejo.
