@@ -27,14 +27,23 @@ def crear_archivo_word(texto_contenido):
     buffer.seek(0)
     return buffer
 
-# Modelo de Google Gemini
-MODELO_ACTIVO = 'gemini-2.0-flash'
-
-# Función para llamar a Gemini con reintento automático de modelos
+# Función inteligente que detecta dinámicamente los modelos habilitados en tu cuenta
 def generar_respuesta_ia(client, system_instruction, prompt_usuario):
-    modelos = [MODELO_ACTIVO, 'gemini-2.5-flash', 'gemini-1.5-flash']
+    modelos_disponibles = []
+    try:
+        # Pregunta a tu cuenta de Google qué modelos tienes habilitados
+        for m in client.models.list():
+            nombre = m.name.replace('models/', '')
+            modelos_disponibles.append(nombre)
+    except Exception:
+        pass
+
+    # Si la detección automática no responde, usa la lista de respaldo
+    if not modelos_disponibles:
+        modelos_disponibles = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-latest']
+
     ultimo_error = None
-    for modelo in modelos:
+    for modelo in modelos_disponibles:
         try:
             response = client.models.generate_content(
                 model=modelo,
@@ -49,7 +58,8 @@ def generar_respuesta_ia(client, system_instruction, prompt_usuario):
         except Exception as err:
             ultimo_error = err
             continue
-    raise RuntimeError(f"Error con todos los modelos: {ultimo_error}")
+
+    raise RuntimeError(f"Error al conectar con la API de Google: {ultimo_error}")
 
 # Creación de las 3 Pestañas de Trabajo
 tab1, tab2, tab3 = st.tabs([
