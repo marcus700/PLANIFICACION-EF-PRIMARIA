@@ -27,8 +27,8 @@ def crear_archivo_word(texto_contenido):
     buffer.seek(0)
     return buffer
 
-# Modelo estable oficial
-MODELO_ACTIVO = 'gemini-2.0-flash'
+# Modelo exacto activo en tu Google AI Studio
+MODELO_ACTIVO = 'gemini-3.6-flash'
 
 # Creación de las 3 Pestañas de Trabajo
 tab1, tab2, tab3 = st.tabs([
@@ -47,7 +47,7 @@ with tab1:
         boton_unidad = st.form_submit_button("📂 Generar Unidad en Word")
 
     if boton_unidad and problema_u:
-        with st.spinner("Diseñando la Unidad de Aprendizaje..."):
+        with st.spinner("Diseñando la Unidad de Aprendizaje con Gemini 3.6 Flash..."):
             try:
                 client = genai.Client(api_key=api_key)
                 instrucciones_u = (
@@ -84,7 +84,7 @@ with tab2:
         boton_sesion = st.form_submit_button("⚡ Generar Sesión en Word")
 
     if boton_sesion and detalles_s:
-        with st.spinner("Diseñando la sesión de aprendizaje..."):
+        with st.spinner("Diseñando la sesión de aprendizaje con Gemini 3.6 Flash..."):
             try:
                 client = genai.Client(api_key=api_key)
                 instrucciones = (
@@ -119,7 +119,7 @@ with tab3:
         boton_rubrica = st.form_submit_button("📊 Generar Rúbrica en Word")
 
     if boton_rubrica and criterio_r:
-        with st.spinner("Estructurando la rúbrica..."):
+        with st.spinner("Estructurando la rúbrica con Gemini 3.6 Flash..."):
             try:
                 client = genai.Client(api_key=api_key)
                 instrucciones_r = (
@@ -138,7 +138,3 @@ with tab3:
                 
                 st.success("¡Rúbrica generada con éxito!")
                 st.markdown(resultado_r)
-                
-                archivo_word_r = crear_archivo_word(resultado_r)
-                st.download_button(label="📥 Descargar Rúbrica en Word (.docx)", data=archivo_word_r, file_name=f"Rubrica_PlanificaEF_{grado_r.replace(' ', '_')}.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-            except Exception as e: st.error(f"Error: {e}")
