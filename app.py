@@ -53,8 +53,8 @@ st.set_page_config(page_title="PlanificaEF", page_icon="🏃‍♂️", layout="
 # ==============================================================================
 # CONFIGURACIÓN DE PAGO, SEGURIDAD Y PINES AUTOMÁTICOS
 # ==============================================================================
-NUMERO_WHATSAPP = "51937287225"  # 👈 REEMPLAZA CON TU NÚMERO DE WHATSAPP CON 51 (ej. 51987654321)
-NUMERO_YAPE_PLIN = "937 287 225" # 👈 REEMPLAZA CON TU NÚMERO DE YAPE / PLIN
+NUMERO_WHATSAPP = "51900000000"  # 👈 REEMPLAZA CON TU NÚMERO DE WHATSAPP CON 51 (ej. 51987654321)
+NUMERO_YAPE_PLIN = "900 000 000" # 👈 REEMPLAZA CON TU NÚMERO DE YAPE / PLIN
 
 # PIN seguro que cambia solo automáticamente cada mes + tu PIN Maestro permanente
 PIN_DEL_MES = obtener_pin_mes_actual()
@@ -382,10 +382,10 @@ with tab1:
                         "4. PROPÓSITOS DE APRENDIZAJE Y SECUENCIA DE SESIONES:\n"
                         "| ACTIVIDAD (SESIÓN) | DESCRIPCIÓN PEDAGÓGICA | COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | INSTRUMENTO DE EVALUACIÓN |\n"
                         "| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n\n"
-                        "REGLAS ABSOLUTAS DE TRANSCRIPCIÓN DE CNEB_DATOS.PY:\n"
+                        "REGLAS ABSOLUTAS Y ESTRICTAS DE EVALUACIÓN CNEB:\n"
                         "- En 'ESTÁNDAR DE LA COMPETENCIA': Copia PALABRA POR PALABRA el Estándar Oficial proporcionado arriba. PROHIBIDO refrasear. Únicamente **resalta en negrita** (`**texto**`) la frase que se ejercita.\n"
                         "- En 'DESEMPEÑO PRECISADO': Copia PALABRA POR PALABRA el Desempeño Oficial del CNEB conservando su NUMERACIÓN ORIGINAL (ejemplo: 1.1.-, 1.2.-). **Resalta en negrita** (`**texto en negrita**`) la frase del CNEB tomada y lo agregado al final para precisarlo.\n"
-                        "- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión separados con <br>.\n"
+                        "- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión separados con <br>. Cada uno de los 3 criterios debe contener de forma completa sus 3 ELEMENTOS FUNDAMENTALES DE EVALUACIÓN CNEB: Acción (verbo observable) + Contenido (habilidad/tema motriz) + Condición (contexto/recurso de la actividad), redactados como una oración pedagógica fluida y SIN escribir ni etiquetar explícitamente las palabras '(Acción)' ni '(Contenido)' por escrito.\n"
                         "- En 'INSTRUMENTO DE EVALUACIÓN': Lista de cotejo / Rúbrica.\n\n"
                         "5. ENFOQUES TRANSVERSALES PRIORIZADOS (Tabla con línea separadora).\n"
                         "6. MATERIALES Y RECURSOS DIDÁCTICOS."
@@ -421,7 +421,7 @@ with tab2:
         col1, col2 = st.columns(2)
         with col1:
             grado_s = st.selectbox("Grado de Primaria:", ["1° Grado", "2° Grado", "3° Grado", "4° Grado", "5° Grado", "6° Grado"], index=2, key="s1")
-            ie_s = st.text_input("I.E. N°:", value=".........", key="s_ie")
+            ie_s = st.text_input("I.E. N°:", value="22314 Vicenta Aquije de Huamán", key="s_ie")
             docente_s = st.text_input("Docente:", value="Mario Garcia Torres", key="s_doc")
         with col2:
             competencia_s = st.selectbox("Competencia Principal:", ["Se desenvuelve de manera autónoma a través de su motricidad", "Asume una vida saludable", "Interactúa a través de sus habilidades sociomotrices"], key="s2")
@@ -472,11 +472,11 @@ with tab2:
                         "## 2. PROPÓSITOS Y EVIDENCIAS DE APRENDIZAJE\n"
                         "| COMPETENCIA / CAPACIDADES | ESTÁNDAR CNEB | DESEMPEÑOS PRECISADO | CRITERIOS DE EVALUACIÓN | EVIDENCIA Y PRODUCTO | INSTRUMENTO DE EVALUACIÓN |\n"
                         "| :--- | :--- | :--- | :--- | :--- | :--- |\n"
-                        "REGLAS DE TRANSCRIPCIÓN:\n"
+                        "REGLAS ABSOLUTAS Y ESTRICTAS DE EVALUACIÓN CNEB:\n"
                         "- Columna 1: Competencia (" + str(competencia_s) + ") y sus capacidades separadas con <br>.\n"
                         "- Columna 2: Transcribe PALABRA POR PALABRA Y COMPLETO el estándar oficial (\"" + str(estandar_base) + "\"). **Resalta en negrita** solo la parte trabajada hoy.\n"
                         "- Columna 3: Selecciona el desempeño de " + str(grado_s) + " de la lista provista arriba. Conserva su numeración exacta (ej. 1.1.-), transcribe palabra por palabra sin modificar, y **resalta en negrita** la frase tomada del CNEB original y lo que le agregas al final para precisarlo al tema (" + str(detalles_s) + ").\n"
-                        "- Columna 4: Formula EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN separados con <br>. Implícitos (Acción+Contenido+Condición) SIN escribir las palabras '(Acción)' ni '(Contenido)' por escrito.\n"
+                        "- Columna 4 (CRITERIOS DE EVALUACIÓN): Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN separados con <br>. Cada uno de los 3 criterios debe incluir de manera completa y rigurosa sus 3 ELEMENTOS CNEB: Acción (verbo observable) + Contenido (habilidad/tema motriz) + Condición (contexto o modo de ejecución), redactados en una oración pedagógica fluida y SIN escribir las etiquetas '(Acción)' ni '(Contenido)' explícitamente.\n"
                         "- Columna 5: Evidencia de aprendizaje.\n"
                         "- Columna 6: Lista de cotejo.\n\n"
                         "## 3. ENFOQUE TRANSVERSAL\n"
@@ -532,7 +532,7 @@ with tab3:
                 client = genai.Client(api_key=api_key)
                 instrucciones_r = (
                     "Actúa como un Evaluador Pedagógico experto en Educación Física para Primaria.\n"
-                    "Diseña una rúbrica analítica estructurada con los niveles: En Inicio, En Proceso, Logrado y Logro Destacado para el desempeño solicitado, utilizando exactamente 3 criterios claros y observables alineados al CNEB sin etiquetar explícitamente '(Acción)' ni '(Contenido)'."
+                    "Diseña una rúbrica analítica estructurada con los niveles: En Inicio, En Proceso, Logrado y Logro Destacado para el desempeño solicitado, utilizando exactamente 3 criterios claros que incluyan Acción + Contenido + Condición sin etiquetar explícitamente '(Acción)' ni '(Contenido)'."
                 )
 
                 pedido_r = "Crea una rúbrica para " + str(grado_r) + ". Competencia: " + str(competencia_r) + ". Desempeño: " + str(criterio_r)
