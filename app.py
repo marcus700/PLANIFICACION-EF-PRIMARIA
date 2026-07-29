@@ -201,16 +201,27 @@ with tab1:
         boton_unidad = st.form_submit_button("📂 Generar Unidad en Word")
 
     if boton_unidad and problema_u:
-        with st.spinner("Cargando matriz del CNEB y diseñando la Unidad..."):
+        with st.spinner("Cargando matriz de cneb_datos.py y diseñando la Unidad..."):
             try:
                 client = genai.Client(api_key=api_key)
                 ciclo_u = obtener_ciclo_primaria(grado_u)
                 
+                # Extraer matriz de desempeñs CNEB para este grado desde cneb_datos.py
+                matriz_desempenos_u = ""
+                if CNEB_PRIMARIA:
+                    des_u_list = []
+                    for comp_name, comp_data in CNEB_PRIMARIA.items():
+                        des_list = comp_data.get("desempenos", {}).get(grado_u, [])
+                        if des_list:
+                            des_u_list.append(f"COMPETENCIA: {comp_name}")
+                            des_u_list.extend(des_list)
+                    matriz_desempenos_u = "\n".join(des_u_list)
+
                 instrucciones_u = f"""Actúa como un Especialista Curricular experto en Educación Física para Primaria bajo el enfoque del CNEB de Perú (MINEDU).
 Diseña una UNIDAD DE APRENDIZAJE completa estructurada EN TABLAS MARKDOWN con la siguiente estructura oficial:
 
-REGISTRO CURRICULAR PARA ESTA UNIDAD:
-- Grado: {grado_u} ({ciclo_u})
+REGISTRO CURRICULAR Y BASE DE DATOS CNEB_DATOS.PY PARA {grado_u} ({ciclo_u}):
+{matriz_desempenos_u}
 
 1. DATOS INFORMATIVOS:
 Genera una TABLA bien organizada con los campos completados con puntos [.....] para rellenar:
@@ -233,9 +244,11 @@ Genera una TABLA en formato Markdown de 7 COLUMNAS:
 | ACTIVIDAD (SESIÓN) | DESCRIPCIÓN PEDAGÓGICA | COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | INSTRUMENTO DE EVALUACIÓN |
 
 REGLAS ABSOLUTAS DE TRANSCRIPCIÓN LITERAL DEL CNEB:
-- En 'ESTÁNDAR DE LA COMPETENCIA': Copia y transcribe la redacción LITERAL, EXACTA Y COMPLETA del Estándar Oficial del CNEB correspondiente al {ciclo_u}. Queda PROHIBIDO refrasear, cambiar palabras o resumir. Únicamente **RESALTA EN NEGRITA (**texto**)** la frase original que se ejercita en esa sesión.
-- En 'DESEMPEÑO PRECISADO': Copia y transcribe la redacción LITERAL Y EXACTA del Desempeño Oficial del CNEB del grado {grado_u} sin alterar sus palabras originales, y **RESALTA EN NEGRITA (**texto precisado**)** la parte del desempeño tomada y la precisión del tema.
-- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión. Integran los 3 elementos pedagógicos (Acción + Contenido + Condición) de forma fluida, SIN escribir las palabras '(Acción)' ni '(Contenido)' explícitamente.
+- En 'ESTÁNDAR DE LA COMPETENCIA': Copia y transcribe la redacción LITERAL, EXACTA Y COMPLETA del Estándar CNEB oficial del {ciclo_u}. Queda PROHIBIDO refrasear o resumir. Únicamente **RESALTA EN NEGRITA (**texto**)** la frase original que se ejercita en esa sesión.
+- En 'DESEMPEÑO PRECISADO': Usa los desempeños oficiales del CNEB de {grado_u} provistos arriba en la matriz CNEB. Conserva 100% las palabras originales del CNEB y **RESALTA EN NEGRITA (**texto en negrita**)** ÚNICAMENTE DOS PARTES:
+  1. La frase tomada del desempeño original que se ejercita.
+  2. Lo que le agregas al final para precisarlo con el tema de la sesión.
+- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión (Acción + Contenido + Condición) sin etiquetas explícitas '(Acción)'.
 - En 'INSTRUMENTO DE EVALUACIÓN': Lista de cotejo / Rúbrica analítica.
 
 5. ENFOQUES TRANSVERSALES PRIORIZADOS:
@@ -248,7 +261,7 @@ Genera una TABLA con las columnas:
                 
                 resultado_u = generar_respuesta_ia(client, instrucciones_u, pedido_u)
                 
-                st.success("¡Unidad Curricular generada con éxito!")
+                st.success("¡Unidad Curricular generada con éxito extrayendo cneb_datos.py!")
                 st.markdown(resultado_u)
                 
                 archivo_word_u = crear_archivo_word_profesional(resultado_u)
@@ -271,12 +284,12 @@ with tab2:
         boton_sesion = st.form_submit_button("⚡ Generar Sesión en Word")
 
     if boton_sesion and detalles_s:
-        with st.spinner("Inyectando base de datos CNEB y estructurando sesión..."):
+        with st.spinner("Extrayendo desempeño base de cneb_datos.py y diseñando sesión..."):
             try:
                 client = genai.Client(api_key=api_key)
                 ciclo_s = obtener_ciclo_primaria(grado_s)
                 
-                # Extraer Estándar y Desempeños reales del archivo cneb_datos.py si está disponible
+                # Extraer Estándar y Desempeños reales del archivo cneb_datos.py
                 estandar_base = ""
                 desempenos_base = ""
                 if CNEB_PRIMARIA and competencia_s in CNEB_PRIMARIA:
@@ -286,12 +299,12 @@ with tab2:
 
                 instrucciones = f"""Actúa como un docente experto de Educación Física de nivel Primaria en Perú, especialista en el enfoque por competencias del Currículo Nacional de la Educación Básica (CNEB) de MINEDU.
 
-DATOS OFICIALES EXTRAÍDOS DIRECTAMENTE DE LA BASE DE DATOS CNEB_DATOS.PY:
+DATOS OFICIALES EXTRAÍDOS DIRECTAMENTE DE CNEB_DATOS.PY:
 - Grado y Ciclo: {grado_s} ({ciclo_s})
 - Competencia principal: {competencia_s}
 - Tema / Propósito motriz: {detalles_s}
 - ESTÁNDAR CNEB OFICIAL A TRANSCRIBIR DE MANERA COMPLETA Y LITERAL: "{estandar_base}"
-- DESEMPEÑOS CNEB OFICIALES DISPONIBLES PARA {grado_s}:
+- DESEMPEÑOS CNEB OFICIALES DISPONIBLES PARA {grado_s} Y PARA LA COMPETENCIA "{competencia_s}":
 {desempenos_base}
 
 ESTRUCTURA OBLIGATORIA A GENERAR EN FORMATO MARKDOWN:
@@ -314,11 +327,13 @@ Genera una TABLA de 2 columnas:
 Genera una TABLA con exactamente las siguientes 6 columnas:
 | Competencia y Capacidades | Estándar CNEB | Desempeños Precisados | Criterios de Evaluación | Evidencia y Producto | Instrumento de Evaluación |
 
-Condiciones obligatorias para esta tabla:
+REGLAS ABSOLUTAS DE TRANSCRIPCIÓN Y PRECISIÓN DEL CNEB:
 - **Columna 1:** Transcribe la competencia ({competencia_s}) y sus capacidades oficiales.
-- **Columna 2:** Transcribe EXACTAMENTE Y DE MANERA COMPLETA el estándar oficial proporcionado arriba ("{estandar_base}"). Queda PROHIBIDO refrasear o usar puntos suspensivos '...'. **Resalta en negrita (**texto**)** únicamente la frase del estándar que se aplica directamente hoy.
-- **Columna 3:** Transcribe el desempeño oficial del CNEB de la lista de {grado_s} de arriba, y **resalta en negrita (**texto precisado**)** la parte precisada para la sesión.
-- **Columna 4:** Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros. Deben integrar implícitamente Acción + Contenido + Condición, PERO NUNCA escribas literalmente las palabras '(Acción)' ni '(Contenido)'.
+- **Columna 2:** Transcribe EXACTAMENTE Y DE MANERA COMPLETA el estándar oficial proporcionado arriba ("{estandar_base}"). PROHIBIDO refrasear o usar puntos suspensivos '...'. **Resalta en negrita (**texto**)** únicamente la frase del estándar que se aplica directamente hoy.
+- **Columna 3 (DESEMPEÑO PRECISADO):** Copia el desempeño oficial del CNEB correspondiente de la lista de {grado_s} arriba provista. CONSERVA EL TEXTO BASE DEL CNEB Y **RESALTA EN NEGRITA (**texto en negrita**)** ÚNICAMENTE DOS PARTES:
+  1. La frase o acción tomada del desempeño original del CNEB que se ejercita hoy.
+  2. La adición específica que le agregas al final para precisarlo con el tema de la clase ({detalles_s}).
+- **Columna 4:** Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros (Acción + Contenido + Condición) sin etiquetas explícitas '(Acción)'.
 - **Columna 5:** Define la Evidencia de aprendizaje (producto o actuación medible).
 - **Columna 6:** Lista de cotejo.
 
@@ -360,7 +375,7 @@ Diseña una TABLA de **Lista de Cotejo** con los 3 criterios de evaluación plan
                 
                 resultado_s = generar_respuesta_ia(client, instrucciones, pedido)
                 
-                st.success("¡Sesión generada con éxito siguiendo cneb_datos.py!")
+                st.success("¡Sesión generada extrayendo desempeño exacto de cneb_datos.py!")
                 st.markdown(resultado_s)
                 
                 archivo_word = crear_archivo_word_profesional(resultado_s)
