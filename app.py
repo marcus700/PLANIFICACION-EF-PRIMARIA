@@ -213,7 +213,7 @@ with tab1:
                     "| Director(a) | [.....] |\n"
                     "| Duración y Periodo | [Duración seleccionada] (Del [Día/Mes] al [Día/Mes]) |\n\n"
                     "2. TÍTULO DE LA UNIDAD DE APRENDIZAJE (Significativo, retador e innovador).\n\n"
-                    "3. SITUACIÓN SIGNIFICATIVA (Contexto del problema, Reto en pregunta y Producto de la unidad).\n\n"
+                    "3. SITUACIÓN SIGNIFICATIVA (Contexto del problema, Reto en pregunta e Y Producto de la unidad).\n\n"
                     "4. PROPÓSITOS DE APRENDIZAJE Y SECUENCIA DE SESIONES:\n"
                     "Genera una TABLA en formato Markdown de 7 COLUMNAS:\n"
                     "| ACTIVIDAD (SESIÓN) | DESCRIPCIÓN PEDAGÓGICA | COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | INSTRUMENTO DE EVALUACIÓN |\n\n"
@@ -326,3 +326,16 @@ with tab3:
                 pedido_r = f"Crea una rúbrica para {grado_r}. Competencia: {competencia_r}. Desempeño: {criterio_r}"
                 
                 resultado_r = generar_respuesta_ia(client, instrucciones_r, pedido_r)
+                
+                st.success("¡Rúbrica generada con éxito!")
+                st.markdown(resultado_r)
+                
+                archivo_word_r = crear_archivo_word_profesional(resultado_r)
+                st.download_button(
+                    label="📥 Descargar Rúbrica en Word (.docx)", 
+                    data=archivo_word_r, 
+                    file_name=f"Rubrica_PlanificaEF_{grado_r.replace(' ', '_')}.docx", 
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                )
+            except Exception as e:
+                st.error(f"Error al generar la Rúbrica: {e}")
