@@ -3,7 +3,6 @@ from google import genai
 from google.genai import types
 from docx import Document
 import io
-
 # Configuración visual de la plataforma
 st.set_page_config(page_title="PlanificaEF", page_icon="🏃‍♂️", layout="centered")
 
