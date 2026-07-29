@@ -31,14 +31,12 @@ def crear_archivo_word(texto_contenido):
 def generar_respuesta_ia(client, system_instruction, prompt_usuario):
     modelos_disponibles = []
     try:
-        # Pregunta a tu cuenta de Google qué modelos tienes habilitados
         for m in client.models.list():
             nombre = m.name.replace('models/', '')
             modelos_disponibles.append(nombre)
     except Exception:
         pass
 
-    # Si la detección automática no responde, usa la lista de respaldo
     if not modelos_disponibles:
         modelos_disponibles = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-latest']
 
@@ -70,7 +68,7 @@ tab1, tab2, tab3 = st.tabs([
 
 # --- PESTAÑA 1: UNIDADES ---
 with tab1:
-    st.write("Estructura una unidad didáctica completa para varias semanas.")
+    st.write("Estructura una unidad didáctica completa para varias semanas con tabla de propósitos detallada.")
     with st.form("form_unidad"):
         grado_u = st.selectbox("Grado de Primaria:", ["1° Grado", "2° Grado", "3° Grado", "4° Grado", "5° Grado", "6° Grado"], key="u1")
         duracion_u = st.selectbox("Duración de la Unidad:", ["4 Semanas (4 sesiones)", "6 Semanas (6 sesiones)", "8 Semanas (8 sesiones)"], key="u2")
@@ -78,18 +76,27 @@ with tab1:
         boton_unidad = st.form_submit_button("📂 Generar Unidad en Word")
 
     if boton_unidad and problema_u:
-        with st.spinner("Diseñando la Unidad de Aprendizaje..."):
+        with st.spinner("Diseñando la Unidad de Aprendizaje con la tabla de 7 columnas..."):
             try:
                 client = genai.Client(api_key=api_key)
                 instrucciones_u = (
-                    "Actúa como un Especialista Curricular experto en Educación Física para Primaria bajo el enfoque del CNEB de Perú. "
-                    "Diseña una Unidad de Aprendizaje completa que incluya estrictamente:\n"
-                    "1. Título de la unidad (significativo).\n"
-                    "2. Situación Significativa (Contexto, Reto en forma de pregunta y Producto esperado).\n"
-                    "3. Propósitos de Aprendizaje articulados con las competencias del área de Educación Física.\n"
-                    "4. Secuencia semanal de sesiones (Título y una breve descripción pedagógica de cada clase)."
+                    "Actúa como un Especialista Curricular experto en Educación Física para Primaria bajo el enfoque del CNEB de Perú (MINEDU).\n"
+                    "Diseña una Unidad de Aprendizaje completa que incluya estrictamente:\n\n"
+                    "1. DATOS INFORMATIVOS Y TÍTULO DE LA UNIDAD (Significativo y motivador).\n"
+                    "2. SITUACIÓN SIGNIFICATIVA (Contexto del problema, Reto en forma de pregunta integradora y Producto esperado).\n"
+                    "3. PROPÓSITOS DE APRENDIZAJE Y SECUENCIA DE SESIONES:\n"
+                    "Genera una TABLA en formato Markdown que contenga ESTRICTAMENTE las siguientes 7 COLUMNAS:\n"
+                    "| ACTIVIDAD (SESIÓN) | DESCRIPCIÓN PEDAGÓGICA | COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | INSTRUMENTO DE EVALUACIÓN |\n\n"
+                    "REGLAS OBLIGATORIAS PARA ESTA TABLA:\n"
+                    "- Cada fila de la tabla representa una sesión de la unidad (ej. Sesión 1, Sesión 2, etc.).\n"
+                    "- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe el estándar oficial del CNEB del ciclo correspondiente y **RESALTA EN NEGRITA (**texto resaltado**)** únicamente el fragmento o habilidad específica del estándar que se aborda en esa sesión.\n"
+                    "- En 'DESEMPEÑO PRECISADO': Redacta el desempeño precisado alineado a la actividad física del día.\n"
+                    "- En 'CRITERIOS DE EVALUACIÓN': Formula un criterio claro por sesión con la estructura: Acción + Contenido + Condición.\n"
+                    "- En 'INSTRUMENTO DE EVALUACIÓN': Coloca 'Lista de cotejo' o 'Rúbrica analítica'.\n\n"
+                    "4. ENFOQUES TRANSVERSALES PRIORIZADOS (Tabla con Enfoque, Valor y Actitud observable).\n"
+                    "5. MATERIALES Y RECURSOS DIDÁCTICOS."
                 )
-                pedido_u = f"Crea una unidad para {grado_u} con duración de {duracion_u}. Contexto: {problema_u}"
+                pedido_u = f"Crea una unidad para {grado_u} con duración de {duracion_u}. Contexto del problema: {problema_u}"
                 
                 resultado_u = generar_respuesta_ia(client, instrucciones_u, pedido_u)
                 
