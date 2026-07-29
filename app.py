@@ -32,12 +32,10 @@ if not api_key:
 # FUNCIONES AUXILIARES: LIMPIEZA Y CONVERTIDOR PROFESIONAL DE MARKDOWN A WORD
 # ==============================================================================
 def limpiar_texto(texto):
-    """Elimina etiquetas HTML indeseadas y corrige separadores de tablas en Markdown."""
+    """Corrige concatenaciones y limpia formato de texto."""
     if not texto:
         return ""
-    texto_limpio = re.sub(r'<br\s*/?>', '\n', texto, flags=re.IGNORECASE)
-    # Corrige concatenaciones accidentales de tubos dobles '||'
-    texto_limpio = texto_limpio.replace('||', '|\n|')
+    texto_limpio = texto.replace('||', '|\n|')
     return texto_limpio
 
 def set_cell_background(cell, fill_color):
@@ -122,8 +120,11 @@ def crear_archivo_word_profesional(texto_markdown):
                             p = cell.paragraphs[0]
                             p.text = ""
                             
+                            # Convertir <br> interno en saltos de línea para el Word
+                            valor_celda_limpio = cell_value.replace('<br>', '\n').replace('<br/>', '\n').replace('<BR>', '\n')
+                            
                             # Formatear texto en negrita dentro de celdas
-                            partes = re.split(r'(\*\*.*?\*\*)', cell_value)
+                            partes = re.split(r'(\*\*.*?\*\*)', valor_celda_limpio)
                             for parte in partes:
                                 if parte.startswith('**') and parte.endswith('**'):
                                     run = p.add_run(parte[2:-2])
@@ -234,9 +235,9 @@ with tab1:
                 instrucciones_u = f"""Actúa como un Especialista Curricular experto en Educación Física para Primaria bajo el enfoque del CNEB de Perú (MINEDU).
 Diseña una UNIDAD DE APRENDIZAJE completa estructurada EN TABLAS MARKDOWN CON LÍNEAS SEPARADORAS (|---|---|).
 
-PROHIBICIÓN STRICTA DE ETIQUETAS Y INTROS:
-- PROHIBIDO usar la etiqueta HTML `<br>`. Usa únicamente saltos de línea normales.
-- Comienza directamente con `# UNIDAD DE APRENDIZAJE N°.......`.
+REGLA SÚPER IMPORTANTE PARA TABLAS (PARA EVITAR QUE EL CONTENIDO SALGA DEL CUADRO):
+- Cada fila de la tabla `| ... | ... |` debe escribirse en UNA SOLA LÍNEA CONTINUA (sin dar Enter dentro de las celdas).
+- Para hacer saltos de línea dentro de una misma celda (por ejemplo, para enlistar Capacidades o los 3 Criterios de Evaluación 1., 2. y 3.), DEBES usar obligatoriamente la etiqueta `<br>` en lugar de presionar Enter.
 
 MATRIZ OFICIAL EXACTA Y PALABRA POR PALABRA DE CNEB_DATOS.PY PARA {grado_u} ({ciclo_u}):
 
@@ -273,7 +274,7 @@ Genera esta TABLA de 7 COLUMNAS con línea separadora:
 REGLAS ABSOLUTAS DE TRANSCRIPCIÓN DE CNEB_DATOS.PY:
 - En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe la redacción LITERAL, EXACTA Y PALABRA POR PALABRA del Estándar Oficial proporcionado arriba. PROHIBIDO cambiar palabras o resumir. Únicamente inserta **negrita** (`**texto**`) sobre las palabras del estándar original que se ejercitan en esa sesión.
 - En 'DESEMPEÑO PRECISADO': Incluye OBLIGATORIAMENTE la NUMERACIÓN OFICIAL del desempeño (ejemplo: `1.1.-`, `1.2.-`, `2.1.-`, `3.1.-`). Transcribe el texto original PALABRA POR PALABRA del CNEB proporcionado arriba para {grado_u} e inserta **negrita** (`**texto en negrita**`) únicamente en la frase tomada del CNEB original y en la adición del tema con que se precisa.
-- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión (Acción + Contenido + Condición) sin etiquetas explícitas '(Acción)' ni '(Contenido)'.
+- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión usando `<br>` para separarlos (ej. `1. Criterio uno<br>2. Criterio dos<br>3. Criterio tres`). Acción + Contenido + Condición sin etiquetas explícitas '(Acción)' ni '(Contenido)'.
 - En 'INSTRUMENTO DE EVALUACIÓN': Lista de cotejo / Rúbrica.
 
 5. ENFOQUES TRANSVERSALES PRIORIZADOS:
@@ -326,9 +327,9 @@ with tab2:
 
                 instrucciones = f"""Actúa como un docente experto de Educación Física de nivel Primaria en Perú, especialista en el enfoque por competencias del CNEB de MINEDU.
 
-PROHIBICIÓN ESTRICTA DE ETIQUETAS Y INTROS:
-- PROHIBIDO usar la etiqueta HTML `<br>`. Usa únicamente saltos de línea normales.
-- Comienza directamente con `# SESIÓN DE APRENDIZAJE N°.......`.
+REGLA SÚPER IMPORTANTE PARA TABLAS (PARA EVITAR QUE EL CONTENIDO SALGA DEL CUADRO):
+- Cada fila de la tabla `| ... | ... |` debe escribirse en UNA SOLA LÍNEA CONTINUA (sin dar Enter dentro de las celdas).
+- Para hacer saltos de línea dentro de una misma celda (por ejemplo, para separar Capacidades o los 3 Criterios de Evaluación 1., 2. y 3.), DEBES usar obligatoriamente la etiqueta `<br>` en lugar de presionar Enter.
 
 DATOS OFICIALES CON NUMERACIÓN EXTRAÍDOS DIRECTAMENTE DE CNEB_DATOS.PY:
 - Grado y Ciclo: {grado_s} ({ciclo_s})
@@ -356,15 +357,15 @@ Genera esta TABLA de 2 columnas con línea separadora:
 | Fecha y Duración | Fecha: [.....] | Duración: 90 minutos |
 
 ## 2. PROPÓSITOS Y EVIDENCIAS DE APRENDIZAJE
-Genera esta TABLA con exactamente las 6 columnas y línea separadora:
-| Competencia y Capacidades | Estándar CNEB | Desempeños Precisados | Criterios de Evaluación | Evidencia y Producto | Instrumento de Evaluación |
+Genera esta TABLA EXACTA de 6 COLUMNAS en una sola fila por cada competencia con línea separadora:
+| COMPETENCIA / CAPACIDADES | ESTÁNDAR CNEB | DESEMPEÑOS PRECISADOS | CRITERIOS DE EVALUACIÓN | EVIDENCIA Y PRODUCTO | INSTRUMENTO DE EVALUACIÓN |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 
-REGLAS ABSOLUTAS DE TRANSCRIPCIÓN Y NUMERACIÓN DE CNEB_DATOS.PY:
-- **Columna 1:** Transcribe la competencia ({competencia_s}) y sus capacidades oficiales.
+REGLAS ABSOLUTAS DE TRANSCRIPCIÓN Y FORMATO EN UNA SOLA LÍNEA:
+- **Columna 1:** Transcribe la competencia ({competencia_s}) y sus capacidades separadas con `<br>`.
 - **Columna 2 (ESTÁNDAR CNEB):** Transcribe PALABRA POR PALABRA Y DE MANERA COMPLETA el estándar oficial proporcionado arriba ("{estandar_base}"). Queda estrictamente PROHIBIDO refrasear, cambiar palabras o usar puntos suspensivos '...'. Únicamente **resalta en negrita (**texto**)** la frase exacta del estándar original que se aplica directamente en la clase de hoy.
 - **Columna 3 (DESEMPEÑO PRECISADO):** Selecciona el desempeño oficial del CNEB de la lista de {grado_s} arriba provista. CONSERVA SU NUMERACIÓN OFICIAL EXACTA (ejemplo: `1.1.-`, `1.2.-`, `2.1.-`, `3.1.-`), transcribe PALABRA POR PALABRA el texto original del CNEB sin modificar sus palabras y **resalta en negrita (**texto en negrita**)** únicamente dos partes: 1) la frase tomada del CNEB original, y 2) lo que le agregas al final para precisarlo con el tema ({detalles_s}).
-- **Columna 4 (CRITERIOS DE EVALUACIÓN):** Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros (Acción + Contenido + Condición) sin etiquetas explícitas '(Acción)' ni '(Contenido)'.
+- **Columna 4 (CRITERIOS DE EVALUACIÓN):** Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN separados con `<br>` dentro de la celda (ejemplo: `1. Criterio uno<br>2. Criterio dos<br>3. Criterio tres`).
 - **Columna 5:** Define la Evidencia de aprendizaje (producto o actuación medible).
 - **Columna 6:** Lista de cotejo.
 
@@ -436,7 +437,6 @@ with tab3:
             try:
                 client = genai.Client(api_key=api_key)
                 instrucciones_r = f"""Actúa como un Evaluador Pedagógico experto en Educación Física para Primaria.
-PROHIBIDO usar la etiqueta HTML `<br>`.
 Diseña una rúbrica analítica estructurada con los niveles: En Inicio, En Proceso, Logrado y Logro Destacado para el desempeño solicitado, utilizando exactamente 3 criterios claros y observables alineados al CNEB sin etiquetar explícitamente '(Acción)' ni '(Contenido)'."""
 
                 pedido_r = f"Crea una rúbrica para {grado_r}. Competencia: {competencia_r}. Desempeño: {criterio_r}"
