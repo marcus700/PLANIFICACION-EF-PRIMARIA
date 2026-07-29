@@ -226,10 +226,9 @@ Genera una TABLA bien organizada con los campos completados con puntos [.....] p
 Genera una TABLA en formato Markdown de 7 COLUMNAS:
 | ACTIVIDAD (SESIÓN) | DESCRIPCIÓN PEDAGÓGICA | COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | INSTRUMENTO DE EVALUACIÓN |
 
-REGLAS ESTRUCTURALES OBLIGATORIAS PARA ESTA TABLA:
-- Cada fila corresponde a una Sesión de la unidad.
-- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe la redacción EXACTA Y COMPLETA del Estándar CNEB oficial del ciclo correspondiente (III, IV o V Ciclo) DE MANERA COMPLETA Y SIN CORTES (sin puntos suspensivos '...' ni abreviaciones) y **RESALTA EN NEGRITA (**texto**)** únicamente la parte del estándar que se aplica en esa sesión.
-- En 'DESEMPEÑO PRECISADO': Usa los desempeños oficiales del CNEB pertenecientes EXCLUSIVAMENTE al grado seleccionado ({grado_u}) y **RESALTA EN NEGRITA (**texto precisado**)** la parte adaptada para el tema.
+REGLAS ABSOLUTAS DE TRANSCRIPCIÓN LITERAL DEL CNEB (¡NO REFRASEAR NI CAMBIAR PALABRAS!):
+- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe la redacción LITERAL, EXACTA Y COMPLETA del Estándar Oficial del CNEB correspondiente al ciclo (III, IV o V Ciclo). Queda estrictamente PROHIBIDO refrasear, cambiar palabras, resumir o alterar la redacción original del CNEB. Únicamente debes **RESALTAR EN NEGRITA (**texto**)** la frase o parte del estándar original que se aplica en esa sesión.
+- En 'DESEMPEÑO PRECISADO': Transcribe la redacción LITERAL Y EXACTA del Desempeño Oficial del CNEB del grado seleccionado ({grado_u}) sin alterar su texto original, y **RESALTA EN NEGRITA (**texto precisado**)** la parte del desempeño que se enfatiza junto a lo que le agregas para precisarlo al tema.
 - En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión. La redacción debe integrar fluidamente los 3 elementos pedagógicos (Acción + Contenido + Condición), pero NUNCA debes escribir ni figurar literalmente las palabras u etiquetas '(Acción)', '(Contenido)' o '(Condición)' en el texto.
 - En 'INSTRUMENTO DE EVALUACIÓN': Lista de cotejo / Rúbrica analítica.
 
@@ -291,8 +290,10 @@ Genera una TABLA de 2 columnas:
 2. PROPÓSITOS Y EVIDENCIAS DE APRENDIZAJE:
 Genera una TABLA en formato Markdown con las siguientes 6 COLUMNAS:
 | COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | EVIDENCIA DE APRENDIZAJE | INSTRUMENTO DE EVALUACIÓN |
-- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe la redacción EXACTA Y COMPLETA del Estándar CNEB del ciclo correspondiente (III, IV o V Ciclo) DE MANERA COMPLETA Y SIN CORTES (sin puntos suspensivos '...' ni abreviaciones) y **RESALTA EN NEGRITA (**texto resaltado**)** el aspecto trabajado hoy.
-- En 'DESEMPEÑO PRECISADO': Usa los desempeños oficiales del CNEB pertenecientes EXCLUSIVAMENTE al grado seleccionado ({grado_s}) y **RESALTA EN NEGRITA (**texto precisado**)** la parte adaptada para el tema.
+
+REGLAS ABSOLUTAS DE TRANSCRIPCIÓN LITERAL DEL CNEB (¡NO REFRASEAR NI CAMBIAR PALABRAS!):
+- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe la redacción LITERAL, EXACTA Y COMPLETA del Estándar Oficial del CNEB del ciclo correspondiente (III, IV o V Ciclo). Queda estrictamente PROHIBIDO refrasear, cambiar palabras o resumir el CNEB. Únicamente **RESALTA EN NEGRITA (**texto**)** el aspecto del estándar original que se trabaja hoy.
+- En 'DESEMPEÑO PRECISADO': Transcribe el texto LITERAL Y EXACTO del Desempeño Oficial del CNEB del grado seleccionado ({grado_s}) conservando sus palabras originales y **RESALTA EN NEGRITA (**texto precisado**)** la parte tomada y la precisión agregada para el tema.
 - En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN. Deben contener de forma implícita los 3 elementos pedagógicos (Acción, Contenido y Condición) de manera fluida y natural, PERO NUNCA escribas ni etiquetes literalmente las palabras '(Acción)', '(Contenido)' o '(Condición)' en el texto.
 
 3. ENFOQUES TRANSVERSALES PRIORIZADOS:
