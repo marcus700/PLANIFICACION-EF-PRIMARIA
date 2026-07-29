@@ -8,6 +8,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 import io
 import re
+import datetime
 
 # Importar la Base de Datos CNEB directamente del archivo cneb_datos.py
 try:
@@ -27,44 +28,73 @@ def mapear_grado_cneb(grado_str):
     }
     return mapa.get(grado_str, grado_str)
 
+# Función para calcular el PIN del mes actual de forma automática
+def obtener_pin_mes_actual():
+    meses = {
+        1: "ENERO", 2: "FEBRERO", 3: "MARZO", 4: "ABRIL",
+        5: "MAYO", 6: "JUNIO", 7: "JULIO", 8: "AGOSTO",
+        9: "SETIEMBRE", 10: "OCTUBRE", 11: "NOVIEMBRE", 12: "DICIEMBRE"
+    }
+    ahora = datetime.datetime.now()
+    nombre_mes = meses[ahora.month]
+    anio = ahora.year
+    return f"EF-{nombre_mes}{anio}"
+
 # Configuración visual de la plataforma
 st.set_page_config(page_title="PlanificaEF", page_icon="🏃‍♂️", layout="centered")
 
 # ==============================================================================
-# CONFIGURACIÓN DE PAGO Y PINES VÁLIDOS (CAMBIA TU NÚMERO Y PINES AQUÍ)
+# CONFIGURACIÓN DE PAGO Y PINES AUTOMÁTICOS
 # ==============================================================================
-NUMERO_WHATSAPP = "51937287225"  # 👈 REEMPLAZA CON TU NÚMERO DE WHATSAPP (ej. 51987654321)
+NUMERO_WHATSAPP = "51937287225"  # 👈 REEMPLAZA CON TU NÚMERO DE WHATSAPP CON 51 (ej. 51987654321)
 NUMERO_YAPE_PLIN = "937 287 225" # 👈 REEMPLAZA CON TU NÚMERO DE YAPE / PLIN
 
-# Lista de PINES mensuales activos que les entregarás a los docentes que te paguen
-PINES_ACTIVOS = st.secrets.get("PINES_ACTIVOS", ["EF2026", "PLANIFICA15", "PROFE1", "MAESTRO2026"])
+# El PIN válido cambia solo cada mes (Ej. EF-JULIO2026, EF-AGOSTO2026) + PIN Maestro
+PIN_DEL_MES = obtener_pin_mes_actual()
+PIN_MAESTRO_ADMIN = "MAESTRO-ADMIN"
+PINES_ACTIVOS = [PIN_DEL_MES, PIN_MAESTRO_ADMIN]
 
-# Estado de autenticación
+# LÍMITES GRATUITOS
+MAX_UNIDADES_GRATIS = 1
+MAX_SESIONES_GRATIS = 1
+
+# Estado de la sesión del usuario
+if "unidades_generadas" not in st.session_state:
+    st.session_state["unidades_generadas"] = 0
+if "sesiones_generadas" not in st.session_state:
+    st.session_state["sesiones_generadas"] = 0
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
 
 # ==============================================================================
-# PANTALLA DE BLOQUEO Y PAGO (PAYWALL)
+# ENCABEZADO DE ESTADO DE LA SUSCRIPCIÓN
 # ==============================================================================
-if not st.session_state["autenticado"]:
-    st.title("🔒 PlanificaEF - Acceso Suscriptores")
-    st.subheader("Plataforma Inteligente de Planificación para Educación Física Primaria CNEB")
-    
-    st.warning("⚠️ Esta plataforma es de acceso exclusivo para docentes suscriptores.")
-    
+st.title("🏃‍♂️ PlanificaEF")
+st.subheader("Asistente Pedagógico de Educación Física (Primaria - CNEB)")
+
+if st.session_state["autenticado"]:
+    st.success(f"✅ **Suscripción Activa:** Generaciones ilimitadas activadas con el PIN mensual ({PIN_DEL_MES}).")
+else:
+    u_usadas = st.session_state["unidades_generadas"]
+    s_usadas = st.session_state["sesiones_generadas"]
+    st.info(f"💡 **Modo Prueba Gratuita:** Tienes 1 Unidad y 1 Sesión de regalo.\n"
+            f"- Unidades creadas: **{u_usadas}/{MAX_UNIDADES_GRATIS}** | Sesiones creadas: **{s_usadas}/{MAX_SESIONES_GRATIS}**")
+
+# Función para mostrar la pantalla de bloqueo cuando se alcanza el límite
+def mostrar_bloqueo_pago(motivo=""):
     st.markdown("---")
+    st.error(f"🔒 **Límite Gratuito Alcanzado ({motivo})**")
+    st.warning("Has utilizado tu prueba gratuita (1 Unidad y 1 Sesión). Para seguir generando documentos sin límites, suscríbete por **S/ 15.00 soles al mes**.")
     
     col_pago, col_login = st.columns(2)
     
     with col_pago:
         st.markdown("### 📲 ¿Cómo suscribirte?")
-        st.write("💰 **Costo:** **S/ 15.00 soles al mes** (Acceso ilimitado).")
         st.write(f"1. Realiza el Yape o Plin de **S/ 15.00** al número: **{NUMERO_YAPE_PLIN}**")
         st.write("2. Envía la captura del pago por WhatsApp.")
         st.write("3. Te enviaremos tu **PIN de Acceso Mensual** al instante.")
         
-        # Enlace directo a WhatsApp
-        mensaje_wa = "Hola, deseo suscribirme a PlanificaEF por S/ 15 soles al mes. Adjunto mi voucher de pago."
+        mensaje_wa = "Hola, alcancé mi límite gratuito en PlanificaEF y deseo suscribirme por S/ 15 soles al mes. Adjunto mi voucher de pago."
         link_wa = f"https://wa.me/{NUMERO_WHATSAPP}?text={re.sub(r' ', '%20', mensaje_wa)}"
         
         st.markdown(f'''
@@ -76,29 +106,16 @@ if not st.session_state["autenticado"]:
         ''', unsafe_allow_html=True)
 
     with col_login:
-        st.markdown("### 🔑 Ingresar PIN de Acceso")
-        st.write("Si ya realizaste tu pago y tienes tu PIN, ingrésalo aquí:")
-        pin_usuario = st.text_input("Ingresa tu PIN mensual:", type="password", key="input_pin")
+        st.markdown("### 🔑 Desbloquear con PIN")
+        pin_usuario = st.text_input("Ingresa tu PIN mensual de suscriptor:", type="password", key=f"input_pin_{motivo}")
         
-        if st.button("🔓 Desbloquear Plataforma", use_container_width=True):
+        if st.button("🔓 Activar Acceso Ilimitado", key=f"btn_pin_{motivo}", use_container_width=True):
             if pin_usuario in PINES_ACTIVOS:
                 st.session_state["autenticado"] = True
-                st.success("¡PIN Correcto! Bienvenido a PlanificaEF.")
+                st.success("¡PIN Correcto! Ahora tienes generaciones ilimitadas.")
                 st.rerun()
             else:
-                st.error("❌ PIN incorrecto o vencido. Si aún no te has suscrito, solicita tu PIN por WhatsApp.")
-
-    st.markdown("---")
-    st.info("💡 Con tu suscripción de S/ 15/mes generas Unidades de Aprendizaje, Sesiones diarias y Rúbricas oficiales del CNEB listas para descargar en Word.")
-    
-    # Detiene la ejecución para no mostrar las pestañas ni gastar API de IA si no ha pagado
-    st.stop()
-
-# ==============================================================================
-# CONTENIDO DE LA PLATAFORMA (SOLO SE MUESTRA SI YA INGRESÓ SU PIN VÁLIDO)
-# ==============================================================================
-st.title("🏃‍♂️ PlanificaEF")
-st.caption("✅ Sesión Activa de Suscriptor | Para cerrar sesión borra la caché del navegador.")
+                st.error("❌ PIN incorrecto o vencido. Solicita tu PIN mensual por WhatsApp.")
 
 # Enlace automático a la clave secreta guardada de forma segura
 api_key = st.secrets.get("GEMINI_API_KEY", None)
@@ -106,11 +123,14 @@ api_key = st.secrets.get("GEMINI_API_KEY", None)
 if not api_key:
     st.error("⚠️ No se encontró la GEMINI_API_KEY en los secretos de Streamlit.")
 
-# Funciones auxiliares de Word e IA
+# ==============================================================================
+# FUNCIONES AUXILIARES: LIMPIEZA Y CONVERTIDOR PROFESIONAL DE MARKDOWN A WORD
+# ==============================================================================
 def limpiar_texto(texto):
     if not texto:
         return ""
-    return texto.replace('||', '|\n|')
+    texto_limpio = texto.replace('||', '|\n|')
+    return texto_limpio
 
 def set_cell_background(cell, fill_color):
     tcPr = cell._element.get_or_add_tcPr()
@@ -268,36 +288,44 @@ with tab1:
         boton_unidad = st.form_submit_button("📂 Generar Unidad en Word")
 
     if boton_unidad and problema_u:
-        with st.spinner("Extrayendo matriz curricular oficial de cneb_datos.py..."):
-            try:
-                client = genai.Client(api_key=api_key)
-                grado_cneb_u = mapear_grado_cneb(grado_u)
-                ciclo_u = obtener_ciclo_primaria(grado_cneb_u)
-                
-                matriz_estandares_u = ""
-                matriz_desempenos_u = ""
-                if CNEB_PRIMARIA:
-                    est_u_list = []
-                    des_u_list = []
-                    for comp_name, comp_data in CNEB_PRIMARIA.items():
-                        est_val = comp_data.get("estandares", {}).get(ciclo_u, "")
-                        des_list = comp_data.get("desempenos", {}).get(grado_cneb_u, [])
-                        if est_val:
-                            est_u_list.append(f"• COMPETENCIA: {comp_name}\nESTÁNDAR OFICIAL: \"{est_val}\"")
-                        if des_list:
-                            des_u_list.append(f"• COMPETENCIA: {comp_name}\nDESEMPEÑOS CON NUMERACIÓN OFICIAL CNEB PARA {grado_u}:\n" + "\n".join(des_list))
-                    matriz_estandares_u = "\n\n".join(est_u_list)
-                    matriz_desempenos_u = "\n\n".join(des_u_list)
+        # VERIFICACIÓN DE LÍMITE GRATUITO
+        if not st.session_state["autenticado"] and st.session_state["unidades_generadas"] >= MAX_UNIDADES_GRATIS:
+            mostrar_bloqueo_pago("Unidad de Aprendizaje")
+        else:
+            with st.spinner("Extrayendo matriz curricular oficial de cneb_datos.py..."):
+                try:
+                    client = genai.Client(api_key=api_key)
+                    grado_cneb_u = mapear_grado_cneb(grado_u)
+                    ciclo_u = obtener_ciclo_primaria(grado_cneb_u)
+                    
+                    matriz_estandares_u = ""
+                    matriz_desempenos_u = ""
+                    if CNEB_PRIMARIA:
+                        est_u_list = []
+                        des_u_list = []
+                        for comp_name, comp_data in CNEB_PRIMARIA.items():
+                            est_val = comp_data.get("estandares", {}).get(ciclo_u, "")
+                            des_list = comp_data.get("desempenos", {}).get(grado_cneb_u, [])
+                            if est_val:
+                                est_u_list.append(f"• COMPETENCIA: {comp_name}\nESTÁNDAR OFICIAL: \"{est_val}\"")
+                            if des_list:
+                                des_u_list.append(f"• COMPETENCIA: {comp_name}\nDESEMPEÑOS CON NUMERACIÓN OFICIAL CNEB PARA {grado_u}:\n" + "\n".join(des_list))
+                        matriz_estandares_u = "\n\n".join(est_u_list)
+                        matriz_desempenos_u = "\n\n".join(des_u_list)
 
-                instrucciones_u = f"""Actúa como un Especialista Curricular experto en Educación Física para Primaria bajo el enfoque del CNEB de Perú (MINEDU).
+                    instrucciones_u = f"""Actúa como un Especialista Curricular experto en Educación Física para Primaria bajo el enfoque del CNEB de Perú (MINEDU).
 Diseña una UNIDAD DE APRENDIZAJE completa estructurada EN TABLAS MARKDOWN CON LÍNEAS SEPARADORAS (|---|---|).
 
-MATRIZ OFICIAL EXACTA Y PALABRA POR PALABRA EXTRAÍDA DE CNEB_DATOS.PY PARA {grado_u} ({ciclo_u}):
+REGLA SÚPER IMPORTANTE PARA TABLAS (PARA EVITAR QUE EL CONTENIDO SALGA DEL CUADRO):
+- Cada fila de la tabla `| ... | ... |` debe escribirse en UNA SOLA LÍNEA CONTINUA (sin dar Enter dentro de las celdas).
+- Para hacer saltos de línea dentro de una misma celda (por ejemplo, para enlistar Capacidades o los 3 Criterios de Evaluación 1., 2. y 3.), DEBES usar obligatoriamente la etiqueta `<br>` en lugar de presionar Enter.
+
+MATRIZ OFICIAL EXACTA Y PALABRA POR PALABRA DE CNEB_DATOS.PY PARA {grado_u} ({ciclo_u}):
 
 ESTÁNDARES OFICIALES DEL CICLO ({ciclo_u}):
 {matriz_estandares_u}
 
-DESEMPEÑOS OFICIALES DEL GRADO ({grado_u}):
+DESEMPEÑOS CON NUMERACIÓN OFICIAL DEL GRADO ({grado_u}):
 {matriz_desempenos_u}
 
 ESTRUCTURA DE LA UNIDAD DE APRENDIZAJE:
@@ -333,23 +361,27 @@ REGLAS ABSOLUTAS Y ESTRICTAS DE TRANSCRIPCIÓN DE CNEB_DATOS.PY:
 5. ENFOQUES TRANSVERSALES PRIORIZADOS (Tabla con línea separadora).
 6. MATERIALES Y RECURSOS DIDÁCTICOS."""
 
-                pedido_u = f"Crea una unidad para {grado_u} con duración de {duracion_u}. Contexto del problema: {problema_u}"
-                
-                resultado_u = generar_respuesta_ia(client, instrucciones_u, pedido_u)
-                resultado_u = limpiar_texto(resultado_u)
-                
-                st.success("¡Unidad Curricular generada con éxito!")
-                st.markdown(resultado_u)
-                
-                archivo_word_u = crear_archivo_word_profesional(resultado_u)
-                st.download_button(
-                    label="📥 Descargar Unidad en Word (.docx)", 
-                    data=archivo_word_u, 
-                    file_name=f"Unidad_PlanificaEF_{grado_u.replace(' ', '_')}.docx", 
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                )
-            except Exception as e:
-                st.error(f"Error al generar la Unidad: {e}")
+                    pedido_u = f"Crea una unidad para {grado_u} con duración de {duracion_u}. Contexto del problema: {problema_u}"
+                    
+                    resultado_u = generar_respuesta_ia(client, instrucciones_u, pedido_u)
+                    resultado_u = limpiar_texto(resultado_u)
+                    
+                    # Incrementar contador si es usuario gratuito
+                    if not st.session_state["autenticado"]:
+                        st.session_state["unidades_generadas"] += 1
+                        
+                    st.success("¡Unidad Curricular generada con éxito!")
+                    st.markdown(resultado_u)
+                    
+                    archivo_word_u = crear_archivo_word_profesional(resultado_u)
+                    st.download_button(
+                        label="📥 Descargar Unidad en Word (.docx)", 
+                        data=archivo_word_u, 
+                        file_name=f"Unidad_PlanificaEF_{grado_u.replace(' ', '_')}.docx", 
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    )
+                except Exception as e:
+                    st.error(f"Error al generar la Unidad: {e}")
 
 # --- PESTAÑA 2: SESIONES ---
 with tab2:
@@ -369,20 +401,24 @@ with tab2:
         boton_sesion = st.form_submit_button("⚡ Generar Sesión en Word")
 
     if boton_sesion and detalles_s:
-        with st.spinner("Extrayendo matriz oficial de cneb_datos.py y diseñando la sesión..."):
-            try:
-                client = genai.Client(api_key=api_key)
-                grado_cneb_s = mapear_grado_cneb(grado_s)
-                ciclo_s = obtener_ciclo_primaria(grado_cneb_s)
-                
-                estandar_base = ""
-                desempenos_base = ""
-                if CNEB_PRIMARIA and competencia_s in CNEB_PRIMARIA:
-                    estandar_base = CNEB_PRIMARIA[competencia_s]["estandares"].get(ciclo_s, "")
-                    desempenos_lista = CNEB_PRIMARIA[competencia_s]["desempenos"].get(grado_cneb_s, [])
-                    desempenos_base = "\n".join(desempenos_lista)
+        # VERIFICACIÓN DE LÍMITE GRATUITO
+        if not st.session_state["autenticado"] and st.session_state["sesiones_generadas"] >= MAX_SESIONES_GRATIS:
+            mostrar_bloqueo_pago("Sesión de Aprendizaje")
+        else:
+            with st.spinner("Extrayendo matriz oficial de cneb_datos.py y diseñando la sesión..."):
+                try:
+                    client = genai.Client(api_key=api_key)
+                    grado_cneb_s = mapear_grado_cneb(grado_s)
+                    ciclo_s = obtener_ciclo_primaria(grado_cneb_s)
+                    
+                    estandar_base = ""
+                    desempenos_base = ""
+                    if CNEB_PRIMARIA and competencia_s in CNEB_PRIMARIA:
+                        estandar_base = CNEB_PRIMARIA[competencia_s]["estandares"].get(ciclo_s, "")
+                        desempenos_lista = CNEB_PRIMARIA[competencia_s]["desempenos"].get(grado_cneb_s, [])
+                        desempenos_base = "\n".join(desempenos_lista)
 
-                instrucciones = f"""Actúa como un docente experto de Educación Física de nivel Primaria en Perú, especialista en el enfoque por competencias del CNEB de MINEDU.
+                    instrucciones = f"""Actúa como un docente experto de Educación Física de nivel Primaria en Perú, especialista en el enfoque por competencias del CNEB de MINEDU.
 
 MATRIZ OFICIAL LITERAL EXTRAÍDA DIRECTAMENTE DE CNEB_DATOS.PY:
 - Grado y Ciclo: {grado_s} ({ciclo_s})
@@ -403,7 +439,7 @@ Genera esta TABLA EXACTA de 2 columnas con línea separadora:
 | :--- | :--- |
 | **I.E N°** | {ie_s} |
 | **Grado y Sección** | {grado_s} |
-| **Area** | Educación fisica |
+| **Area** | Educación física |
 | **Docente** | {docente_s} |
 | **Fecha** | {fecha_s} |
 | **tiempo** | {tiempo_s} |
@@ -462,6 +498,10 @@ Diseña una TABLA de **Lista de Cotejo** con línea separadora con los 3 criteri
                 resultado_s = generar_respuesta_ia(client, instrucciones, pedido)
                 resultado_s = limpiar_texto(resultado_s)
                 
+                # Incrementar contador si es usuario gratuito
+                if not st.session_state["autenticado"]:
+                    st.session_state["sesiones_generadas"] += 1
+                    
                 st.success("¡Sesión generada con éxito!")
                 st.markdown(resultado_s)
                 
