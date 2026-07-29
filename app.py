@@ -251,4 +251,91 @@ with tab2:
     with st.form("form_sesion"):
         grado_s = st.selectbox("Grado de Primaria:", ["1° Grado", "2° Grado", "3° Grado", "4° Grado", "5° Grado", "6° Grado"], key="s1")
         competencia_s = st.selectbox("Competencia Principal:", ["Se desenvuelve de manera autónoma a través de su motricidad", "Asume una vida saludable", "Interactúa a través de sus habilidades sociomotrices"], key="s2")
-        detalles_s = st.text_area("Tema de la clase o materiales disponibles:", pla
+        detalles_s = st.text_area("Tema de la clase o materiales disponibles:", placeholder="Ej. Coordinación óculo-manual lanzando y recibiendo pelotas de plástico.", key="s3")
+        boton_sesion = st.form_submit_button("⚡ Generar Sesión en Word")
+
+    if boton_sesion and detalles_s:
+        with st.spinner("Diseñando la sesión de aprendizaje en tablas formateadas..."):
+            try:
+                client = genai.Client(api_key=api_key)
+                instrucciones = (
+                    "Actúa como un Asistente Pedagógico experto en Educación Física para Nivel Primaria bajo el CNEB del MINEDU Perú.\n"
+                    "Diseña una Sesión de Aprendizaje completa formateada en TABLAS MARKDOWN con la siguiente estructura oficial:\n\n"
+                    "1. DATOS INFORMATIVOS COMPLETOS:\n"
+                    "Genera una TABLA de 2 columnas:\n"
+                    "| Campo | Detalle |\n"
+                    "| DRE / UGEL | DRE [.....] / UGEL [.....] |\n"
+                    "| Institución Educativa | I.E. N° [.....] |\n"
+                    "| Lugar / Localidad | [.....] |\n"
+                    "| Grado y Sección | [Grado seleccionado], Secciones: [.....] |\n"
+                    "| Docente del Área | [.....] |\n"
+                    "| Fecha y Duración | Fecha: [.....] | Duración: 90 minutos |\n\n"
+                    "2. PROPÓSITOS Y EVIDENCIAS DE APRENDIZAJE:\n"
+                    "Genera una TABLA en formato Markdown con las siguientes 6 COLUMNAS:\n"
+                    "| COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | EVIDENCIA DE APRENDIZAJE | INSTRUMENTO DE EVALUACIÓN |\n"
+                    "- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe el estándar oficial del CNEB del ciclo y **RESALTA EN NEGRITA (**texto resaltado**)** el aspecto trabajado hoy.\n"
+                    "- En 'DESEMPEÑO PRECISADO': Transcribe el desempeño del CNEB y **RESALTA EN NEGRITA (**texto precisado**)** la parte adaptada para el tema.\n"
+                    "- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE ENTRE 2 Y 3 CRITERIOS DE EVALUACIÓN claros y observables.\n\n"
+                    "3. ENFOQUES TRANSVERSALES PRIORIZADOS:\n"
+                    "Genera una TABLA de 3 columnas:\n"
+                    "| Enfoque Transversal Priorizado | Valores | Actitudes / Comportamientos Observables |\n\n"
+                    "4. PREPARACIÓN DE LA SESIÓN:\n"
+                    "Genera una TABLA de ESTRICTAMENTE 2 COLUMNAS:\n"
+                    "| ¿Qué necesitamos hacer antes de la sesión? | ¿Qué recursos o materiales se utilizarán en esta sesión? |\n\n"
+                    "5. SECUENCIA DIDÁCTICA (MOMENTOS DE LA SESIÓN):\n"
+                    "   - Inicio: Motivación, saberes previos, problematización, propósito de la clase y ACTIVACIÓN CORPORAL (calentamiento lúdico y toma de pulso inicial).\n"
+                    "   - Desarrollo: 2 a 3 actividades lúdico-motrices en progresión, variante de dificultad, pausa de hidratación y reglas de seguridad.\n"
+                    "   - Cierre: Vuelta a la calma (estiramientos, respiración, pulso final), HÁBITOS DE HIGIENE (aseo y lavado de manos) y preguntas de metacognición.\n\n"
+                    "6. ANEXO: TABLA DE LISTA DE COTEJO con los 2 a 3 Criterios de Evaluación formulados y filas para nombres de estudiantes."
+                )
+                pedido = f"Diseña una sesión para {grado_s}. Competencia: {competencia_s}. Detalles del tema: {detalles_s}"
+                
+                resultado_s = generar_respuesta_ia(client, instrucciones, pedido)
+                
+                st.success("¡Sesión generada con éxito!")
+                st.markdown(resultado_s)
+                
+                archivo_word = crear_archivo_word_profesional(resultado_s)
+                st.download_button(
+                    label="📥 Descargar Sesión en Word (.docx)", 
+                    data=archivo_word, 
+                    file_name=f"Sesion_PlanificaEF_{grado_s.replace(' ', '_')}.docx", 
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                )
+            except Exception as e:
+                st.error(f"Error al generar la Sesión: {e}")
+
+# --- PESTAÑA 3: RÚBRICAS ---
+with tab3:
+    st.write("Diseña instrumentos de evaluación con criterios claros.")
+    with st.form("form_rubrica"):
+        grado_r = st.selectbox("Grado de Primaria:", ["1° Grado", "2° Grado", "3° Grado", "4° Grado", "5° Grado", "6° Grado"], key="r1")
+        competencia_r = st.selectbox("Competencia a Evaluar:", ["Se desenvuelve de manera autónoma a través de su motricidad", "Asume una vida saludable", "Interactúa a través de sus habilidades sociomotrices"], key="r2")
+        criterio_r = st.text_input("Desempeño específico a evaluar:", placeholder="Ej. Control de la postura al saltar con un pie.")
+        boton_rubrica = st.form_submit_button("📊 Generar Rúbrica en Word")
+
+    if boton_rubrica and criterio_r:
+        with st.spinner("Estructurando la rúbrica..."):
+            try:
+                client = genai.Client(api_key=api_key)
+                instrucciones_r = (
+                    "Actúa como un Evaluador Pedagógico experto en Educación Física para Primaria. "
+                    "Diseña una rúbrica analítica estructurada con los niveles: En Inicio, En Proceso, Logrado y Logro Destacado "
+                    "para el desempeño solicitado, utilizando entre 2 y 3 criterios claros y observables alineados al CNEB."
+                )
+                pedido_r = f"Crea una rúbrica para {grado_r}. Competencia: {competencia_r}. Desempeño: {criterio_r}"
+                
+                resultado_r = generar_respuesta_ia(client, instrucciones_r, pedido_r)
+                
+                st.success("¡Rúbrica generada con éxito!")
+                st.markdown(resultado_r)
+                
+                archivo_word_r = crear_archivo_word_profesional(resultado_r)
+                st.download_button(
+                    label="📥 Descargar Rúbrica en Word (.docx)", 
+                    data=archivo_word_r, 
+                    file_name=f"Rubrica_PlanificaEF_{grado_r.replace(' ', '_')}.docx", 
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                )
+            except Exception as e:
+                st.error(f"Error al generar la Rúbrica: {e}")
