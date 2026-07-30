@@ -51,10 +51,11 @@ def obtener_pin_mes_actual():
 st.set_page_config(page_title="PlanificaEF", page_icon="🏃‍♂️", layout="centered")
 
 # ==============================================================================
-# OCULTAR BARRA SUPERIOR, GATITO DE GITHUB, MENÚ Y FOOTER (CSS)
+# ESTILOS CSS PERSONALIZADOS: PLATAFORMA COLORIDA Y TABLAS PASTEL
 # ==============================================================================
 st.markdown("""
     <style>
+    /* Ocultar barra superior y menú Streamlit / GitHub */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
@@ -62,6 +63,73 @@ st.markdown("""
     .stDeployButton {display: none;}
     div[data-testid="stToolbar"] {visibility: hidden; height: 0%; position: fixed;}
     div[data-testid="stDecoration"] {visibility: hidden; height: 0%; position: fixed;}
+    
+    /* Fondo y fuentes globales */
+    .stApp {
+        background-color: #F4F9F4;
+    }
+    
+    /* Botones vibrantes con bordes redondeados */
+    .stButton>button {
+        background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%) !important;
+        color: white !important;
+        font-weight: bold !important;
+        border-radius: 10px !important;
+        border: none !important;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15) !important;
+        transition: all 0.3s ease !important;
+    }
+    .stButton>button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    /* Pestañas coloridas */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        height: 45px;
+        white-space: pre-wrap;
+        background-color: #E8F5E9;
+        border-radius: 8px 8px 0px 0px;
+        color: #1B5E20;
+        font-weight: bold;
+        border: 1px solid #A5D6A7;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #2E7D32 !important;
+        color: white !important;
+    }
+    
+    /* Estilos para Tablas en pantalla con tonos Pastel y bordes verdes */
+    table {
+        border-collapse: collapse !important;
+        width: 100% !important;
+        border: 2px solid #81C784 !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+        margin: 15px 0 !important;
+    }
+    th {
+        background-color: #C8E6C9 !important;
+        color: #1B5E20 !important;
+        border: 1px solid #A5D6A7 !important;
+        font-weight: bold !important;
+        padding: 10px !important;
+        text-align: center !important;
+    }
+    td {
+        border: 1px solid #C8E6C9 !important;
+        padding: 8px 12px !important;
+        font-size: 0.9em !important;
+    }
+    tr:nth-child(even) {
+        background-color: #F1F8E9 !important;
+    }
+    tr:nth-child(odd) {
+        background-color: #FFFFFF !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -186,7 +254,9 @@ api_key = st.secrets.get("GEMINI_API_KEY", None)
 if not api_key:
     st.error("⚠️ No se encontró la GEMINI_API_KEY en los secretos de Streamlit.")
 
-# FUNCIONES AUXILIARES
+# ==============================================================================
+# FUNCIONES AUXILIARES: LIMPIEZA Y CONVERTIDOR PROFESIONAL DE MARKDOWN A WORD
+# ==============================================================================
 def limpiar_texto(texto):
     if not texto:
         return ""
@@ -194,12 +264,30 @@ def limpiar_texto(texto):
     return texto_limpio
 
 def set_cell_background(cell, fill_color):
+    """Aplica color de fondo a una celda de tabla en Word."""
     tcPr = cell._element.get_or_add_tcPr()
     shd = OxmlElement('w:shd')
     shd.set(qn('w:val'), 'clear')
     shd.set(qn('w:color'), 'auto')
     shd.set(qn('w:fill'), fill_color)
     tcPr.append(shd)
+
+def set_cell_borders(cell, color="81C784"):
+    """Aplica bordes de color verde menta a la celda en Word."""
+    tcPr = cell._element.get_or_add_tcPr()
+    tcBorders = tcPr.first_child_found_in("w:tcBorders")
+    if tcBorders is None:
+        tcBorders = OxmlElement('w:tcBorders')
+        tcPr.append(tcBorders)
+    for edge in ('top', 'left', 'bottom', 'right'):
+        element = tcBorders.find(qn('w:{}'.format(edge)))
+        if element is None:
+            element = OxmlElement('w:{}'.format(edge))
+            tcBorders.append(element)
+        element.set(qn('w:val'), 'single')
+        element.set(qn('w:sz'), '6')
+        element.set(qn('w:space'), '0')
+        element.set(qn('w:color'), color)
 
 def crear_archivo_word_profesional(texto_markdown):
     doc = Document()
@@ -212,6 +300,9 @@ def crear_archivo_word_profesional(texto_markdown):
     lineas = texto_markdown.split('\n')
     i = 0
     
+    # Paleta de Colores Pastel para encabezados de columnas
+    colores_pastel = ["D4EDDA", "D1ECF1", "FFF3CD", "E8DAEF", "F8D7DA", "D5F5E3", "FDEBD0"]
+
     while i < len(lineas):
         linea = lineas[i].strip()
         if not linea:
@@ -276,294 +367,18 @@ def crear_archivo_word_profesional(texto_markdown):
                                 run.font.name = 'Arial'
                                 if r_idx == 0:
                                     run.font.bold = True
-                                    run.font.color.rgb = RGBColor(255, 255, 255)
+                                    run.font.color.rgb = RGBColor(27, 94, 32) # Texto verde oscuro sobre fondo pastel
                                     run.font.size = Pt(9.5)
                                 else:
                                     run.font.size = Pt(8.5)
+                            
+                            # Aplicar bordes verde menta
+                            set_cell_borders(cell, color="81C784")
+                            
+                            # Aplicar tono pastel a encabezados de columna
                             if r_idx == 0:
-                                set_cell_background(cell, "2E7D32")
-                doc.add_paragraph()
-        else:
-            p = doc.add_paragraph()
-            partes = re.split(r'(\*\*.*?\*\*)', linea)
-            for parte in partes:
-                if parte.startswith('**') and parte.endswith('**'):
-                    run = p.add_run(parte[2:-2])
-                    run.bold = True
-                else:
-                    run = p.add_run(parte)
-                run.font.name = 'Arial'
-                run.font.size = Pt(10)
-            i += 1
-
-    buffer = io.BytesIO()
-    doc.save(buffer)
-    buffer.seek(0)
-    return buffer
-
-def generar_respuesta_ia(client, system_instruction, prompt_usuario):
-    modelos_disponibles = []
-    try:
-        for m in client.models.list():
-            nombre = m.name.replace('models/', '')
-            modelos_disponibles.append(nombre)
-    except Exception:
-        pass
-
-    if not modelos_disponibles:
-        modelos_disponibles = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-latest']
-
-    ultimo_error = None
-    for modelo in modelos_disponibles:
-        try:
-            response = client.models.generate_content(
-                model=modelo,
-                contents=prompt_usuario,
-                config=types.GenerateContentConfig(
-                    system_instruction=system_instruction,
-                    temperature=0.7
-                )
-            )
-            if response and response.text:
-                return response.text
-        except Exception as err:
-            ultimo_error = err
-            continue
-
-    raise RuntimeError(f"Error al conectar con la API de Google: {ultimo_error}")
-
-# Creación de las 3 Pestañas de Trabajo
-tab1, tab2, tab3 = st.tabs([
-    "📂 Crear Unidad de Aprendizaje", 
-    "📝 Crear Sesión de Aprendizaje", 
-    "📊 Crear Rúbrica de Evaluación"
-])
-
-# --- PESTAÑA 1: UNIDADES ---
-with tab1:
-    st.write("Estructura una unidad didáctica completa según el formato oficial MINEDU.")
-    with st.form("form_unidad"):
-        grado_u = st.selectbox("Grado de Primaria:", ["1° Grado", "2° Grado", "3° Grado", "4° Grado", "5° Grado", "6° Grado"], key="u1")
-        duracion_u = st.selectbox("Duración de la Unidad:", ["4 Semanas", "5 Semanas", "6 Semanas", "8 Semanas"], key="u2")
-        problema_u = st.text_area("Describe el problema del contexto o interés de los niños:", placeholder="Ej. Los estudiantes muestran dificultades para trabajar en equipo y respetar reglas en los juegos del recreo.", key="u3")
-        boton_unidad = st.form_submit_button("📂 Generar Unidad en Word")
-
-    if boton_unidad and problema_u:
-        if not st.session_state["autenticado"] and st.session_state["unidades_generadas"] >= MAX_UNIDADES_GRATIS:
-            st.session_state["dnis_bloqueados_servidor"].add(st.session_state["dni_usuario"])
-            mostrar_bloqueo_pago("Unidad de Aprendizaje")
-        else:
-            with st.spinner("Extrayendo matriz curricular oficial de cneb_datos.py..."):
-                try:
-                    client = genai.Client(api_key=api_key)
-                    grado_cneb_u = mapear_grado_cneb(grado_u)
-                    ciclo_u = obtener_ciclo_primaria(grado_cneb_u)
-                    
-                    matriz_estandares_u = ""
-                    matriz_desempenos_u = ""
-                    if CNEB_PRIMARIA:
-                        est_u_list = []
-                        des_u_list = []
-                        for comp_name, comp_data in CNEB_PRIMARIA.items():
-                            est_val = comp_data.get("estandares", {}).get(ciclo_u, "")
-                            des_list = comp_data.get("desempenos", {}).get(grado_cneb_u, [])
-                            if est_val:
-                                est_u_list.append("• COMPETENCIA: " + str(comp_name) + "\nESTÁNDAR OFICIAL: \"" + str(est_val) + "\"")
-                            if des_list:
-                                des_u_list.append("• COMPETENCIA: " + str(comp_name) + "\nDESEMPEÑOS CON NUMERACIÓN OFICIAL CNEB PARA " + str(grado_u) + ":\n" + "\n".join(des_list))
-                        matriz_estandares_u = "\n\n".join(est_u_list)
-                        matriz_desempenos_u = "\n\n".join(des_u_list)
-
-                    instrucciones_u = (
-                        "Actúa como un Especialista Curricular experto en Educación Física para Primaria bajo el enfoque del CNEB de Perú (MINEDU).\n"
-                        "Diseña una UNIDAD DE APRENDIZAJE completa estructurada EN TABLAS MARKDOWN CON LÍNEAS SEPARADORAS (|---|---|).\n\n"
-                        "MATRIZ OFICIAL EXACTA Y PALABRA POR PALABRA EXTRAÍDA DE CNEB_DATOS.PY PARA " + str(grado_u) + " (" + str(ciclo_u) + "):\n\n"
-                        "ESTÁNDARES OFICIALES DEL CICLO (" + str(ciclo_u) + "):\n" + str(matriz_estandares_u) + "\n\n"
-                        "DESEMPEÑOS CON NUMERACIÓN OFICIAL DEL GRADO (" + str(grado_u) + "):\n" + str(matriz_desempenos_u) + "\n\n"
-                        "ESTRUCTURA DE LA UNIDAD DE APRENDIZAJE:\n\n"
-                        "1. DATOS INFORMATIVOS:\n"
-                        "| Campo | Detalle |\n"
-                        "| :--- | :--- |\n"
-                        "| **DRE / UGEL** | DRE [.....] / UGEL [.....] |\n"
-                        "| **Institución Educativa** | I.E. N° [.....] |\n"
-                        "| **Lugar / Localidad** | [.....] |\n"
-                        "| **Ciclo** | " + str(ciclo_u) + " |\n"
-                        "| **Grado y Sección** | " + str(grado_u) + ", Secciones: [.....] |\n"
-                        "| **Docente del Área** | [.....] |\n"
-                        "| **Director(a)** | [.....] |\n"
-                        "| **Duración y Periodo** | " + str(duracion_u) + " (Del [Día/Mes] al [Día/Mes]) |\n\n"
-                        "2. TÍTULO DE LA UNIDAD DE APRENDIZAJE (Significativo, retador e innovador).\n\n"
-                        "3. SITUACIÓN SIGNIFICATIVA (Contexto del problema, Reto en pregunta y Producto de la unidad).\n\n"
-                        "4. PROPÓSITOS DE APRENDIZAJE Y SECUENCIA DE SESIONES:\n"
-                        "| ACTIVIDAD (SESIÓN) | DESCRIPCIÓN PEDAGÓGICA | COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | INSTRUMENTO DE EVALUACIÓN |\n"
-                        "| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n\n"
-                        "REGLAS ABSOLUTAS Y ESTRICTAS DE EVALUACIÓN CNEB:\n"
-                        "- En 'ESTÁNDAR DE LA COMPETENCIA': Copia PALABRA POR PALABRA el Estándar Oficial proporcionado arriba. PROHIBIDO refrasear. Únicamente **resalta en negrita** (`**texto**`) la frase que se ejercita.\n"
-                        "- En 'DESEMPEÑO PRECISADO': Copia PALABRA POR PALABRA el Desempeño Oficial del CNEB conservando su NUMERACIÓN ORIGINAL (ejemplo: 1.1.-, 1.2.-). **Resalta en negrita** (`**texto en negrita**`) la frase del CNEB tomada y lo agregado al final para precisarlo.\n"
-                        "- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión separados con <br>. Cada uno de los 3 criterios debe contener de forma completa sus 3 ELEMENTOS FUNDAMENTALES DE EVALUACIÓN CNEB: Acción (verbo observable) + Contenido (habilidad/tema motriz) + Condición (contexto/recurso de la actividad), redactados como una oración pedagógica fluida y SIN escribir ni etiquetar explícitamente las palabras '(Acción)' ni '(Contenido)' por escrito.\n"
-                        "- En 'INSTRUMENTO DE EVALUACIÓN': Lista de cotejo / Rúbrica.\n\n"
-                        "5. ENFOQUES TRANSVERSALES PRIORIZADOS (Tabla con línea separadora).\n"
-                        "6. MATERIALES Y RECURSOS DIDÁCTICOS."
-                    )
-
-                    pedido_u = "Crea una unidad para " + str(grado_u) + " con duración de " + str(duracion_u) + ". Contexto del problema: " + str(problema_u)
-                    
-                    resultado_u = generar_respuesta_ia(client, instrucciones_u, pedido_u)
-                    resultado_u = limpiar_texto(resultado_u)
-                    
-                    if not st.session_state["autenticado"]:
-                        st.session_state["unidades_generadas"] += 1
-                        if st.session_state["unidades_generadas"] >= MAX_UNIDADES_GRATIS and st.session_state["sesiones_generadas"] >= MAX_SESIONES_GRATIS:
-                            st.session_state["dnis_bloqueados_servidor"].add(st.session_state["dni_usuario"])
-                        
-                    st.success("¡Unidad Curricular generada con éxito!")
-                    st.markdown(resultado_u)
-                    
-                    archivo_word_u = crear_archivo_word_profesional(resultado_u)
-                    st.download_button(
-                        label="📥 Descargar Unidad en Word (.docx)", 
-                        data=archivo_word_u, 
-                        file_name=f"Unidad_PlanificaEF_{grado_u.replace(' ', '_')}.docx", 
-                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    )
-                except Exception as e:
-                    st.error(f"Error al generar la Unidad: {e}")
-
-# --- PESTAÑA 2: SESIONES ---
-with tab2:
-    st.write("Genera el desarrollo de una sesión diaria paso a paso extrayendo datos reales del CNEB.")
-    with st.form("form_sesion"):
-        col1, col2 = st.columns(2)
-        with col1:
-            grado_s = st.selectbox("Grado de Primaria:", ["1° Grado", "2° Grado", "3° Grado", "4° Grado", "5° Grado", "6° Grado"], index=2, key="s1")
-            ie_s = st.text_input("I.E. N°:", value=" ", key="s_ie")
-            docente_s = st.text_input("Docente:", value=" ", key="s_doc")
-        with col2:
-            competencia_s = st.selectbox("Competencia Principal:", ["Se desenvuelve de manera autónoma a través de su motricidad", "Asume una vida saludable", "Interactúa a través de sus habilidades sociomotrices"], key="s2")
-            fecha_s = st.text_input("Fecha:", value="29/07/2026", key="s_fec")
-            tiempo_s = st.selectbox("Tiempo:", ["45 minutos", "90 minutos", "135 minutos"], index=1, key="s_time")
-
-        detalles_s = st.text_area("Tema de la clase o materiales disponibles:", placeholder="Ej. Coordinación óculo-manual lanzando y recibiendo pelotas de plástico.", key="s3")
-        boton_sesion = st.form_submit_button("⚡ Generar Sesión en Word")
-
-    if boton_sesion and detalles_s:
-        if not st.session_state["autenticado"] and st.session_state["sesiones_generadas"] >= MAX_SESIONES_GRATIS:
-            st.session_state["dnis_bloqueados_servidor"].add(st.session_state["dni_usuario"])
-            mostrar_bloqueo_pago("Sesión de Aprendizaje")
-        else:
-            with st.spinner("Extrayendo matriz oficial de cneb_datos.py y diseñando la sesión..."):
-                try:
-                    client = genai.Client(api_key=api_key)
-                    grado_cneb_s = mapear_grado_cneb(grado_s)
-                    ciclo_s = obtener_ciclo_primaria(grado_cneb_s)
-                    
-                    estandar_base = ""
-                    desempenos_base = ""
-                    if CNEB_PRIMARIA and competencia_s in CNEB_PRIMARIA:
-                        estandar_base = CNEB_PRIMARIA[competencia_s]["estandares"].get(ciclo_s, "")
-                        desempenos_lista = CNEB_PRIMARIA[competencia_s]["desempenos"].get(grado_cneb_s, [])
-                        desempenos_base = "\n".join(desempenos_lista)
-
-                    instrucciones = (
-                        "Actúa como un docente experto de Educación Física de nivel Primaria en Perú, especialista en el CNEB de MINEDU.\n\n"
-                        "DATOS OFICIALES DE CNEB_DATOS.PY:\n"
-                        "- Grado y Ciclo: " + str(grado_s) + " (" + str(ciclo_s) + ")\n"
-                        "- Competencia principal: " + str(competencia_s) + "\n"
-                        "- Tema / Propósito motriz: " + str(detalles_s) + "\n"
-                        "- ESTÁNDAR CNEB OFICIAL LITERAL: \"" + str(estandar_base) + "\"\n"
-                        "- DESEMPEÑOS CNEB OFICIALES DISPONIBLES:\n" + str(desempenos_base) + "\n\n"
-                        "ESTRUCTURA OBLIGATORIA A GENERAR EN MARKDOWN:\n\n"
-                        "# SESIÓN DE APRENDIZAJE N°.......\n"
-                        "**Título:** [Crea un título motivador e innovador sobre " + str(detalles_s) + "]\n\n"
-                        "## 1. DATOS INFORMATIVOS\n"
-                        "| Campo | Detalle |\n"
-                        "| :--- | :--- |\n"
-                        "| **I.E N°** | " + str(ie_s) + " |\n"
-                        "| **Grado y Sección** | " + str(grado_s) + " |\n"
-                        "| **Area** | Educación física |\n"
-                        "| **Docente** | " + str(docente_s) + " |\n"
-                        "| **Fecha** | " + str(fecha_s) + " |\n"
-                        "| **tiempo** | " + str(tiempo_s) + " |\n\n"
-                        "## 2. PROPÓSITOS Y EVIDENCIAS DE APRENDIZAJE\n"
-                        "| COMPETENCIA / CAPACIDADES | ESTÁNDAR CNEB | DESEMPEÑOS PRECISADO | CRITERIOS DE EVALUACIÓN | EVIDENCIA Y PRODUCTO | INSTRUMENTO DE EVALUACIÓN |\n"
-                        "| :--- | :--- | :--- | :--- | :--- | :--- |\n"
-                        "REGLAS ABSOLUTAS Y ESTRICTAS DE EVALUACIÓN CNEB:\n"
-                        "- Columna 1: Competencia (" + str(competencia_s) + ") y sus capacidades separadas con <br>.\n"
-                        "- Columna 2: Transcribe PALABRA POR PALABRA Y COMPLETO el estándar oficial (\"" + str(estandar_base) + "\"). **Resalta en negrita** solo la parte trabajada hoy.\n"
-                        "- Columna 3: Selecciona el desempeño de " + str(grado_s) + " de la lista provista arriba. Conserva su numeración exacta (ej. 1.1.-), transcribe palabra por palabra sin modificar, y **resalta en negrita** la frase tomada del CNEB original y lo que le agregas al final para precisarlo al tema (" + str(detalles_s) + ").\n"
-                        "- Columna 4 (CRITERIOS DE EVALUACIÓN): Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN separados con <br>. Cada uno de los 3 criterios debe incluir de manera completa y rigurosa sus 3 ELEMENTOS CNEB: Acción (verbo observable) + Contenido (habilidad/tema motriz) + Condición (contexto o modo de ejecución), redactados en una oración pedagógica fluida y SIN escribir las etiquetas '(Acción)' ni '(Contenido)' explícitamente.\n"
-                        "- Columna 5: Evidencia de aprendizaje.\n"
-                        "- Columna 6: Lista de cotejo.\n\n"
-                        "## 3. ENFOQUE TRANSVERSAL\n"
-                        "| Enfoque Transversal Priorizado | Valor | Actitud / Comportamiento Observable |\n"
-                        "| :--- | :--- | :--- |\n\n"
-                        "## 4. PREPARACIÓN DE LA SESIÓN\n"
-                        "| ¿Qué necesitamos hacer antes de la sesión? | Recursos o Materiales a utilizar |\n"
-                        "| :--- | :--- |\n\n"
-                        "## 5. SECUENCIA DIDÁCTICA (MOMENTOS DE LA SESIÓN)\n"
-                        "Redacta en PRIMERA PERSONA ('Recibo...', 'Explico...', 'Organizo...') y TIEMPO PRESENTE.\n"
-                        "### A) INICIO (20% - 18 min): Motivación, saberes previos, problematización, propósito, acuerdos, Activación Corporal (calentamiento y toma de pulso inicial).\n"
-                        "### B) DESARROLLO (60% - 54 min): 3 a 4 actividades en progresión, hidratación, normas de seguridad y retroalimentación.\n"
-                        "### C) CIERRE (20% - 18 min): Vuelta a la calma (estiramientos, respiración, pulso final), Hábitos de higiene (aseo y lavado de manos) y metacognición.\n\n"
-                        "## 6. ANEXO: INSTRUMENTO DE EVALUACIÓN\n"
-                        "Tabla de Lista de Cotejo con los 3 criterios formulados y filas para nombres de estudiantes."
-                    )
-                    
-                    pedido = "Diseña una sesión para " + str(grado_s) + ". Competencia: " + str(competencia_s) + ". Detalles del tema: " + str(detalles_s)
-                    
-                    resultado_s = generar_respuesta_ia(client, instrucciones, pedido)
-                    resultado_s = limpiar_texto(resultado_s)
-                    
-                    if not st.session_state["autenticado"]:
-                        st.session_state["sesiones_generadas"] += 1
-                        if st.session_state["unidades_generadas"] >= MAX_UNIDADES_GRATIS and st.session_state["sesiones_generadas"] >= MAX_SESIONES_GRATIS:
-                            st.session_state["dnis_bloqueados_servidor"].add(st.session_state["dni_usuario"])
-                        
-                    st.success("¡Sesión generada con éxito!")
-                    st.markdown(resultado_s)
-                    
-                    archivo_word = crear_archivo_word_profesional(resultado_s)
-                    st.download_button(
-                        label="📥 Descargar Sesión en Word (.docx)", 
-                        data=archivo_word, 
-                        file_name=f"Sesion_PlanificaEF_{grado_s.replace(' ', '_')}.docx", 
-                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    )
-                except Exception as e:
-                    st.error(f"Error al generar la Sesión: {e}")
-
-# --- PESTAÑA 3: RÚBRICAS ---
-with tab3:
-    st.write("Diseña instrumentos de evaluación con criterios claros.")
-    with st.form("form_rubrica"):
-        grado_r = st.selectbox("Grado de Primaria:", ["1° Grado", "2° Grado", "3° Grado", "4° Grado", "5° Grado", "6° Grado"], key="r1")
-        competencia_r = st.selectbox("Competencia a Evaluar:", ["Se desenvuelve de manera autónoma a través de su motricidad", "Asume una vida saludable", "Interactúa a través de sus habilidades sociomotrices"], key="r2")
-        criterio_r = st.text_input("Desempeño específico a evaluar:", placeholder="Ej. Control de la postura al saltar con un pie.")
-        boton_rubrica = st.form_submit_button("📊 Generar Rúbrica en Word")
-
-    if boton_rubrica and criterio_r:
-        with st.spinner("Estructurando la rúbrica..."):
-            try:
-                client = genai.Client(api_key=api_key)
-                instrucciones_r = (
-                    "Actúa como un Evaluador Pedagógico experto en Educación Física para Primaria.\n"
-                    "Diseña una rúbrica analítica estructurada con los niveles: En Inicio, En Proceso, Logrado y Logro Destacado para el desempeño solicitado, utilizando exactamente 3 criterios claros que incluyan Acción + Contenido + Condición sin etiquetar explícitamente '(Acción)' ni '(Contenido)'."
-                )
-
-                pedido_r = "Crea una rúbrica para " + str(grado_r) + ". Competencia: " + str(competencia_r) + ". Desempeño: " + str(criterio_r)
-                
-                resultado_r = generar_respuesta_ia(client, instrucciones_r, pedido_r)
-                resultado_r = limpiar_texto(resultado_r)
-                
-                st.success("¡Rúbrica generada con éxito!")
-                st.markdown(resultado_r)
-                
-                archivo_word_r = crear_archivo_word_profesional(resultado_r)
-                st.download_button(
-                    label="📥 Descargar Rúbrica en Word (.docx)", 
-                    data=archivo_word_r, 
-                    file_name=f"Rubrica_PlanificaEF_{grado_r.replace(' ', '_')}.docx", 
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                )
-            except Exception as e:
-                st.error(f"Error al generar la Rúbrica: {e}")
+                                color_p = colores_pastel[c_idx % len(colores_pastel)]
+                                set_cell_background(cell, color_p)
+                            elif r_idx % 2 == 1:
+                                set_cell_background(cell, "F1F8E9") # Cebra pastel muy suave
+                d
