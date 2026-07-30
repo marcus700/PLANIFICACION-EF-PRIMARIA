@@ -418,9 +418,9 @@ with tab1:
                         "| ACTIVIDAD (SESIÓN) | DESCRIPCIÓN PEDAGÓGICA | COMPETENCIA / CAPACIDADES | ESTÁNDAR DE LA COMPETENCIA | DESEMPEÑO PRECISADO | CRITERIOS DE EVALUACIÓN | INSTRUMENTO DE EVALUACIÓN |\n"
                         "| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n\n"
                         "REGLAS ABSOLUTAS Y ESTRICTAS DE EVALUACIÓN CNEB:\n"
-                        "- En 'ESTÁNDAR DE LA COMPETENCIA': Copia PALABRA POR PALABRA el Estándar Oficial proporcionado arriba. PROHIBIDO refrasear. Únicamente **resalta en negrita** (`**texto**`) la frase que se ejercita.\n"
+                        "- En 'ESTÁNDAR DE LA COMPETENCIA': Transcribe la redacción LITERAL Y COMPLETA del Estándar CNEB oficial del ciclo. OBLIGATORIAMENTE **resalta en negrita** (`**frase en negrita**`) la parte o habilidad específica del estándar que se ejercita en esa sesión.\n"
                         "- En 'DESEMPEÑO PRECISADO': Copia PALABRA POR PALABRA el Desempeño Oficial del CNEB conservando su NUMERACIÓN ORIGINAL (ejemplo: 1.1.-, 1.2.-). **Resalta en negrita** (`**texto en negrita**`) la frase del CNEB tomada y lo agregado al final para precisarlo.\n"
-                        "- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión separados con <br>. Cada uno de los 3 criterios debe contener de forma completa sus 3 ELEMENTOS FUNDAMENTALES DE EVALUACIÓN CNEB: Acción (verbo observable) + Contenido (habilidad/tema motriz) + Condición (contexto/recurso de la actividad), redactados como una oración pedagógica fluida y SIN escribir ni etiquetar explícitamente las palabras '(Acción)' ni '(Contenido)' por escrito.\n"
+                        "- En 'CRITERIOS DE EVALUACIÓN': Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN ENUMERADOS del 1 al 3 por cada sesión separados con <br> (ejemplo: 1. Primer criterio...<br>2. Segundo criterio...<br>3. Tercer criterio...). Cada criterio incluye Acción + Contenido + Condición sin escribir las palabras '(Acción)' ni '(Contenido)' explícitamente.\n"
                         "- En 'INSTRUMENTO DE EVALUACIÓN': Lista de cotejo / Rúbrica.\n\n"
                         "5. ENFOQUES TRANSVERSALES PRIORIZADOS (Tabla con línea separadora).\n"
                         "6. MATERIALES Y RECURSOS DIDÁCTICOS."
@@ -490,8 +490,8 @@ with tab2:
                         "- Grado y Ciclo: " + str(grado_s) + " (" + str(ciclo_s) + ")\n"
                         "- Competencia principal: " + str(competencia_s) + "\n"
                         "- Tema / Propósito motriz: " + str(detalles_s) + "\n"
-                        "- ESTÁNDAR CNEB OFICIAL LITERAL: \"" + str(estandar_base) + "\"\n"
-                        "- DESEMPEÑOS CNEB OFICIALES DISPONIBLES:\n" + str(desempenos_base) + "\n\n"
+                        "- ESTÁNDAR CNEB OFICIAL LITERAL PARA " + str(ciclo_s) + ": \"" + str(estandar_base) + "\"\n"
+                        "- DESEMPEÑOS CNEB OFICIALES DISPONIBLES PARA " + str(grado_s) + ":\n" + str(desempenos_base) + "\n\n"
                         "ESTRUCTURA OBLIGATORIA A GENERAR EN MARKDOWN:\n\n"
                         "# SESIÓN DE APRENDIZAJE N°.......\n"
                         "**Título:** [Crea un título motivador e innovador sobre " + str(detalles_s) + "]\n\n"
@@ -509,9 +509,9 @@ with tab2:
                         "| :--- | :--- | :--- | :--- | :--- | :--- |\n"
                         "REGLAS ABSOLUTAS Y ESTRICTAS DE EVALUACIÓN CNEB:\n"
                         "- Columna 1: Competencia (" + str(competencia_s) + ") y sus capacidades separadas con <br>.\n"
-                        "- Columna 2: Transcribe PALABRA POR PALABRA Y COMPLETO el estándar oficial (\"" + str(estandar_base) + "\"). **Resalta en negrita** solo la parte trabajada hoy.\n"
-                        "- Columna 3: Selecciona el desempeño de " + str(grado_s) + " de la lista provista arriba. Conserva su numeración exacta (ej. 1.1.-), transcribe palabra por palabra sin modificar, y **resalta en negrita** la frase tomada del CNEB original y lo que le agregas al final para precisarlo al tema (" + str(detalles_s) + ").\n"
-                        "- Columna 4 (CRITERIOS DE EVALUACIÓN): Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN separados con <br>. Cada uno de los 3 criterios debe incluir de manera completa y rigurosa sus 3 ELEMENTOS CNEB: Acción (verbo observable) + Contenido (habilidad/tema motriz) + Condición (contexto o modo de ejecución), redactados en una oración pedagógica fluida y SIN escribir las etiquetas '(Acción)' ni '(Contenido)' explícitamente.\n"
+                        "- Columna 2 (ESTÁNDAR CNEB): Transcribe PALABRA POR PALABRA Y DE MANERA COMPLETA el estándar oficial proporcionado arriba (\"" + str(estandar_base) + "\"). Queda estrictamente PROHIBIDO refrasear o resumir. OBLIGATORIAMENTE **resalta en negrita** (`**frase en negrita**`) la frase o aspecto del estándar que se ejercita y aplica directamente en la clase de hoy.\n"
+                        "- Columna 3 (DESEMPEÑO PRECISADO): Selecciona el desempeño oficial del CNEB de la lista de " + str(grado_s) + " arriba provista. Conserva su numeración exacta (ej. 1.1.-), transcribe palabra por palabra sin modificar, y **resalta en negrita** (`**texto en negrita**`) la frase tomada del CNEB original y lo que le agregas al final para precisarlo al tema (" + str(detalles_s) + ").\n"
+                        "- Columna 4 (CRITERIOS DE EVALUACIÓN): Formula OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN ENUMERADOS del 1 al 3 y separados con <br> (ejemplo: 1. Primer criterio...<br>2. Segundo criterio...<br>3. Tercer criterio...). Cada uno de los 3 criterios incluye Acción + Contenido + Condición en oración fluida sin escribir '(Acción)' ni '(Contenido)' explícitamente.\n"
                         "- Columna 5: Evidencia de aprendizaje.\n"
                         "- Columna 6: Lista de cotejo.\n\n"
                         "## 3. ENFOQUE TRANSVERSAL\n"
@@ -521,9 +521,9 @@ with tab2:
                         "| ¿Qué necesitamos hacer antes de la sesión? | Recursos o Materiales a utilizar |\n"
                         "| :--- | :--- |\n\n"
                         "## 5. SECUENCIA DIDÁCTICA (MOMENTOS DE LA SESIÓN)\n"
-                        "REGLA FUNDAMENTAL DE CNEB_DATOS.PY: Redacta TODAS las acciones de los momentos obligatoriamente en **PRIMERA PERSONA** ('Recibo a mis estudiantes...', 'Explico el juego...', 'Organizo a las cuadrillas...') y en **TIEMPO PRESENTE**.\n\n"
+                        "Redacta en PRIMERA PERSONA ('Recibo...', 'Explico...', 'Organizo...') y TIEMPO PRESENTE.\n\n"
                         "### A) INICIO (Aprox. 20% del tiempo - 18 min):\n"
-                        "- **Motivación inicial:** Presento un desafío a través de una actividad física corta, imagen o historia relacionada con " + str(detalles_s) + ".\n"
+                        "- **Motivación inicial:** Presento una historia corta, imagen o desafío lúdico relacionado con " + str(detalles_s) + ".\n"
                         "- **Recojo de saberes previos:** Formulo preguntas abiertas para explorar los conocimientos previos de mis estudiantes sobre el tema.\n"
                         "- **Problematización / Conflicto cognitivo:** Planteo un reto motriz o pregunta problematizadora que despierte la curiosidad.\n"
                         "- **Propósito y organización:** Comunico claramente qué van a aprender hoy en " + str(grado_s) + " y cómo nos organizaremos.\n"
@@ -541,7 +541,7 @@ with tab2:
                         "- **Metacognición:** Planteo preguntas reflexivas guiadas (¿Qué aprendimos hoy? ¿Cómo lo logramos? ¿Qué dificultades tuvimos? ¿Para qué nos sirve lo aprendido en nuestra vida cotidiana?).\n"
                         "- **Cuidado e Higiene Personal:** Guío los hábitos de aseo personal, lavado correcto de manos y cara, hidratación final y ordenamiento colectivo de los materiales utilizados.\n\n"
                         "## 6. ANEXO: INSTRUMENTO DE EVALUACIÓN\n"
-                        "Tabla de Lista de Cotejo con los 3 criterios formulados y filas para nombres de estudiantes."
+                        "Tabla de Lista de Cotejo con los 3 criterios formulados (enumerados 1., 2., 3.) y filas para nombres de estudiantes."
                     )
                     
                     pedido = "Diseña una sesión para " + str(grado_s) + ". Competencia: " + str(competencia_s) + ". Detalles del tema: " + str(detalles_s)
@@ -582,7 +582,7 @@ with tab3:
                 client = genai.Client(api_key=api_key)
                 instrucciones_r = (
                     "Actúa como un Evaluador Pedagógico experto en Educación Física para Primaria.\n"
-                    "Diseña una rúbrica analítica estructurada con los niveles: En Inicio, En Proceso, Logrado y Logro Destacado para el desempeño solicitado, utilizando exactamente 3 criterios claros que incluyan Acción + Contenido + Condición sin etiquetar explícitamente '(Acción)' ni '(Contenido)'."
+                    "Diseña una rúbrica analítica estructurada con los niveles: En Inicio, En Proceso, Logrado y Logro Destacado para el desempeño solicitado, utilizando exactamente 3 criterios enumerados (1., 2., 3.) que incluyan Acción + Contenido + Condición sin etiquetar explícitamente '(Acción)' ni '(Contenido)'."
                 )
 
                 pedido_r = "Crea una rúbrica para " + str(grado_r) + ". Competencia: " + str(competencia_r) + ". Desempeño: " + str(criterio_r)
