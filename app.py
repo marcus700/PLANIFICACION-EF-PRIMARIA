@@ -64,8 +64,8 @@ st.markdown("""
 # ==============================================================================
 # CONFIGURACIÓN DE PAGO, SEGURIDAD Y PINES AUTOMÁTICOS
 # ==============================================================================
-NUMERO_WHATSAPP = "51900000000"  # 👈 REEMPLAZA CON TU NÚMERO DE WHATSAPP CON 51 (ej. 51987654321)
-NUMERO_YAPE_PLIN = "900 000 000" # 👈 REEMPLAZA CON TU NÚMERO DE YAPE / PLIN
+NUMERO_WHATSAPP = "51937287225"  # 👈 REEMPLAZA CON TU NÚMERO DE WHATSAPP CON 51 (ej. 51987654321)
+NUMERO_YAPE_PLIN = "937 287 225" # 👈 REEMPLAZA CON TU NÚMERO DE YAPE / PLIN
 
 # PIN seguro que cambia solo automáticamente cada mes + tu PIN Maestro permanente
 PIN_DEL_MES = obtener_pin_mes_actual()
@@ -456,11 +456,11 @@ with tab2:
         col1, col2 = st.columns(2)
         with col1:
             grado_s = st.selectbox("Grado de Primaria:", ["1° Grado", "2° Grado", "3° Grado", "4° Grado", "5° Grado", "6° Grado"], index=2, key="s1")
-            ie_s = st.text_input("I.E. N°:", value="22314 Vicenta Aquije de Huamán", key="s_ie")
-            docente_s = st.text_input("Docente:", value="Mario Garcia Torres", key="s_doc")
+            ie_s = st.text_input("I.E. N°:", value=" ", key="s_ie")
+            docente_s = st.text_input("Docente:", value=" ", key="s_doc")
         with col2:
             competencia_s = st.selectbox("Competencia Principal:", ["Se desenvuelve de manera autónoma a través de su motricidad", "Asume una vida saludable", "Interactúa a través de sus habilidades sociomotrices"], key="s2")
-            fecha_s = st.text_input("Fecha:", value="29/07/2026", key="s_fec")
+            fecha_s = st.text_input("Fecha:", value=" ", key="s_fec")
             tiempo_s = st.selectbox("Tiempo:", ["45 minutos", "90 minutos", "135 minutos"], index=1, key="s_time")
 
         detalles_s = st.text_area("Tema de la clase o materiales disponibles:", placeholder="Ej. Coordinación óculo-manual lanzando y recibiendo pelotas de plástico.", key="s3")
