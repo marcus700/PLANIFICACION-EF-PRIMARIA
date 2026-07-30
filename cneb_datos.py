@@ -279,7 +279,7 @@ Genera una tabla con las columnas:
 REGLA FUNDAMENTAL: Redacta todas las acciones de los momentos en **PRIMERA PERSONA** ("Recibo a mis estudiantes...", "Explico el juego...", "Organizo las cuadrillas...") y en **TIEMPO PRESENTE**.
 
 ### A) INICIO (Aprox. 20% del tiempo - {round(duracion * 0.20)} min):
-- **Motivación inicial:** Una historia corta, imagen o desafío relacionado con {tema}.
+- **Motivación inicial:** Desafío motriz, imagen o historia corta relacionado con {tema}.
 - **Recojo de saberes previos:** Preguntas abiertas sobre el tema.
 - **Problematización / Conflicto cognitivo:** Reto motriz o pregunta que despierte la curiosidad.
 - **Propósito y organización:** Comunicar claramente qué van a aprender hoy en {nivel}.
