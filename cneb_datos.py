@@ -279,16 +279,17 @@ Genera una tabla con las columnas:
 REGLA FUNDAMENTAL: Redacta todas las acciones de los momentos en **PRIMERA PERSONA** ("Recibo a mis estudiantes...", "Explico el juego...", "Organizo las cuadrillas...") y en **TIEMPO PRESENTE**.
 
 ### A) INICIO (Aprox. 20% del tiempo - {round(duracion * 0.20)} min):
-- **Motivación inicial:** Desafío motriz, imagen o historia corta relacionado con {tema}.
+- **Motivación inicial:** Desafío a través de actividad fisica , imagen o historia corta relacionado con {tema}.
 - **Recojo de saberes previos:** Preguntas abiertas sobre el tema.
 - **Problematización / Conflicto cognitivo:** Reto motriz o pregunta que despierte la curiosidad.
 - **Propósito y organización:** Comunicar claramente qué van a aprender hoy en {nivel}.
 - **Acuerdos de convivencia:** 2 a 3 acuerdos para el campo o patio.
-- **Activación Corporal (Calentamiento dinámico):** Juego motivador relacionado a {tema} y movilidad articular.
 
 ### B) DESARROLLO (Aprox. 60% del tiempo - {round(duracion * 0.60)} min) - Gestión y acompañamiento:
-- Diseña una secuencia metodológica de lo simple a lo complejo (progresión motriz adecuada para {nivel}).
+- **Activación Corporal (Calentamiento dinámico):** Juego motivador relacionado a {tema} y movilidad articular. 
+- Diseña una secuencia metodológica de lo simple a lo complejo (progresión motriz adecuada para {nivel}).  
 - Incluye de 3 a 4 actividades prácticas explicadas con claridad para ejecutar en el patio (juegos tradicionales, circuitos, minitorneos o dinámicas de exploración).
+- **Actividad de aplicación:**Juego final, reto grupal o creación colectiva donde aplican lo aprendido,
 - Asegúrate de que las actividades promuevan la autonomía, el pensamiento estratégico y la interacción saludable.
 - Describe la estrategia de retroalimentación (feedback) que brindo como docente durante la práctica.
 
