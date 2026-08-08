@@ -749,7 +749,7 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 | Duración | {duracion_sesion} |
 
 3. TABLA II: PROPÓSITOS DE APRENDIZAJE Y EVIDENCIAS
-REGLA DEL ESTÁNDAR: Coloca en la PARTE SUPERIOR / ENCABEZADO DE ESTA TABLA (o como bloque inmediatamente superior a la matriz) el ESTÁNDAR COMPLETO CNEB del {ciclo_actual} para la competencia evaluada, redactado de manera íntegra (sin modificar ni recortar su texto original), RESALTANDO EN NEGRITA únicamente la parte específica que se trabaja/evalúa en esta sesión.
+REGLA DEL ESTÁNDAR: Coloca en la PARTE SUPERIOR / ENCABEZADO DE ESTA TABLA (como bloque inmediatamente superior a la matriz) el ESTÁNDAR COMPLETO CNEB del {ciclo_actual} para la competencia evaluada, redactado de manera íntegra (sin modificar ni recortar su texto original), RESALTANDO EN NEGRITA únicamente la parte específica que se trabaja/evalúa en esta sesión.
 
 Estructura del bloque y tabla II:
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo con **negrita** en la parte aplicada]
@@ -786,10 +786,10 @@ Coloca la tabla con las Competencias Transversales que se emplean en la sesión 
   2. **Secuencia de Actividades Motrices:** Progresión de lo simple a lo complejo (3 a 4 actividades prácticas de exploración, juegos cooperativos o deportivos con pausas de hidratación).
   3. **ACTIVIDAD OBLIGATORIA DE ALTO NIVEL COGNITIVO (Analizar, Evaluar y Crear):** Incluye un reto motriz/estratégico específico donde los estudiantes deban **analizar** una situación de juego, **evaluar** soluciones o variantes tácticas en equipo y **crear** su propia regla, secuencia o estrategia motriz colectiva.
 
-- **CIERRE (Aprox. 10 min):**
-  1. **Vuelta a la calma:** Ejercicios de respiración guiada, relajación muscular y estiramientos suaves.
-  2. **Metacognición motriz:** Preguntas de reflexión (¿Qué aprendimos sobre nuestro cuerpo? ¿Cómo superamos las dificultades?).
-  3. **Rutina Obligatoria de Higiene Personal:** Práctica autónoma de lavado de manos con agua y jabón, secado con toalla y cambio de polo deportivo.
+- **CIERRE (Aprox. 10 min) - DEBES REDACTAR OBLIGATORIAMENTE Y EN SU TOTALIDAD LOS SIGUIENTES 3 PUNTOS (PROHIBIDO OMITIR O CORTAR EL CIERRE):**
+  1. **Vuelta a la calma:** Ejercicios de respiración guiada, relajación muscular y estiramientos suaves en el patio.
+  2. **Metacognición motriz:** Redacta de 3 a 4 preguntas reflexivas pedagógicas explícitas (ej. ¿Qué aprendimos sobre nuestro cuerpo hoy? ¿Cómo superamos las dificultades en el juego? ¿Para qué nos sirve lo aprendido?).
+  3. **Rutina Obligatoria de Higiene Personal:** Describe en detalle la práctica autónoma de aseo personal, lavado de manos con agua y jabón, secado con toalla y cambio de polo deportivo al concluir la clase.
 
 8. TABLA VI: LISTA DE COTEJO DE EDUCACIÓN FÍSICA (Tabla con criterios de evaluación y 30 estudiantes ficticios).
 """
