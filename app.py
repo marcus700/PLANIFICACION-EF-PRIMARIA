@@ -553,6 +553,11 @@ if tipo_documento == "Sesión de Clase de Ed. Física":
         capacidades_custom = st.text_input("Capacidades Específicas (Opcional - Blanco para automático):", value="", placeholder="Ej. Comprende su cuerpo. / Se expresa corporalmente.")
         estandar_custom = st.text_area("Estándar de la Competencia (Opcional - Blanco para automático):", value="", height=70, placeholder="Texto del estándar...")
     with col_s2:
+        tipo_motivacion = st.selectbox(
+            "Tipo de Motivación para el Inicio de la Clase:",
+            ["A través de una actividad física", "A través de una imagen", "A través de una historia"],
+            index=0
+        )
         criterios_custom = st.text_area("Criterios de Evaluación (Opcional - Blanco para automático):", value="", height=70, placeholder="Ej. 1. Ejecuta desplazamientos orientados en el patio. 2. Identifica nociones de derecha e izquierda.")
         evidencia_custom = st.text_input("Evidencia de Aprendizaje (Opcional - Blanco para automático):", value="", placeholder="Ej. Ejecución de desplazamientos coordinados hacia señales leídas.")
 
@@ -703,7 +708,6 @@ ESTRUCTURA DE SALIDA (MARKDOWN LIMPIO EN TABLAS):
 """
 
 def generar_prompt_sesion_ef():
-    # Selección de datos provistos o automáticos
     comps_str = ", ".join(comps_seleccionadas) if comps_seleccionadas else "Seleccionar automáticamente según el tema del CNEB"
     cap_str = capacidades_custom.strip() if capacidades_custom.strip() else "Generar automáticamente según la(s) competencia(s) elegida(s)"
     est_str = estandar_custom.strip() if estandar_custom.strip() else "Transcribir el Estándar COMPLETO oficial del ciclo del CNEB con negrita en la parte movilizada"
@@ -718,6 +722,7 @@ DATOS INGRESADOS PARA LA SESIÓN:
 - N.° de Sesión: {num_doc}
 - Título de la actividad: "{problema_contexto}"
 - IE: {ie_nombre} | Docente: {docente} | Fecha: {fecha_sugerida} | Duración: {duracion_sesion}
+- Tipo de Motivación elegida: {tipo_motivacion}
 - Competencia(s) solicitada(s): {comps_str}
 - Capacidades solicitadas: {cap_str}
 - Estándar solicitado: {est_str}
@@ -744,9 +749,13 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 | Duración | {duracion_sesion} |
 
 3. TABLA II: PROPÓSITOS DE APRENDIZAJE Y EVIDENCIAS
-| ÁREA | COMPETENCIA Y CAPACIDADES | ESTÁNDAR CNEB COMPLETO (con **negrita**) | DESEMPEÑO PRECISADO COMPLETO (con **negrita**) | CRITERIOS DE EVALUACIÓN | PROPÓSITO DE LA CLASE | EVIDENCIA | INSTRUMENTO |
+REGLA DEL ESTÁNDAR: Coloca en la PARTE SUPERIOR / ENCABEZADO DE ESTA TABLA (o como bloque inmediatamente superior a la matriz) el ESTÁNDAR COMPLETO CNEB del {ciclo_actual} para la competencia evaluada, redactado de manera íntegra (sin modificar ni recortar su texto original), RESALTANDO EN NEGRITA únicamente la parte específica que se trabaja/evalúa en esta sesión.
+
+Estructura del bloque y tabla II:
+> **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo con **negrita** en la parte aplicada]
+
+| ÁREA | COMPETENCIA Y CAPACIDADES | DESEMPEÑO PRECISADO COMPLETO (con **negrita**) | CRITERIOS DE EVALUACIÓN | PROPÓSITO DE LA CLASE | EVIDENCIA | INSTRUMENTO |
 - **Competencias:** Incluye la(s) competencia(s) solicitada(s) de Educación Física.
-- **Estándar CNEB:** Transcribe el Estándar COMPLETO del {ciclo_actual} del CNEB sin recortar texto, resaltando en **negrita** la parte aplicada.
 - **Desempeño:** Transcribe el Desempeño COMPLETO del CNEB para {grado_seccion}, resaltando en **negrita** la parte utilizada y los términos precisados agregados.
 
 4. TABLA III: ENFOQUE TRANSVERSAL (ÚNICO Y ESPECÍFICO)
@@ -764,7 +773,7 @@ Coloca la tabla con las Competencias Transversales que se emplean en la sesión 
 
 - **INICIO (Aprox. 20 min):**
   Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE. Debe considerar ESTRICTAMENTE el siguiente orden:
-  1. **Motivación:** [Juego motriz inicial, dinámica con música, reto lúdico o historia motivadora]
+  1. **Motivación ({tipo_motivacion}):** [Desarrollar la motivación STRICTAMENTE según el tipo elegido: {tipo_motivacion}. Si es "A través de una imagen", describe la imagen motivadora y las preguntas reflexivas; si es "A través de una actividad física", describe el juego motivador inicial; si es "A través de una historia", relata la historia corta o cuento regional motriz].
   2. **Saberes previos:** [Preguntas abiertas sobre el tema o movimientos]
   3. **Problematización / Conflicto cognitivo:** [Reto motriz o pregunta desafiante sobre el juego/cuerpo]
   4. **Propósito de la clase:** [Comunicar con claridad qué aprenderán hoy]
@@ -824,7 +833,7 @@ if st.button(f"✨ Generar {tipo_documento}"):
             else:
                 prompt_maestro = generar_prompt_ficha_ef()
 
-            sys_inst = "Eres un Especialista Curricular del MINEDU Perú dedicado exclusivamente al área de Educación Física. Generas documentos completos en Markdown alineados estrictamente al CNEB."
+            sys_inst = "Eres un Especialista Curricular del MINEDU Perú dedicado exclusivamente al área de Educación Física. Generas documentos completos en Markdown alineados strictly al CNEB."
 
             with st.spinner(f"⚽ Google Gemini está redactando tu {tipo_documento} para {grado_seccion}..."):
                 config = types.GenerateContentConfig(
