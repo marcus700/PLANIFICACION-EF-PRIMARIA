@@ -305,7 +305,7 @@ def check_password():
         st.subheader("🔒 Acceso Restringido")
         pwd_input = st.text_input("Contraseña de acceso:", type="password", key="pwd_input")
         if st.button("Ingresar 🚀"):
-            target_pwd = st.secrets.get("APP_PASSWORD", "docente2026")
+            target_pwd = st.secrets.get("APP_PASSWORD", "docente2026ef")
             if pwd_input == target_pwd:
                 st.session_state["password_correct"] = True
                 st.rerun()
