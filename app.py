@@ -250,7 +250,7 @@ def check_password():
         st.subheader("🔒 Acceso Restringido")
         pwd_input = st.text_input("Contraseña de acceso:", type="password", key="pwd_input")
         if st.button("Ingresar 🚀"):
-            target_pwd = st.secrets.get("APP_PASSWORD", "docente2026ef")
+            target_pwd = st.secrets.get("APP_PASSWORD", "docente2026")
             if pwd_input == target_pwd:
                 st.session_state["password_correct"] = True
                 st.rerun()
@@ -271,7 +271,7 @@ if 'fname_clean' not in st.session_state:
 if 'tipo_documento' not in st.session_state:
     st.session_state['tipo_documento'] = "Unidad de Aprendizaje (CNEB EF 10 Secciones)"
 
-# SIDEBAR
+# SIDEBAR CON MODELOS ESTABLES DE GOOGLE STUDIO
 st.sidebar.title("⚙️ Configuración EF")
 if st.sidebar.button("🔒 Cerrar Sesión"):
     st.session_state["password_correct"] = False
@@ -284,9 +284,10 @@ if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_API_KEY"]:
 else:
     api_key = st.sidebar.text_input("🔑 Google AI Studio API Key:", type="password")
 
+# OPCIONES DE MODELOS OFICIALES Y ESTABLES
 model_choice = st.sidebar.selectbox(
     "Modelo de Gemini:", 
-    ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-pro"]
+    ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
 )
 
 # ==============================================================================
@@ -651,7 +652,7 @@ ESTRUCTURA REQUERIDA:
 """
 
 # ==============================================================================
-# EJECUCIÓN CON GEMINI API
+# EJECUCIÓN CON SISTEMA DUAL ROBUSTO ANTI-404
 # ==============================================================================
 st.markdown("---")
 
@@ -675,18 +676,39 @@ if st.button(f"✨ Generar {tipo_documento}"):
 
             sys_inst = "Eres un Especialista Curricular del MINEDU Perú dedicado exclusivamente al área de Educación Física. Generas documentos completos en Markdown alineados estrictamente al CNEB."
 
-            with st.spinner(f"⚽ Google Gemini ({model_choice}) está redactando tu {tipo_documento} para {grado_seccion}..."):
+            with st.spinner(f"⚽ Google Gemini está redactando tu {tipo_documento} para {grado_seccion}..."):
                 config = types.GenerateContentConfig(
                     system_instruction=sys_inst,
                     temperature=0.15,
                     max_output_tokens=8192
                 )
                 
-                response = client.models.generate_content(
-                    model=model_choice,
-                    contents=prompt_maestro,
-                    config=config
-                )
+                # LISTA DE MODELOS ESTABLES CON RESPALDO AUTOMÁTICO EN CASO DE 404
+                modelos_a_probar = [
+                    model_choice,
+                    "gemini-2.0-flash",
+                    "gemini-1.5-flash",
+                    "gemini-1.5-pro"
+                ]
+                
+                response = None
+                ultimo_err = None
+                
+                for mod in modelos_a_probar:
+                    try:
+                        response = client.models.generate_content(
+                            model=mod,
+                            contents=prompt_maestro,
+                            config=config
+                        )
+                        if response and response.text:
+                            break
+                    except Exception as err:
+                        ultimo_err = err
+                        continue
+                
+                if not response or not response.text:
+                    raise ultimo_err
                 
                 st.session_state['resultado_md'] = response.text
                 st.session_state['tipo_doc_generado'] = tipo_documento
