@@ -205,11 +205,7 @@ st.markdown("""
         border-radius: 8px !important;
     }
 
-    /* ==========================================================================
-       ESTILOS DE ALTO CONTRASTE Y LEGIBILIDAD PARA BOTONES DE HERRAMIENTAS
-       ========================================================================== */
-    
-    /* 1. BOTÓN UNIDAD CNEB EF (PÚRPURA VIBRANTE) */
+    /* ESTILOS DE ALTO CONTRASTE Y LEGIBILIDAD PARA BOTONES DE HERRAMIENTAS */
     div.st-key-btn_unidad > button {
         background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%) !important;
         background-color: #7C3AED !important;
@@ -223,7 +219,6 @@ st.markdown("""
         box-shadow: 0 6px 18px rgba(124, 58, 237, 0.6) !important;
     }
 
-    /* 2. BOTÓN PROYECTO LÚDICO (VERDE ESMERALDA VIBRANTE) */
     div.st-key-btn_proyecto > button {
         background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
         background-color: #059669 !important;
@@ -237,7 +232,6 @@ st.markdown("""
         box-shadow: 0 6px 18px rgba(5, 150, 105, 0.6) !important;
     }
 
-    /* 3. BOTÓN SESIÓN DE CLASE (AZUL ELÉCTRICO VIBRANTE) */
     div.st-key-btn_sesion > button {
         background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
         background-color: #2563EB !important;
@@ -251,7 +245,6 @@ st.markdown("""
         box-shadow: 0 6px 18px rgba(37, 99, 235, 0.6) !important;
     }
 
-    /* 4. BOTÓN FICHA DE TRABAJO (NARANJA ÁMBAR VIBRANTE) */
     div.st-key-btn_ficha > button {
         background: linear-gradient(135deg, #D97706 0%, #B45309 100%) !important;
         background-color: #D97706 !important;
@@ -265,7 +258,6 @@ st.markdown("""
         box-shadow: 0 6px 18px rgba(217, 119, 6, 0.6) !important;
     }
 
-    /* 5. BOTÓN PRINCIPAL DE GENERAR DOCUMENTO (✨ GENERAR) */
     div.stButton > button:not([key="btn_unidad"]):not([key="btn_proyecto"]):not([key="btn_sesion"]):not([key="btn_ficha"]) {
         background: linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%) !important;
         background-color: #1E40AF !important;
@@ -281,7 +273,6 @@ st.markdown("""
         box-shadow: 0 6px 20px rgba(37, 99, 235, 0.7) !important;
     }
 
-    /* FORZAR TEXTO BLANCO INTENSO Y NEGRILLA EN TODOS LOS BOTONES */
     div.stButton > button,
     div.stButton > button *,
     div.stButton > button p,
@@ -535,10 +526,45 @@ with c3:
     ciclo_actual = obtener_ciclo_ef(grado_seccion)
     st.info(f"Ciclo CNEB Detectado: **{ciclo_actual}**")
 
-if tipo_documento in ["Sesión de Clase de Ed. Física", "Ficha de Trabajo / Autoevaluación EF"]:
+# VARIABLES ESPECÍFICAS PARA CADA HERRAMIENTA
+if tipo_documento == "Sesión de Clase de Ed. Física":
     f1, f2, f3 = st.columns(3)
     with f1:
-        num_doc = st.text_input("N.° de Sesión / Ficha:", "01")
+        num_doc = st.text_input("N.° de Sesión:", "01")
+    with f2:
+        fecha_sugerida = st.text_input("Fecha:", "22 de junio de 2026")
+    with f3:
+        duracion_sesion = st.selectbox("Duración de la Clase:", ["45 minutos", "90 minutos", "135 minutos"], index=1)
+    
+    st.markdown("##### 📌 Configuración Pedagógica de la Sesión (Opcional: Dejar en blanco para generación automática del CNEB)")
+    titulo_sesion_input = st.text_input("Título de la Actividad / Sesión de Clase (Opcional):", value="", placeholder="Ej. Leemos señales para desplazarnos y reconocer direcciones en el patio")
+    
+    col_s1, col_s2 = st.columns(2)
+    with col_s1:
+        comps_seleccionadas = st.multiselect(
+            "Competencia(s) a Trabajar (1, 2 o 3):",
+            [
+                "Se desenvuelve de manera autónoma a través de su motricidad",
+                "Asume una vida saludable",
+                "Interactúa a través de sus habilidades sociomotrices"
+            ],
+            default=["Se desenvuelve de manera autónoma a través de su motricidad"]
+        )
+        capacidades_custom = st.text_input("Capacidades Específicas (Opcional - Blanco para automático):", value="", placeholder="Ej. Comprende su cuerpo. / Se expresa corporalmente.")
+        estandar_custom = st.text_area("Estándar de la Competencia (Opcional - Blanco para automático):", value="", height=70, placeholder="Texto del estándar...")
+    with col_s2:
+        criterios_custom = st.text_area("Criterios de Evaluación (Opcional - Blanco para automático):", value="", height=70, placeholder="Ej. 1. Ejecuta desplazamientos orientados en el patio. 2. Identifica nociones de derecha e izquierda.")
+        evidencia_custom = st.text_input("Evidencia de Aprendizaje (Opcional - Blanco para automático):", value="", placeholder="Ej. Ejecución de desplazamientos coordinados hacia señales leídas.")
+
+    fechas_duracion = fecha_sugerida
+    duracion_semanas = 1
+    producto_unidad = ""
+    problema_contexto = titulo_sesion_input.strip() if titulo_sesion_input.strip() else "Desarrollo de nociones espaciales, coordinación motriz y convivencia en juegos de Educación Física."
+
+elif tipo_documento == "Ficha de Trabajo / Autoevaluación EF":
+    f1, f2, f3 = st.columns(3)
+    with f1:
+        num_doc = st.text_input("N.° de Ficha:", "01")
     with f2:
         fecha_sugerida = st.text_input("Fecha:", "22 de junio de 2026")
     with f3:
@@ -547,6 +573,7 @@ if tipo_documento in ["Sesión de Clase de Ed. Física", "Ficha de Trabajo / Aut
     fechas_duracion = fecha_sugerida
     duracion_semanas = 1
     producto_unidad = ""
+    problema_contexto = st.text_area("📋 Describe el Tema de la Ficha:", height=100, value="Autoevaluación de desplazamientos, normas de juego y hábitos de higiene en Educación Física.")
 
 else:  # Unidad o Proyecto EF
     f1, f2, f3, f4 = st.columns(4)
@@ -560,11 +587,11 @@ else:  # Unidad o Proyecto EF
         producto_unidad = st.text_input("Producto Final Tangible:", "Festival Lúdico-Motor Peruanito")
         duracion_sesion = "90 minutos"
 
-problema_contexto = st.text_area(
-    "📋 Describe el Tema, Problema de Contexto o Necesidad Motriz/Saludable de los Estudiantes:",
-    height=120,
-    value="Dificultades de coordinación motriz, orientación espacial en el patio al desplazarse en grupo, poco conocimiento de juegos tradicionales peruanos y falta de hábitos de higiene personal (lavado de manos, cambio de polo) al finalizar la actividad física."
-)
+    problema_contexto = st.text_area(
+        "📋 Describe el Tema, Problema de Contexto o Necesidad Motriz/Saludable de los Estudiantes:",
+        height=120,
+        value="Dificultades de coordinación motriz, orientación espacial en el patio al desplazarse en grupo, poco conocimiento de juegos tradicionales peruanos y falta de hábitos de higiene personal (lavado de manos, cambio de polo) al finalizar la actividad física."
+    )
 
 # ==============================================================================
 # PROMPTS ESPECIALIZADOS EN EDUCACIÓN FÍSICA
@@ -676,27 +703,86 @@ ESTRUCTURA DE SALIDA (MARKDOWN LIMPIO EN TABLAS):
 """
 
 def generar_prompt_sesion_ef():
-    return f"""
-Actúa como Docente Experto en Educación Física para Primaria (CNEB MINEDU).
-Elabora una SESIÓN DE CLASE PRÁCTICA DE EDUCACIÓN FÍSICA completa para {grado_seccion}.
-Tema: {problema_contexto}. Duración: {duracion_sesion}.
+    # Selección de datos provistos o automáticos
+    comps_str = ", ".join(comps_seleccionadas) if comps_seleccionadas else "Seleccionar automáticamente según el tema del CNEB"
+    cap_str = capacidades_custom.strip() if capacidades_custom.strip() else "Generar automáticamente según la(s) competencia(s) elegida(s)"
+    est_str = estandar_custom.strip() if estandar_custom.strip() else "Transcribir el Estándar COMPLETO oficial del ciclo del CNEB con negrita en la parte movilizada"
+    crit_str = criterios_custom.strip() if criterios_custom.strip() else "Formular automáticamente mínimo 3 criterios claros con la estructura Acción + Contenido + Condición"
+    evid_str = evidencia_custom.strip() if evidencia_custom.strip() else "Generar automáticamente la evidencia motriz o demostración práctica adecuada"
 
-ESTRUCTURA DE SALIDA REQUERIDA:
+    return f"""
+Actúa como Docente Experto en Educación Física para Primaria bajo el enfoque oficial del CNEB del MINEDU Perú.
+Elabora una SESIÓN DE CLASE PRÁCTICA DE EDUCACIÓN FÍSICA completa para {grado_seccion} ({ciclo_actual}).
+
+DATOS INGRESADOS PARA LA SESIÓN:
+- N.° de Sesión: {num_doc}
+- Título de la actividad: "{problema_contexto}"
+- IE: {ie_nombre} | Docente: {docente} | Fecha: {fecha_sugerida} | Duración: {duracion_sesion}
+- Competencia(s) solicitada(s): {comps_str}
+- Capacidades solicitadas: {cap_str}
+- Estándar solicitado: {est_str}
+- Criterios solicitados: {crit_str}
+- Evidencia solicitada: {evid_str}
+*(Nota: Si algún dato anterior dice "generar automáticamente", completa los campos de forma rigurosa utilizando la base de datos oficial del CNEB de Educación Física).*
+
+---
+
+REGLAS DE FORMATO Y ESTRUCTURA OBLIGATORIA DE LA SESIÓN:
+
+1. ENCABEZADO Y TÍTULO DE LA SESIÓN:
+Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 # **SESIÓN DE APRENDIZAJE DE EDUCACIÓN FÍSICA N.º {num_doc}**
 ## **"{problema_contexto.upper()}"**
+*(QUEDA STRICTAMENTE PROHIBIDO COLOCAR CUALQUIER OTRO DATO, FECHA O SUBTÍTULO DEBAJO DEL TÍTULO DE LA SESIÓN).*
 
-• TABLA I: DATOS INFORMATIVOS (IE: {ie_nombre}, Docente: {docente}, Grado: {grado_seccion}, Fecha: {fecha_sugerida}, Duración: {duracion_sesion}).
-• TABLA II: PROPÓSITOS DE APRENDIZAJE Y EVIDENCIAS
+2. TABLA I: DATOS INFORMATIVOS
+| DATOS INFORMATIVOS | DETALLE |
+| Institución Educativa | {ie_nombre} |
+| Docente de Educación Física | {docente} |
+| Grado y Sección | {grado_seccion} ({ciclo_actual}) |
+| Fecha | {fecha_sugerida} |
+| Duración | {duracion_sesion} |
+
+3. TABLA II: PROPÓSITOS DE APRENDIZAJE Y EVIDENCIAS
 | ÁREA | COMPETENCIA Y CAPACIDADES | ESTÁNDAR CNEB COMPLETO (con **negrita**) | DESEMPEÑO PRECISADO COMPLETO (con **negrita**) | CRITERIOS DE EVALUACIÓN | PROPÓSITO DE LA CLASE | EVIDENCIA | INSTRUMENTO |
-• TABLA III: ENFOQUES TRANSVERSALES Y COMPETENCIA TRANSVERSAL.
-• TABLA IV: PREPARACIÓN DE LA CLASE (Materiales del patio: conos, aros, pelotas, silbato, kit de aseo).
+- **Competencias:** Incluye la(s) competencia(s) solicitada(s) de Educación Física.
+- **Estándar CNEB:** Transcribe el Estándar COMPLETO del {ciclo_actual} del CNEB sin recortar texto, resaltando en **negrita** la parte aplicada.
+- **Desempeño:** Transcribe el Desempeño COMPLETO del CNEB para {grado_seccion}, resaltando en **negrita** la parte utilizada y los términos precisados agregados.
 
-• MOMENTOS DE LA CLASE DE EDUCACIÓN FÍSICA:
-- **INICIO (20 min):** Activación corporal / Calentamiento dinámico con música/juegos, movilidad articular, saberes previos, delimitación del espacio y acuerdos de seguridad.
-- **DESARROLLO (60 min):** Secuencia motriz de lo simple a lo complejo. 3 a 4 actividades prácticas descritas en PRIMERA PERSONA DEL PLURAL TIEMPO PRESENTE (exploración motriz, juegos cooperativos/deportivos, pausas de hidratación).
-- **CIERRE (10 min):** Vuelta a la calma (respiración guiada, estiramientos), metacognición motriz y **Rutina Obligatoria de Higiene Personal (lavado de manos, secado con toalla y cambio de polo)**.
+4. TABLA III: ENFOQUE TRANSVERSAL (ÚNICO Y ESPECÍFICO)
+Coloca UN SOLO Enfoque Transversal (el más coherente e ideal para la actividad específica):
+| ENFOQUE TRANSVERSAL PRIORIZADO | VALOR(ES) | ACTITUDES OBSERVABLES |
 
-• TABLA V: LISTA DE COTEJO DE EDUCACIÓN FÍSICA (con 30 alumnos ficticios).
+5. TABLA IV: COMPETENCIAS TRANSVERSALES
+Coloca la tabla con las Competencias Transversales que se emplean en la sesión ("Gestiona su aprendizaje de manera autónoma" y/o "Se desenvuelve en entornos virtuales"):
+| COMPETENCIA TRANSVERSAL | CAPACIDADES | DESEMPEÑOS PRECISADOS |
+
+6. TABLA V: PREPARACIÓN DE LA CLASE
+| ¿Qué necesitamos hacer antes de la sesión de Ed. Física? | ¿Qué recursos o materiales del patio se utilizarán? |
+
+7. MOMENTOS DE LA CLASE DE EDUCACIÓN FÍSICA:
+
+- **INICIO (Aprox. 20 min):**
+  Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE. Debe considerar ESTRICTAMENTE el siguiente orden:
+  1. **Motivación:** [Juego motriz inicial, dinámica con música, reto lúdico o historia motivadora]
+  2. **Saberes previos:** [Preguntas abiertas sobre el tema o movimientos]
+  3. **Problematización / Conflicto cognitivo:** [Reto motriz o pregunta desafiante sobre el juego/cuerpo]
+  4. **Propósito de la clase:** [Comunicar con claridad qué aprenderán hoy]
+  5. **Criterios de evaluación:** [Explicar de forma sencilla cómo serán evaluados]
+  6. **Acuerdos de convivencia:** [Establecer 2 a 3 normas de respeto y seguridad en el patio]
+
+- **DESARROLLO (Aprox. 60 min):**
+  Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE. Incluye la secuencia pedagógica:
+  1. **Activación Corporal (Calentamiento dinámico):** Movilidad articular, trote lúdico con ritmos/cambios de dirección y estiramientos dinámicos en el patio.
+  2. **Secuencia de Actividades Motrices:** Progresión de lo simple a lo complejo (3 a 4 actividades prácticas de exploración, juegos cooperativos o deportivos con pausas de hidratación).
+  3. **ACTIVIDAD OBLIGATORIA DE ALTO NIVEL COGNITIVO (Analizar, Evaluar y Crear):** Incluye un reto motriz/estratégico específico donde los estudiantes deban **analizar** una situación de juego, **evaluar** soluciones o variantes tácticas en equipo y **crear** su propia regla, secuencia o estrategia motriz colectiva.
+
+- **CIERRE (Aprox. 10 min):**
+  1. **Vuelta a la calma:** Ejercicios de respiración guiada, relajación muscular y estiramientos suaves.
+  2. **Metacognición motriz:** Preguntas de reflexión (¿Qué aprendimos sobre nuestro cuerpo? ¿Cómo superamos las dificultades?).
+  3. **Rutina Obligatoria de Higiene Personal:** Práctica autónoma de lavado de manos con agua y jabón, secado con toalla y cambio de polo deportivo.
+
+8. TABLA VI: LISTA DE COTEJO DE EDUCACIÓN FÍSICA (Tabla con criterios de evaluación y 30 estudiantes ficticios).
 """
 
 def generar_prompt_ficha_ef():
@@ -738,7 +824,7 @@ if st.button(f"✨ Generar {tipo_documento}"):
             else:
                 prompt_maestro = generar_prompt_ficha_ef()
 
-            sys_inst = "Eres un Especialista Curricular del MINEDU Perú dedicado exclusivamente al área de Educación Física. Generas documentos completos en Markdown alineados strictly al CNEB."
+            sys_inst = "Eres un Especialista Curricular del MINEDU Perú dedicado exclusivamente al área de Educación Física. Generas documentos completos en Markdown alineados estrictamente al CNEB."
 
             with st.spinner(f"⚽ Google Gemini está redactando tu {tipo_documento} para {grado_seccion}..."):
                 config = types.GenerateContentConfig(
