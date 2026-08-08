@@ -156,7 +156,7 @@ def obtener_ciclo_ef(grado: str) -> str:
     return "V Ciclo"
 
 # ==============================================================================
-# CONFIGURACIÓN DE PÁGINA Y CSS PLANIFICAPRIMARIA (EDUCACIÓN FÍSICA)
+# CONFIGURACIÓN DE PÁGINA Y CSS MEJORADO PARA ALTA VISIBILIDAD DE BOTONES
 # ==============================================================================
 st.set_page_config(
     page_title="PlanificaEF Primaria - Plataforma de Educación Física",
@@ -205,28 +205,92 @@ st.markdown("""
         border-radius: 8px !important;
     }
 
-    /* BOTONES DE HERRAMIENTAS DE EDUCACIÓN FÍSICA */
-    div.st-key-btn_proyecto > button {
-        background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
-        border-radius: 12px !important; border: none !important;
-    }
-    div.st-key-btn_unidad > button {
-        background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%) !important;
-        border-radius: 12px !important; border: none !important;
-    }
-    div.st-key-btn_sesion > button {
-        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%) !important;
-        border-radius: 12px !important; border: none !important;
-    }
-    div.st-key-btn_ficha > button {
-        background: linear-gradient(135deg, #F97316 0%, #D97706 100%) !important;
-        border-radius: 12px !important; border: none !important;
-    }
+    /* ==========================================================================
+       ESTILOS DE ALTO CONTRASTE Y LEGIBILIDAD PARA BOTONES DE HERRAMIENTAS
+       ========================================================================== */
     
-    div.stButton > button p {
+    /* 1. BOTÓN UNIDAD CNEB EF (PÚRPURA VIBRANTE) */
+    div.st-key-btn_unidad > button {
+        background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%) !important;
+        background-color: #7C3AED !important;
+        border: 2px solid #6D28D9 !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4) !important;
+        transition: all 0.3s ease !important;
+    }
+    div.st-key-btn_unidad > button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 18px rgba(124, 58, 237, 0.6) !important;
+    }
+
+    /* 2. BOTÓN PROYECTO LÚDICO (VERDE ESMERALDA VIBRANTE) */
+    div.st-key-btn_proyecto > button {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+        background-color: #059669 !important;
+        border: 2px solid #047857 !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.4) !important;
+        transition: all 0.3s ease !important;
+    }
+    div.st-key-btn_proyecto > button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 18px rgba(5, 150, 105, 0.6) !important;
+    }
+
+    /* 3. BOTÓN SESIÓN DE CLASE (AZUL ELÉCTRICO VIBRANTE) */
+    div.st-key-btn_sesion > button {
+        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+        background-color: #2563EB !important;
+        border: 2px solid #1D4ED8 !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4) !important;
+        transition: all 0.3s ease !important;
+    }
+    div.st-key-btn_sesion > button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 18px rgba(37, 99, 235, 0.6) !important;
+    }
+
+    /* 4. BOTÓN FICHA DE TRABAJO (NARANJA ÁMBAR VIBRANTE) */
+    div.st-key-btn_ficha > button {
+        background: linear-gradient(135deg, #D97706 0%, #B45309 100%) !important;
+        background-color: #D97706 !important;
+        border: 2px solid #B45309 !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 14px rgba(217, 119, 6, 0.4) !important;
+        transition: all 0.3s ease !important;
+    }
+    div.st-key-btn_ficha > button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 18px rgba(217, 119, 6, 0.6) !important;
+    }
+
+    /* 5. BOTÓN PRINCIPAL DE GENERAR DOCUMENTO (✨ GENERAR) */
+    div.stButton > button:not([key="btn_unidad"]):not([key="btn_proyecto"]):not([key="btn_sesion"]):not([key="btn_ficha"]) {
+        background: linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%) !important;
+        background-color: #1E40AF !important;
+        border: 2px solid #1D4ED8 !important;
+        border-radius: 12px !important;
+        padding: 0.75rem 1.5rem !important;
+        box-shadow: 0 4px 16px rgba(30, 64, 175, 0.5) !important;
+        transition: all 0.3s ease !important;
+    }
+    div.stButton > button:not([key="btn_unidad"]):not([key="btn_proyecto"]):not([key="btn_sesion"]):not([key="btn_ficha"]):hover {
+        background: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.7) !important;
+    }
+
+    /* FORZAR TEXTO BLANCO INTENSO Y NEGRILLA EN TODOS LOS BOTONES */
+    div.stButton > button,
+    div.stButton > button *,
+    div.stButton > button p,
+    div.stButton > button span,
+    div.stButton > button div {
         color: #FFFFFF !important;
         font-weight: 800 !important;
         font-size: 1.05rem !important;
+        text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.6) !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -287,7 +351,7 @@ else:
 # OPCIONES DE MODELOS OFICIALES Y ESTABLES
 model_choice = st.sidebar.selectbox(
     "Modelo de Gemini:", 
-    ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
+    ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
 )
 
 # ==============================================================================
@@ -328,7 +392,7 @@ COLOR_MAP = {
 banner_color = COLOR_MAP.get(tipo_documento, "#7C3AED")
 
 st.markdown(f"""
-<div style="background-color: {banner_color}; color: white; padding: 0.6rem 1rem; border-radius: 8px; font-weight: bold; font-size: 1.1rem; margin-top: 0.8rem; margin-bottom: 1.2rem; text-align: center;">
+<div style="background-color: {banner_color}; color: white; padding: 0.6rem 1rem; border-radius: 8px; font-weight: bold; font-size: 1.1rem; margin-top: 0.8rem; margin-bottom: 1.2rem; text-align: center; text-shadow: 0px 1px 3px rgba(0,0,0,0.4);">
     📍 Área Exclusiva: EDUCACIÓN FÍSICA | Herramienta: {tipo_documento.upper()}
 </div>
 """, unsafe_allow_html=True)
@@ -674,7 +738,7 @@ if st.button(f"✨ Generar {tipo_documento}"):
             else:
                 prompt_maestro = generar_prompt_ficha_ef()
 
-            sys_inst = "Eres un Especialista Curricular del MINEDU Perú dedicado exclusivamente al área de Educación Física. Generas documentos completos en Markdown alineados estrictamente al CNEB."
+            sys_inst = "Eres un Especialista Curricular del MINEDU Perú dedicado exclusivamente al área de Educación Física. Generas documentos completos en Markdown alineados strictly al CNEB."
 
             with st.spinner(f"⚽ Google Gemini está redactando tu {tipo_documento} para {grado_seccion}..."):
                 config = types.GenerateContentConfig(
