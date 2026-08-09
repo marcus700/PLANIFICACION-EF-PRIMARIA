@@ -648,12 +648,14 @@ Desarrolla {total_sesiones_unidad} bloques de tablas independientes (uno por cad
 
 9. IX. SECUENCIA DE SESIONES (Formato Tabla)
 Genera una tabla completa para las {total_sesiones_unidad} sesiones detallando:
-| N° | Título de la actividad | Propósito de la actividad | 
+| N° | Título de la actividad | Propósito de la actividad | Representación gráfica |
 - El propósito debe ser explícito e incluir la secuencia metodológica (calentamiento/activación, desarrollo motriz/juego, hábitos de higiene personal y reflexión).
+- La representación gráfica describe brevemente el esquema visual o distribución de materiales en el patio.
 
 10. X. RECURSOS
 - Recursos para el Docente (Normativa CNEB, RM N° 501-2025, materiales).
 - Recursos para el Estudiante (Kit de aseo: jabón, toalla, polo de cambio, ropa deportiva, botellas de agua).
+- Fecha y espacio para firmas (Directora y Docente de Educación Física).
 """
 
 def generar_prompt_proyecto_ef():
@@ -721,6 +723,7 @@ Detallar exhaustivamente:
 - Material reciclado / alternativo.
 - Material de señalización y kit de aseo (jabón, toalla, polo de repuesto).
 - Espacios educativos (patio, losa deportiva, campo).
+- Fecha y espacio para firmas (Directora y Docente de Educación Física).
 """
 
 def generar_prompt_sesion_ef():
