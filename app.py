@@ -655,7 +655,6 @@ Genera una tabla completa para las {total_sesiones_unidad} sesiones detallando:
 10. X. RECURSOS
 - Recursos para el Docente (Normativa CNEB, RM N° 501-2025, materiales).
 - Recursos para el Estudiante (Kit de aseo: jabón, toalla, polo de cambio, ropa deportiva, botellas de agua).
-- Fecha y espacio para firmas (Directora y Docente de Educación Física).
 """
 
 def generar_prompt_proyecto_ef():
@@ -723,7 +722,6 @@ Detallar exhaustivamente:
 - Material reciclado / alternativo.
 - Material de señalización y kit de aseo (jabón, toalla, polo de repuesto).
 - Espacios educativos (patio, losa deportiva, campo).
-- Fecha y espacio para firmas (Directora y Docente de Educación Física).
 """
 
 def generar_prompt_sesion_ef():
