@@ -648,9 +648,8 @@ Desarrolla {total_sesiones_unidad} bloques de tablas independientes (uno por cad
 
 9. IX. SECUENCIA DE SESIONES (Formato Tabla)
 Genera una tabla completa para las {total_sesiones_unidad} sesiones detallando:
-| N° | Título de la actividad | Propósito de la actividad | Representación gráfica |
+| N° | Título de la actividad | Propósito de la actividad | 
 - El propósito debe ser explícito e incluir la secuencia metodológica (calentamiento/activación, desarrollo motriz/juego, hábitos de higiene personal y reflexión).
-- La representación gráfica describe brevemente el esquema visual o distribución de materiales en el patio.
 
 10. X. RECURSOS
 - Recursos para el Docente (Normativa CNEB, RM N° 501-2025, materiales).
