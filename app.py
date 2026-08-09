@@ -14,19 +14,146 @@ from google.genai import types
 import streamlit as st
 
 # ==============================================================================
-# IMPORTACIÓN DESDE TU BASE DE DATOS EXTERNA (cneb_datos.py)
+# BASE DE DATOS EXACTA CNEB EDUCACIÓN FÍSICA PRIMARIA (MINEDU PERÚ)
 # ==============================================================================
-from cneb_datos import CNEB_PRIMARIA, obtener_ciclo_primaria
+CNEB_EF_PRIMARIA = {
+    "Se desenvuelve de manera autónoma a través de su motricidad": {
+        "estandares": {
+            "III Ciclo": "Se desenvuelve de manera autónoma a través de su motricidad cuando comprende cómo usar su cuerpo en las diferentes acciones que realiza utilizando su lado dominante y realiza movimientos coordinados que le ayudan a sentirse seguro en la práctica de actividades físicas. Se orienta espacialmente en relación a sí mismo y a otros puntos de referencia. Se expresa corporalmente con sus pares de diferentes utilizando el ritmo, gestos y movimientos como recursos para comunicar.",
+            "IV Ciclo": "Se desenvuelve de manera autónoma a través de su motricidad cuando comprende cómo usar su cuerpo explorando la alternancia de sus lados corporales de acuerdo a su utilidad y ajustando la posición del cuerpo en el espacio y en el tiempo en diferentes etapas de las acciones motrices, con una actitud positiva y una voluntad de experimentar situaciones diversas. Experimenta nuevas posibilidades expresivas de su cuerpo y las utiliza para relacionarse y comunicar ideas, emociones, sentimientos, pensamientos.",
+            "V Ciclo": "Se desenvuelve de manera autónoma a través de su motricidad cuando acepta sus posibilidades y limitaciones según su desarrollo e imagen corporal. Realiza secuencias de movimientos coordinados aplicando la alternancia de sus lados corporales de acuerdo a su utilidad. Produce con sus pares secuencias de movimientos corporales, expresivos o rítmicos en relación a una intención."
+        },
+        "desempenos": {
+            "1er Grado A": [
+                "Es autónomo al explorar las posibilidades de su cuerpo en diferentes acciones para mejorar sus movimientos (saltar, correr, lanzar) al mantener y/o recuperar el equilibrio en el espacio y con los objetos.",
+                "Se orienta a través de sus nociones espacio-temporales (arriba - abajo, dentro - fuera, cerca - lejos) en relación a sí mismo.",
+                "Descubre nuevos movimientos y gestos para representar objetos, personajes y estados de ánimo y ritmos sencillos.",
+                "Se expresa motrizmente para comunicar sus emociones y representa en el juego acciones cotidianas de su familia y comunidad."
+            ],
+            "2do Grado A": [
+                "Explora de manera autónoma sus posibilidades de movimiento al realizar con seguridad y confianza habilidades motrices básicas realizando movimientos coordinados.",
+                "Se orienta en el espacio y tiempo en relación a sí mismo y a otros puntos de referencia, reconociendo su lado derecho e izquierdo y sus posibilidades de equilibrio en acciones lúdicas.",
+                "Resuelve situaciones motrices al utilizar su lenguaje corporal (gesto, contacto visual, actitud corporal) para comunicarse mejor.",
+                "Utiliza su cuerpo y el movimiento para expresar ideas y emociones en la práctica de actividades lúdicas con diferentes tipos de ritmos."
+            ],
+            "3er Grado A": [
+                "Reconoce la izquierda y derecha en relación a objetos y en sus pares para mejorar sus posibilidades de movimiento en acciones lúdicas.",
+                "Se orienta en un espacio y tiempo determinado en relación a sí mismo, objetos y compañeros, coordinando sus movimientos y regulando su equilibrio.",
+                "Resuelve situaciones motrices al utilizar su lenguaje corporal, verbal y sonoro para comunicar actitudes y estados de ánimo.",
+                "Vivencia el ritmo y se apropia de secuencias rítmicas corporales en situaciones de juego."
+            ],
+            "4to Grado A": [
+                "Regula la posición del cuerpo en situaciones de equilibrio con modificación del espacio teniendo como referencia la trayectoria de objetos y sus desplazamientos.",
+                "Alterna sus lados corporales de acuerdo a su utilidad/necesidad y se orienta en el espacio y tiempo en actividades lúdicas y predeportivas.",
+                "Utiliza su cuerpo (posturas, gestos y mímica) y diferentes movimientos para expresar formas, ideas, emociones y pensamientos.",
+                "Utiliza su lenguaje corporal para expresar su forma particular de moverse creando secuencias sencillas de movimiento."
+            ],
+            "5to Grado A": [
+                "Anticipa las acciones motrices a realizar en un espacio y tiempo para mejorar las posibilidades de respuesta en la acción aplicando alternancia corporal.",
+                "Pone en práctica las habilidades motrices específicas (carrera, salto y lanzamientos) para dar respuesta a situaciones motrices lúdicas y predeportivas.",
+                "Crea movimientos y desplazamientos rítmicos teniendo como base la música de su región.",
+                "Valora en sí mismo y en sus pares nuevas formas de movimiento y gestos corporales aceptando la diversidad de expresión."
+            ],
+            "6to Grado A": [
+                "Anticipa las acciones motrices a realizar en un espacio y tiempo para mejorar la respuesta aplicando alternancia de lados corporales según su preferencia.",
+                "Afianza las habilidades motrices específicas (carrera, salto y lanzamientos) a través de la regulación de su cuerpo en contextos predeportivos.",
+                "Aplica su lenguaje corporal para expresar su forma particular de moverse al asumir y adjudicar diferentes roles.",
+                "Crea con sus pares una secuencia de movimientos corporales, expresivos o rítmicos de manera programada y estructurada."
+            ]
+        }
+    },
+    "Asume una vida saludable": {
+        "estandares": {
+            "III Ciclo": "Asume una vida saludable cuando diferencia los alimentos saludables de su dieta familiar, los momentos adecuados para ingerirlos y las posturas que lo ayudan al buen desempeño en la práctica de actividad física y de la vida cotidiana, reconociendo la importancia del autocuidado. Participa regularmente en la práctica de actividades lúdicas identificando su ritmo cardiaco, respiración y sudoración; utiliza prácticas de activación corporal y psicológica antes de la actividad lúdica.",
+            "IV Ciclo": "Asume una vida saludable cuando diferencia los alimentos de su dieta familiar y de su región que son saludables de los que no lo son. Previene riesgos relacionados con la postura e higiene conociendo aquellas que favorecen y no favorecen su salud e identifica su fuerza, resistencia y velocidad en la práctica de actividades lúdicas. Adapta su esfuerzo en la práctica de actividad física de acuerdo a las características de la actividad y a sus posibilidades, aplicando conocimientos relacionados con el ritmo cardiaco, la respiración y la sudoración. Realiza prácticas de activación corporal y psicológica, e incorpora el autocuidado relacionado con los ritmos de actividad y descanso para mejorar el funcionamiento de su organismo.",
+            "V Ciclo": "Asume una vida saludable cuando utiliza instrumentos que miden la aptitud física y estado nutricional e interpreta la información de los resultados obtenidos para mejorar su calidad de vida. Replantea sus hábitos higiénicos y alimenticios tomando en cuenta los cambios físicos propios de la edad, evita la realización de ejercicios y posturas contraindicadas para la salud en la práctica de actividad física. Incorpora prácticas saludables para su organismo consumiendo alimentos adecuados a las características personales y evitando el consumo de drogas. Propone ejercicios de activación y relajación antes, durante y después de la práctica y participa en actividad física de distinta intensidad regulando su esfuerzo."
+        },
+        "desempenos": {
+            "1er Grado A": [
+                "Reconoce los alimentos de su dieta familiar y las posturas que son beneficiosas para su salud en la vida cotidiana y lúdica.",
+                "Identifica en sí mismo y en otros la diferencia entre inspiración y espiración, en reposo y movimiento, regulando su esfuerzo.",
+                "Realiza con autonomía prácticas de cuidado personal al asearse, vestirse y adoptar posturas adecuadas en el juego.",
+                "Busca satisfacer sus necesidades corporales cuando tiene sed y resuelve dificultades producidas por el cansancio e inactividad."
+            ],
+            "2do Grado A": [
+                "Comprende la importancia de la activación corporal (calentamiento) y psicológica antes de la actividad lúdica identificando signos como ritmo cardiaco, respiración y sudoración.",
+                "Reflexiona sobre los alimentos saludables de su dieta familiar/regional, la hidratación y las posturas adecuadas en la práctica física.",
+                "Incorpora prácticas de cuidado personal al asearse, vestirse y adoptar posturas adecuadas sin afectar su desempeño.",
+                "Reconoce la importancia del autocuidado regulando su esfuerzo en la práctica de actividades lúdicas."
+            ],
+            "3er Grado A": [
+                "Explica la importancia de la activación corporal (calentamiento) y psicológica que le ayuda a estar predispuesto a la actividad.",
+                "Diferencia los alimentos de su dieta familiar y regional que son saludables de los que no lo son para la actividad física.",
+                "Aplica los conocimientos de los beneficios de la actividad física relacionados con el ritmo cardiaco, respiración y sudoración adaptando su esfuerzo.",
+                "Incorpora el autocuidado relacionado con los ritmos de actividad-descanso para mejorar el funcionamiento de su organismo."
+            ],
+            "4to Grado A": [
+                "Selecciona actividades para la activación corporal y psicológica e identifica variaciones en la frecuencia cardiaca y respiratoria según el nivel de esfuerzo.",
+                "Selecciona e incorpora en su dieta alimentos nutritivos y energéticos de su región que contribuyen a la práctica física.",
+                "Incorpora el autocuidado relacionado con los ritmos de actividad-descanso, hidratación y protección solar.",
+                "Adopta posturas adecuadas para prevenir problemas musculares y óseos incorporando ritmos de descanso."
+            ],
+            "5to Grado A": [
+                "Identifica las condiciones que favorecen la aptitud física (pruebas físicas e IMC) para mejorar su calidad de vida.",
+                "Comprende los cambios físicos propios de la edad y su repercusión en la higiene en la práctica física y reflexión alimenticia.",
+                "Identifica posturas y ejercicios contraindicados para la salud en la práctica de actividad física.",
+                "Aplica los beneficios relacionados con la salud al realizar actividades de activación corporal, psicológica y de recuperación."
+            ],
+            "6to Grado A": [
+                "Conoce diferentes métodos de evaluación para determinar la aptitud física y selecciona los que mejor se adecúen a sus posibilidades.",
+                "Comprende la importancia de la actividad física incorporándola a su vida cotidiana e identifica cambios físicos e higiene.",
+                "Evita la realización de posturas y ejercicios contraindicados o cualquier práctica que perjudique su salud.",
+                "Previene hábitos perjudiciales para su organismo como comida chatarra, sedentarismo y desórdenes alimenticios."
+            ]
+        }
+    },
+    "Interactúa a través de sus habilidades sociomotrices": {
+        "estandares": {
+            "III Ciclo": "Interactúa a través de sus habilidades sociomotrices al aceptar al otro como compañero de juego y busca el consenso sobre la manera de jugar para lograr el bienestar común y muestra una actitud de respeto evitando juegos violentos y humillantes; expresa su posición ante un conflicto con intención de resolverlo y escucha la posición de sus compañeros en los diferentes tipos de juegos. Resuelve situaciones motrices a través de estrategias colectivas y participa en la construcción de reglas de juego adaptadas a la situación y al entorno, para lograr un objetivo común en la práctica de actividades lúdicas.",
+            "IV Ciclo": "Interactúa a través de sus habilidades sociomotrices al tomar acuerdos sobre la manera de jugar y los posibles cambios o conflictos que se den y propone adaptaciones o modificaciones para favorecer la inclusión de compañeros en actividades lúdicas, aceptando al oponente como compañero de juego. Adapta la estrategia de juego anticipando las intenciones de sus compañeros y oponentes para cumplir con los objetivos planteados. Propone reglas y las modifica de acuerdo a las necesidades del contexto y los intereses del grupo en la práctica de actividades físicas.",
+            "V Ciclo": "Interactúa a través de sus habilidades sociomotrices proactivamente con un sentido de cooperación teniendo en cuenta las adaptaciones o modificaciones propuestas por el grupo en diferentes actividades físicas. Hace uso de estrategias de cooperación y oposición seleccionando los diferentes elementos técnicos y tácticos que se pueden dar en la práctica de actividades lúdicas y predeportivas, para resolver la situación de juego que le dé un mejor resultado y que responda a las variaciones que se presentan en el entorno."
+        },
+        "desempenos": {
+            "1er Grado A": [
+                "Asume roles y funciones de manera individual y dentro de un grupo interactuando espontáneamente en actividades lúdicas.",
+                "Participa en juegos cooperativos y de oposición en parejas y pequeños grupos, aceptando al oponente como compañero de juego.",
+                "Propone soluciones a situaciones motrices poniéndose de acuerdo con sus pares y respetando las reglas de juego."
+            ],
+            "2do Grado A": [
+                "Participa en juegos cooperativos y de oposición tomando consensos sobre la manera de jugar y respetando al oponente.",
+                "Muestra una actitud de respeto en la práctica lúdica evitando juegos bruscos, amenazas o apodos e incluyendo a todos.",
+                "Resuelve de manera compartida situaciones en juegos tradicionales/autóctonos y adecúa reglas para la inclusión."
+            ],
+            "3er Grado A": [
+                "Propone cambios en las condiciones de juego para posibilitar la inclusión de sus pares, promoviendo el respeto y participación.",
+                "Participa en juegos cooperativos y de oposición aceptando al oponente como compañero de juego y tomando consensos.",
+                "Asocia el resultado favorable en el juego a la necesidad de generar estrategias colectivas conociendo el rol de cada integrante."
+            ],
+            "4to Grado A": [
+                "Propone normas y reglas en las actividades lúdicas modificándolas según las necesidades para favorecer la inclusión.",
+                "Propone juegos populares/tradicionales con adaptaciones consensuadas por el grupo respetando al oponente.",
+                "Adapta la estrategia de juego cuando prevé las intenciones de sus compañeros y oponentes para cumplir el objetivo."
+            ],
+            "5to Grado A": [
+                "Emplea la resolución reflexiva y el diálogo para solucionar conflictos surgidos durante la práctica de actividades lúdicas y predeportivas.",
+                "Realiza actividades lúdicas interactuando con compañeros y oponentes con respeto a las diferencias personales y cambio de roles.",
+                "Propone junto a sus pares soluciones estratégicas oportunas al practicar juegos tradicionales, autóctonos y predeportivos."
+            ],
+            "6to Grado A": [
+                "Participa en actividades en la naturaleza, eventos predeportivos y juegos populares tomando decisiones en favor del grupo con sentido solidario.",
+                "Modifica juegos y actividades para que se adecúen a las posibilidades del grupo y a la lógica del juego deportivo.",
+                "Discrimina y pone en práctica estrategias en actividades lúdicas, predeportivas y deportivas adecuando normas y soluciones tácticas."
+            ]
+        }
+    }
+}
 
-def normalizar_grado_cneb(grado_str: str) -> str:
-    """Mapea la opción seleccionada al formato de llave exacta en cneb_datos.py"""
-    if "1" in grado_str: return "1° de Primaria"
-    if "2" in grado_str: return "2° de Primaria"
-    if "3" in grado_str: return "3° de Primaria"
-    if "4" in grado_str: return "4° de Primaria"
-    if "5" in grado_str: return "5° de Primaria"
-    if "6" in grado_str: return "6° de Primaria"
-    return "2° de Primaria"
+def obtener_ciclo_ef(grado: str) -> str:
+    if "1er" in grado or "2do" in grado:
+        return "III Ciclo"
+    elif "3er" in grado or "4to" in grado:
+        return "IV Ciclo"
+    return "V Ciclo"
 
 # ==============================================================================
 # CONFIGURACIÓN DE PÁGINA Y CSS MEJORADO PARA ALTA VISIBILIDAD DE BOTONES
@@ -396,10 +523,7 @@ with c2:
     docente = st.text_input("Docente de Educación Física:", "Mario A. García Torres")
 with c3:
     grado_seccion = st.selectbox("Grado y Sección:", ["1er Grado A", "2do Grado A", "3er Grado A", "4to Grado A", "5to Grado A", "6to Grado A"], index=1)
-    
-    # Detección del Ciclo desde cneb_datos.py
-    grado_normalizado_cneb = normalizar_grado_cneb(grado_seccion)
-    ciclo_actual = obtener_ciclo_primaria(grado_normalizado_cneb)
+    ciclo_actual = obtener_ciclo_ef(grado_seccion)
     st.info(f"Ciclo CNEB Detectado: **{ciclo_actual}**")
 
 # VARIABLES ESPECÍFICAS PARA CADA HERRAMIENTA
@@ -480,31 +604,30 @@ else:  # Unidad o Proyecto EF
     )
 
 # ==============================================================================
-# PROMPTS ESPECIALIZADOS QUE LEEN DE cneb_datos.py
+# PROMPTS ESPECIALIZADOS EN EDUCACIÓN FÍSICA
 # ==============================================================================
 
 def generar_prompt_unidad_ef_10_secciones():
     cneb_datos_text = ""
-    for comp_nombre, comp_info in CNEB_PRIMARIA.items():
+    for comp_nombre, comp_info in CNEB_EF_PRIMARIA.items():
         est_txt = comp_info["estandares"].get(ciclo_actual, "")
-        des_list = comp_info["desempenos"].get(grado_normalizado_cneb, [])
-        cneb_datos_text += f"\n\nCOMPETENCIA: {comp_nombre}\nESTÁNDAR OFICIAL ({ciclo_actual}):\n{est_txt}\nDESEMPEÑOS OFICIALES ({grado_normalizado_cneb}):\n" + "\n".join(des_list)
+        des_list = comp_info["desempenos"].get(grado_seccion, [])
+        cneb_datos_text += f"\n\nCOMPETENCIA: {comp_nombre}\nESTÁNDAR OFICIAL ({ciclo_actual}):\n{est_txt}\nDESEMPEÑOS OFICIALES ({grado_seccion}):\n" + "\n".join(des_list)
 
     total_sesiones_unidad = duracion_semanas * sesiones_por_semana
 
     return f"""
 Actúa como un especialista en currículo educativo peruano y docente experto en el área de Educación Física para Educación Básica Regular (CNEB). 
 
-Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa, extensa, rigurosa y alineada al Currículo Nacional (CNEB), siguiendo estrictamente las 10 secciones obligatorias sin cortar el documento al final.
+Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa, extensa, rigurosa y alineada al Currículo Nacional (CNEB), siguiendo estrictamente las 10 secciones obligatorias sin cortar ni interrumpir el documento al final.
 
-🚨 REGLAS CRÍTICAS DE COMPLETITUD Y SÍNTESIS DE CELDAS (OBLIGATORIO LLEGAR HASTA LA SECCIÓN X):
-1. DEBES FINALIZAR EL DOCUMENTO OBLIGATORIAMENTE HASTA LA SECCIÓN X (RECURSOS Y FIRMAS). QUEDA STRICTAMENTE PROHIBIDO DEJAR EL DOCUMENTO INCOMPLETO.
-2. SÍNTESIS EN TABLAS: MANTÉN EL TEXTO DENTRO DE LAS CELDAS DE LAS TABLAS DE FORMA SINTÉTICA Y CONCISA (1 A 2 LÍNEAS POR CELDA) PARA NUNCA EXCEDER EL LÍMITE DE MEMORIA Y LOGRAR DESARROLLAR LAS 10 SECCIONES ENTERAS.
-3. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), DESARROLLA CADA UNA DE LAS {total_sesiones_unidad} SESIONES ({duracion_semanas} semanas, {sesiones_por_semana} sesión(es) por semana). ESTÁ PROHIBIDO PONER PUNTOS SUSPENSIVOS (...) O SALTARSE SESIONES.
-4. EN LA MATRIZ DE PLANIFICACIÓN: TRANSCRIBE EL ESTÁNDAR COMPLETO DEL CNEB EN LA PARTE SUPERIOR DE CADA SESIÓN CON NEGRITA EN LA PARTE EVALUADA, Y EL DESEMPEÑO COMPLETO EN LA COLUMNA CORRESPONDIENTE CON NEGRITA EN LO UTILIZADO Y PRECISADO.
-5. COMPLETA SIEMPRE LA SECCIÓN IX (SECUENCIA DE SESIONES) Y LA SECCIÓN X (RECURSOS Y ESPACIO PARA FIRMAS DE DIRECTORA Y DOCENTE).
+🚨 REGLAS CRÍTICAS DE COMPLETITUD Y ESTRUCTURA (OBLIGATORIO LLEGAR HASTA LA SECCIÓN X):
+1. DEBES FINALIZAR EL DOCUMENTO OBLIGATORIAMENTE HASTA LA SECCIÓN X (RECURSOS Y FIRMAS). QUEDA PROHIBIDO CORTAR O DEJAR INCOMPLETA LA UNIDAD AL FINAL.
+2. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), DESARROLLA CADA UNA DE LAS {total_sesiones_unidad} SESIONES DE FORMA CLARA Y CONCISA ({duracion_semanas} semanas, {sesiones_por_semana} sesión(es) por semana). ESTÁ PROHIBIDO PONER PUNTOS SUSPENSIVOS (...), RESÚMENES O OMITIR SESIONES.
+3. EN LA MATRIZ DE PLANIFICACIÓN: TRANSCRIBE EL ESTÁNDAR COMPLETO DEL CNEB EN LA PARTE SUPERIOR DE CADA SESIÓN CON NEGRITA EN LA PARTE EVALUADA, Y EL DESEMPEÑO COMPLETO EN LA COLUMNA CORRESPONDIENTE CON NEGRITA EN LO UTILIZADO Y PRECISADO.
+4. COMPLETA SIEMPRE LA SECCIÓN IX (SECUENCIA DE SESIONES CON SUS PROPÓSITOS Y REPRESENTACIONES GRÁFICAS) Y LA SECCIÓN X (RECURSOS Y ESPACIO PARA FIRMAS DE DIRECTORA Y DOCENTE).
 
-DATOS OFICIALES EXTRAÍDOS DE cneb_datos.py PARA ESTA UNIDAD ({grado_seccion} - {ciclo_actual}):
+DATOS OFICIALES EXTRAÍDOS DEL CNEB DE EDUCACIÓN FÍSICA PARA UTILIZAR EN ESTA UNIDAD ({grado_seccion} - {ciclo_actual}):
 {cneb_datos_text}
 
 DATOS PARA LA GENERACIÓN:
@@ -552,94 +675,89 @@ ESTRUCTURA OBLIGATORIA DE LA UNIDAD DE APRENDIZAJE DE EDUCACIÓN FÍSICA:
 8. VIII. MATRIZ DE PLANIFICACIÓN (Formato Tabla detallado por las {total_sesiones_unidad} sesiones)
 Desarrolla {total_sesiones_unidad} bloques de tablas independientes (uno por cada sesión):
 - En la parte superior de cada bloque de sesión, incluye la fila con el ESTÁNDAR COMPLETO del CNEB correspondiente a la competencia evaluada, redactado de manera íntegra (sin modificar ni alterar su texto original), RESALTANDO EN NEGRITA la parte específica que se trabaja/evalúa en esa actividad.
-- Columnas de la Matriz por cada sesión (Celdas sintéticas de 1 a 2 líneas):
+- Columnas de la Matriz por cada sesión:
   | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño | Criterios de Evaluación | Evidencia y Producto | Instrumento de Evaluación |
 - REGLA DEL DESEMPEÑO: Redactado de manera COMPLETA tal cual aparece en el CNEB, RESALTANDO EN NEGRITA tanto la parte del desempeño utilizada como las palabras/términos agregados para su precisión y contextualización.
 *NOTA: NO incluir la columna "Propósito" en la Matriz de Planificación.*
 
 9. IX. SECUENCIA DE SESIONES (Formato Tabla)
-Genera una tabla completa para las {total_sesiones_unidad} sesiones detallando (Propósito directo de 2 a 3 líneas):
+Genera una tabla completa para las {total_sesiones_unidad} sesiones detallando:
 | N° | Título de la actividad | Propósito de la actividad | Representación gráfica |
+- El propósito debe ser explícito e incluir la secuencia metodológica (calentamiento/activación, desarrollo motriz/juego, hábitos de higiene personal y reflexión).
+- La representación gráfica describe brevemente el esquema visual o distribución de materiales en el patio.
 
 10. X. RECURSOS
 - Recursos para el Docente (Normativa CNEB, RM N° 501-2025, materiales).
 - Recursos para el Estudiante (Kit de aseo: jabón, toalla, polo de cambio, ropa deportiva, botellas de agua).
-- Fecha y espacio para firmas de la Directora y Docente de Educación Física.
+- Fecha y espacio para firmas (Directora y Docente de Educación Física).
 """
 
 def generar_prompt_proyecto_ef():
     cneb_datos_text = ""
-    for comp_nombre, comp_info in CNEB_PRIMARIA.items():
+    for comp_nombre, comp_info in CNEB_EF_PRIMARIA.items():
         est_txt = comp_info["estandares"].get(ciclo_actual, "")
-        des_list = comp_info["desempenos"].get(grado_normalizado_cneb, [])
-        cneb_datos_text += f"\n\nCOMPETENCIA: {comp_nombre}\nESTÁNDAR OFICIAL ({ciclo_actual}):\n{est_txt}\nDESEMPEÑOS OFICIALES ({grado_normalizado_cneb}):\n" + "\n".join(des_list)
+        des_list = comp_info["desempenos"].get(grado_seccion, [])
+        cneb_datos_text += f"\n\nCOMPETENCIA: {comp_nombre}\nESTÁNDAR OFICIAL ({ciclo_actual}):\n{est_txt}\nDESEMPEÑOS OFICIALES ({grado_seccion}):\n" + "\n".join(des_list)
 
     total_sesiones_proyecto = duracion_semanas * sesiones_por_semana
 
     return f"""
-Actúa como un Especialista Pedagógico experto en Educación Física del Ministerio de Educación de Perú (MINEDU). Tu tarea es diseñar un Proyecto de Aprendizaje completo bajo el enfoque por competencias del Currículo Nacional de la Educación Básica (CNEB), manteniendo de manera estricta y detallada una estructura formal sin cortar el documento al final.
+Actúa como un Especialista Pedagógico experto en Educación Física del Ministerio de Educación de Perú (MINEDU). Tu tarea es diseñar un Proyecto de Aprendizaje completo bajo el enfoque por competencias del Currículo Nacional de la Educación Básica (CNEB), manteniendo de manera estricta y detallada una estructura formal.
 
-🚨 REGLAS CRÍTICAS DE COMPLETITUD Y SÍNTESIS EN TABLAS (OBLIGATORIO LLEGAR HASTA LA SECCIÓN IX):
-1. DEBES DESARROLLAR EL PROYECTO COMPLETO LLEGANDO OBLIGATORIAMENTE HASTA LA SECCIÓN IX (RECURSOS Y MATERIALES Y FIRMAS). QUEDA STRICTAMENTE PROHIBIDO CORTAR EL DOCUMENTO.
-2. MANTÉN LAS RESPUESTAS Y TEXTOS DENTRO DE LAS CELDAS DE LAS TABLAS DE FORMA SINTÉTICA Y CONCISA (1 A 2 LÍNEAS POR CELDA) PARA GARANTIZAR QUE EL DOCUMENTO SE GENERE COMPLETO.
-3. EN LA SECCIÓN VII (CUADRO CRONOLÓGICO DE SESIONES), DESARROLLA LAS {total_sesiones_proyecto} SESIONES ({duracion_semanas} semanas, {sesiones_por_semana} sesión(es) por semana) UNA POR UNA. ESTÁ PROHIBIDO USAR PUNTOS SUSPENSIVOS (...) O OMITIR SESIONES.
-4. EN LA SECCIÓN VI (MATRIZ DE PROPÓSITOS), TRANSCRIBE EL ESTÁNDAR COMPLETO DEL CNEB EN LA PARTE SUPERIOR DE CADA TABLA CON NEGRITA EN LA PARTE TRABAJADA, Y EL DESEMPEÑO COMPLETO EN LA COLUMNA CORRESPONDIENTE CON NEGRITA EN LO UTILIZADO Y PRECISADO.
-
-DATOS OFICIALES EXTRAÍDOS DE cneb_datos.py PARA ESTE PROYECTO ({grado_seccion} - {ciclo_actual}):
+DATOS OFICIALES EXTRAÍDOS DEL CNEB DE EDUCACIÓN FÍSICA PARA UTILIZAR EN ESTE PROYECTO ({grado_seccion} - {ciclo_actual}):
 {cneb_datos_text}
 
-DATOS PARA LA GENERACIÓN:
-- N° de Proyecto: Proyecto N° {num_doc}
+Para este nuevo proyecto, los datos de entrada son:
+- Nivel y Grado: Educación Primaria, {grado_seccion} - {ciclo_actual}
 - DRE / UGEL: {dre_ugel}
 - Institución Educativa: {ie_nombre}
-- Nivel: Educación Primaria
-- Ciclo: {ciclo_actual}
-- Grado y Sección: {grado_seccion}
-- Área Curricular: Educación Física
+- Director(a): {director}
+- Docente de Ed. Física: {docente}
 - Duración y Frecuencia: {duracion_semanas} semanas, {sesiones_por_semana} sesiones por semana = {total_sesiones_proyecto} sesiones en total ({fechas_duracion})
 - Tema o Problemática Central: {problema_contexto}
 - Producto Final: {producto_unidad}
 
----
+Genera el proyecto de manera exhaustiva respetando fielmente las siguientes secciones:
 
-ESTRUCTURA OBLIGATORIA DEL PROYECTO DE APRENDIZAJE DE EDUCACIÓN FÍSICA:
+I. DATOS GENERALES:
+Muestra la tabla de Datos Informativos con: DRE / UGEL ({dre_ugel}), I.E. ({ie_nombre}), Director ({director}), Docente ({docente}), Grado y Sección ({grado_seccion} - {ciclo_actual}), Duración ({duracion_semanas} semanas, {total_sesiones_proyecto} sesiones en total, {fechas_duracion}).
 
-I. TÍTULO DEL PROYECTO
-- Debe ser motivador, creativo, retador y entre comillas (Ejemplo: "¡CELEBRAMOS NUESTRA PERUANIDAD EN EL GRAN FESTIVAL LÚDICO-MOTOR!").
+II. TÍTULO DEL PROYECTO: Redacta un título motivador entre comillas que evidencie el producto y el propósito (Ejemplo: "¡{producto_unidad.upper()} PARA PROMOVER LA VIDA SALUDABLE!").
 
-II. DATOS INFORMATIVOS
-- DRE/UGEL, IE, Nivel, Ciclo, Grado y Sección, Área (Educación Física), Duración, N° de sesiones, Docente, Director(a).
+III. SITUACIÓN SIGNIFICATIVA: Redacta una situación basada en un contexto real de la escuela, describiendo la problemática ({problema_contexto}), las consecuencias y planteando obligatoriamente de 2 a 3 retos en forma de preguntas para los estudiantes.
 
-III. SITUACIÓN SIGNIFICATIVA
-Redacta una situación basada en un contexto real de la escuela en 4 bloques sintéticos:
-- Contexto, Problema o necesidad ({problema_contexto}), Reto (2 a 3 preguntas) y Propósito.
+IV. CUADRO DE ENFOQUES TRANSVERSALES: Una tabla con 3 columnas (Enfoque Transversal, Valores, Actitudes observables o Acciones concretas) adaptados a la problemática.
 
-IV. CUADRO DE ENFOQUES TRANSVERSALES
-Elabora una tabla con 1 o 2 enfoques transversales más pertinentes (Enfoque, Valores, Actitudes observables).
+V. CUADRO DE NEGOCIACIÓN / PLANIFICACIÓN CON LOS ESTUDIANTES: Una tabla de 4 columnas (¿Qué queremos hacer?, ¿Cómo lo haremos?, ¿Qué necesitamos?, ¿Cómo nos daremos cuenta de que lo logramos?) simulando las respuestas participativas de los niños en la sesión 1.
 
-V. CUADRO DE NEGOCIACIÓN Y PLANIFICACIÓN CON LOS ESTUDIANTES
-Tabla sintética de 4 columnas (¿Qué queremos hacer?, ¿Cómo lo haremos?, ¿Qué necesitamos?, ¿Cómo nos daremos cuenta de que lo logramos?) con respuestas realistas de asamblea.
+VI. CUADRO DE PROPÓSITOS DE APRENDIZAJE Y EVALUACIÓN MATRIZADA:
+Organiza la matriz dividida por cada Competencia del área que intervenga (Se desenvuelve de manera autónoma..., Asume una vida saludable, Interactúa a través de sus habilidades sociomotrices). Para cada competencia, debes estructurar una tabla con las siguientes 7 columnas exactas:
+  1. Actividad General por Semana: Coloca el título del bloque general o eje de la semana.
+  2. Sesiones Vinculadas: Indica el número y nombre de la sesión (ejemplo: Sesión 1: "Nombre").
+  3. Estándar de Aprendizaje Completo (CNEB): Copia de forma LITERAL y completa el estándar del {ciclo_actual} según el CNEB, sin recortar nada. Resalta en NEGRITA únicamente el fragmento específico que se movilizará en esa sesión.
+  4. Desempeño Completo del Grado (CNEB) con Precisión: Copia de forma LITERAL y completa el desempeño oficial de {grado_seccion} del CNEB. Resalta en NEGRITA lo que se está utilizando de la norma y añade al final (también en NEGRITA) la precisión o el contexto específico de la sesión que tú le estás agregando como docente.
+  5. 3 Criterios de Evaluación por Sesión: Redacta exactamente tres criterios claros, medibles y específicos por cada sesión lineal.
+  6. Evidencia de Aprendizaje: Define el producto parcial o actuación tangible que dejará el alumno en esa sesión.
+  7. Instrumento de Evaluación: Indica la herramienta de calificación formativa (Lista de cotejo, rúbrica, escala de valoración, etc.).
 
-VI. CUADRO DE PROPÓSITOS DE APRENDIZAJE Y EVALUACIÓN MATRIZADA
-Organiza una tabla por competencia (C1, C2, C3 de Educación Física):
-- PARTE SUPERIOR DE CADA TABLA: Estándar COMPLETO del {ciclo_actual} del CNEB con **negrita** en la parte movilizada.
-- Tabla con 7 columnas (Celdas sintéticas y precisas):
-  | Actividad General por Semana | Sesiones Vinculadas | Estándar Completo (encima) | Desempeño Completo (con **negrita**) | 3 Criterios de Evaluación | Evidencia de Aprendizaje | Instrumento |
-
-VII. PLANIFICACIÓN CRONOLÓGICA DETALLADA DE LAS SESIONES
-Desglosa secuencialmente las {total_sesiones_proyecto} sesiones. Tabla obligatoria de 3 COLUMNAS:
+VII. PLANIFICACIÓN CRONOLÓGICA DETALLADA DE LAS SESIONES:
+Desglosa secuencialmente las {total_sesiones_proyecto} sesiones indicadas ({duracion_semanas} semanas, {sesiones_por_semana} sesión(es) por semana). Presenta OBLIGATORIAMENTE una tabla con exactamente las siguientes 3 COLUMNAS:
 | Denominación de la sesión | Propósito detallado de la sesión | Representación gráfica |
-- Denominación: Número y título motivador entre comillas.
-- Propósito detallado: Síntesis clara que incluya calentamiento, juego práctico e higiene personal.
-- Representación gráfica: Descripción breve de la imagen o esquema del patio.
+- Denominación de la sesión: Número y título motivador de la sesión entre comillas (ejemplo: Sesión 1: "Descubrimos trayectorias en el patio").
+- Propósito detallado de la sesión: Explicación pedagógica explícita que incluya la secuencia metodológica (activación corporal/calentamiento, desarrollo motriz/juego práctico y rutina de higiene personal).
+- Representación gráfica: Descripción breve de la imagen, esquema visual o distribución de materiales en el patio que representa la sesión.
 
 VIII. PRODUCTOS DEL PROYECTO
-- Producto Intangible / Práctico (Festival, Mini olimpiadas, Gincana).
-- Producto Tangible ({producto_unidad}).
+- Producto Intangible / Práctico: (Ej. Festival deportivo, Mini olimpiadas, Gincana, Circuito motriz demostrativo).
+- Producto Tangible: {producto_unidad} (Ej. Cartelera de compromisos de salud, mapa del circuito de juegos, etc.).
 
 IX. RECURSOS Y MATERIALES
-- Material deportivo, material reciclado, materiales de higiene.
-- Espacios educativos y espacio para firmas de la Directora y Docente de Educación Física.
+Detallar exhaustivamente:
+- Material deportivo del patio (conos, aros, pelotas, cuerdas, silbato).
+- Material reciclado / alternativo.
+- Material de señalización y kit de aseo (jabón, toalla, polo de repuesto).
+- Espacios educativos (patio, losa deportiva, campo).
+- Fecha y espacio para firmas (Directora y Docente de Educación Física).
 """
 
 def generar_prompt_sesion_ef():
@@ -663,16 +781,17 @@ DATOS INGRESADOS PARA LA SESIÓN:
 - Estándar solicitado: {est_str}
 - Criterios solicitados: {crit_str}
 - Evidencia solicitada: {evid_str}
+*(Nota: Si algún dato anterior dice "generar automáticamente", completa los campos de forma rigurosa utilizando la base de datos oficial del CNEB de Educación Física).*
 
 ---
 
-REGLAS DE FORMATO Y ESTRUCTURA OBLIGATORIA DE LA SESIÓN (DESARROLLAR COMPLETA DE PRINCIPIO A FIN):
+REGLAS DE FORMATO Y ESTRUCTURA OBLIGATORIA DE LA SESIÓN:
 
 1. ENCABEZADO Y TÍTULO DE LA SESIÓN:
 Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 # **SESIÓN DE APRENDIZAJE DE EDUCACIÓN FÍSICA N.º {num_doc}**
 ## **"{problema_contexto.upper()}"**
-*(QUEDA STRICTAMENTE PROHIBIDO COLOCAR CUALQUIER OTRO DATO O FECHA DEBAJO DEL TÍTULO DE LA SESIÓN).*
+*(QUEDA STRICTAMENTE PROHIBIDO COLOCAR CUALQUIER OTRO DATO, FECHA O SUBTÍTULO DEBAJO DEL TÍTULO DE LA SESIÓN).*
 
 2. TABLA I: DATOS INFORMATIVOS
 | DATOS INFORMATIVOS | DETALLE |
@@ -683,14 +802,21 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 | Duración | {duracion_sesion} |
 
 3. TABLA II: PROPÓSITOS DE APRENDIZAJE Y EVIDENCIAS
+REGLA DEL ESTÁNDAR: Coloca en la PARTE SUPERIOR / ENCABEZADO DE ESTA TABLA (como bloque inmediatamente superior a la matriz) el ESTÁNDAR COMPLETO CNEB del {ciclo_actual} para la competencia evaluada, redactado de manera íntegra (sin modificar ni recortar su texto original), RESALTANDO EN NEGRITA únicamente la parte específica que se trabaja/evalúa en esta sesión.
+
+Estructura del bloque y tabla II:
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo con **negrita** en la parte aplicada]
 
 | ÁREA | COMPETENCIA Y CAPACIDADES | DESEMPEÑO PRECISADO COMPLETO (con **negrita**) | CRITERIOS DE EVALUACIÓN | PROPÓSITO DE LA CLASE | EVIDENCIA | INSTRUMENTO |
+- **Competencias:** Incluye la(s) competencia(s) solicitada(s) de Educación Física.
+- **Desempeño:** Transcribe el Desempeño COMPLETO del CNEB para {grado_seccion}, resaltando en **negrita** la parte utilizada y los términos precisados agregados.
 
 4. TABLA III: ENFOQUE TRANSVERSAL (ÚNICO Y ESPECÍFICO)
+Coloca UN SOLO Enfoque Transversal (el más coherente e ideal para la actividad específica):
 | ENFOQUE TRANSVERSAL PRIORIZADO | VALOR(ES) | ACTITUDES OBSERVABLES |
 
 5. TABLA IV: COMPETENCIAS TRANSVERSALES
+Coloca la tabla con las Competencias Transversales que se emplean en la sesión ("Gestiona su aprendizaje de manera autónoma" y/o "Se desenvuelve en entornos virtuales"):
 | COMPETENCIA TRANSVERSAL | CAPACIDADES | DESEMPEÑOS PRECISADOS |
 
 6. TABLA V: PREPARACIÓN DE LA CLASE
@@ -700,25 +826,25 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 
 - **INICIO (Aprox. 20 min):**
   Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE. Debe considerar ESTRICTAMENTE el siguiente orden:
-  1. **Motivación ({tipo_motivacion}):** [Desarrollar la motivación según el tipo elegido: {tipo_motivacion}].
-  2. **Saberes previos:** [Preguntas abiertas sobre el tema/movimientos].
-  3. **Problematización / Conflicto cognitivo:** [Reto motriz o pregunta desafiante].
-  4. **Propósito de la clase:** [Comunicar qué aprenderán hoy].
-  5. **Criterios de evaluación:** [Explicar cómo serán evaluados].
-  6. **Acuerdos de convivencia:** [2 a 3 normas de seguridad en el patio].
+  1. **Motivación ({tipo_motivacion}):** [Desarrollar la motivación STRICTAMENTE según el tipo elegido: {tipo_motivacion}. Si es "A través de una imagen", describe la imagen motivadora y las preguntas reflexivas; si es "A través de una actividad física", describe el juego motivador inicial; si es "A través de una historia", relata la historia corta o cuento regional motriz].
+  2. **Saberes previos:** [Preguntas abiertas sobre el tema o movimientos]
+  3. **Problematización / Conflicto cognitivo:** [Reto motriz o pregunta desafiante sobre el juego/cuerpo]
+  4. **Propósito de la clase:** [Comunicar con claridad qué aprenderán hoy]
+  5. **Criterios de evaluación:** [Explicar de forma sencilla cómo serán evaluados]
+  6. **Acuerdos de convivencia:** [Establecer 2 a 3 normas de respeto y seguridad en el patio]
 
 - **DESARROLLO (Aprox. 60 min):**
-  Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE:
-  1. **Activación Corporal (Calentamiento dinámico):** Movilidad articular, trote lúdico y estiramientos.
-  2. **Secuencia de Actividades Motrices:** Progresión práctica (3 actividades con hidratación).
-  3. **ACTIVIDAD OBLIGATORIA DE ALTO NIVEL COGNITIVO (Analizar, Evaluar y Crear):** Reto motriz/estratégico donde los alumnos deban analizar una situación de juego, evaluar variantes tácticas y crear su propia regla o estrategia en equipo.
+  Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE. Incluye la secuencia pedagógica:
+  1. **Activación Corporal (Calentamiento dinámico):** Movilidad articular, trote lúdico con ritmos/cambios de dirección y estiramientos dinámicos en el patio.
+  2. **Secuencia de Actividades Motrices:** Progresión de lo simple a lo complejo (3 a 4 actividades prácticas de exploración, juegos cooperativos o deportivos con pausas de hidratación).
+  3. **ACTIVIDAD OBLIGATORIA DE ALTO NIVEL COGNITIVO (Analizar, Evaluar y Crear):** Incluye un reto motriz/estratégico específico donde los estudiantes deban **analizar** una situación de juego, **evaluar** soluciones o variantes tácticas en equipo y **crear** su propia regla, secuencia o estrategia motriz colectiva.
 
-- **CIERRE (Aprox. 10 min) - DEBES REDACTAR OBLIGATORIAMENTE Y EN SU TOTALIDAD LOS SIGUIENTES 3 PUNTOS (PROHIBIDO OMITIR EL CIERRE):**
-  1. **Vuelta a la calma:** Ejercicios de respiración guiada y estiramientos suaves.
-  2. **Metacognición motriz:** Redacta de 3 a 4 preguntas reflexivas explícitas (¿Qué aprendimos sobre nuestro cuerpo? ¿Cómo superamos retos?).
-  3. **Rutina Obligatoria de Higiene Personal:** Describe en detalle la práctica autónoma de aseo personal, lavado de manos con jabón, secado con toalla y cambio de polo deportivo.
+- **CIERRE (Aprox. 10 min) - DEBES REDACTAR OBLIGATORIAMENTE Y EN SU TOTALIDAD LOS SIGUIENTES 3 PUNTOS (PROHIBIDO OMITIR O CORTAR EL CIERRE):**
+  1. **Vuelta a la calma:** Ejercicios de respiración guiada, relajación muscular y estiramientos suaves en el patio.
+  2. **Metacognición motriz:** Redacta de 3 a 4 preguntas reflexivas pedagógicas explícitas (ej. ¿Qué aprendimos sobre nuestro cuerpo hoy? ¿Cómo superamos las dificultades en el juego? ¿Para qué nos sirve lo aprendido?).
+  3. **Rutina Obligatoria de Higiene Personal:** Describe en detalle la práctica autónoma de aseo personal, lavado de manos con agua y jabón, secado con toalla y cambio de polo deportivo al concluir la clase.
 
-8. TABLA VI: LISTA DE COTEJO DE EDUCACIÓN FÍSICA (Genera una tabla limpia con los criterios de evaluación y 8 a 10 estudiantes ficticios representativos para optimizar espacio y garantizar la completitud del documento).
+8. TABLA VI: LISTA DE COTEJO DE EDUCACIÓN FÍSICA (Tabla con criterios de evaluación y 30 estudiantes ficticios).
 """
 
 def generar_prompt_ficha_ef():
@@ -738,7 +864,7 @@ ESTRUCTURA REQUERIDA:
 """
 
 # ==============================================================================
-# EJECUCIÓN CON SISTEMA DUAL ROBUSTO ANTI-404 Y COMPLETITUD
+# EJECUCIÓN CON SISTEMA DUAL ROBUSTO ANTI-404
 # ==============================================================================
 st.markdown("---")
 
@@ -760,14 +886,12 @@ if st.button(f"✨ Generar {tipo_documento}"):
             else:
                 prompt_maestro = generar_prompt_ficha_ef()
 
-            sys_inst = """Eres un Especialista Curricular del MINEDU Perú dedicado exclusivamente al área de Educación Física. Generas documentos pedagógicos completos en Markdown alineados estrictamente al CNEB.
-REGLA ABSOLUTA DE COMPLETITUD: Queda STRICTAMENTE PROHIBIDO recortar, abreviar o dejar incompletos los documentos al final.
-Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y DIRECTO dentro de las celdas de las tablas, garantizando que el documento se redacte ENTERO de principio a fin, concluyendo obligatoriamente en la última sección con el espacio para firmas correspondientes."""
+            sys_inst = "Eres un Especialista Curricular del MINEDU Perú dedicado exclusivamente al área de Educación Física. Generas documentos completos en Markdown alineados strictly al CNEB."
 
             with st.spinner(f"⚽ Google Gemini está redactando tu {tipo_documento} para {grado_seccion}..."):
                 config = types.GenerateContentConfig(
                     system_instruction=sys_inst,
-                    temperature=0.10,          # Temperatura baja para máxima fidelidad y concisión técnica
+                    temperature=0.15,
                     max_output_tokens=8192
                 )
                 
