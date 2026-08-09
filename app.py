@@ -359,7 +359,7 @@ with col_b1:
 
 with col_b2:
     if st.button("🚀 Proyecto de Aprendizaje", key="btn_proyecto", use_container_width=True):
-        st.session_state['tipo_documento'] = "Proyecto de Aprendizaje"
+        st.session_state['tipo_documento'] = "Proyecto de Apredizaje"
         st.rerun()
 
 with col_b3:
@@ -375,9 +375,9 @@ with col_b4:
 tipo_documento = st.session_state['tipo_documento']
 
 COLOR_MAP = {
-    "Unidad de Aprendizaje (CNEB EF 10 Secciones)": "#7C3AED",
-    "Proyecto Lúdico / Deportivo EF": "#059669",
-    "Sesión de Clase de Ed. Física": "#2563EB",
+    "Unidad de Aprendizaje": "#7C3AED",
+    "Proyecto de Aprendizaje": "#059669",
+    "Sesión de Aprendizaje de Ed. Física": "#2563EB",
     "Ficha de Trabajo / Autoevaluación EF": "#D97706"
 }
 banner_color = COLOR_MAP.get(tipo_documento, "#7C3AED")
@@ -527,7 +527,7 @@ with c3:
     st.info(f"Ciclo CNEB Detectado: **{ciclo_actual}**")
 
 # VARIABLES ESPECÍFICAS PARA CADA HERRAMIENTA
-if tipo_documento == "Sesión de Clase de Ed. Física":
+if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
     f1, f2, f3 = st.columns(3)
     with f1:
         num_doc = st.text_input("N.° de Sesión:", "01")
@@ -686,25 +686,90 @@ Genera una tabla completa para las {duracion_semanas} sesiones detallando:
 """
 
 def generar_prompt_proyecto_ef():
+    cneb_datos_text = ""
+    for comp_nombre, comp_info in CNEB_EF_PRIMARIA.items():
+        est_txt = comp_info["estandares"].get(ciclo_actual, "")
+        des_list = comp_info["desempenos"].get(grado_seccion, [])
+        cneb_datos_text += f"\n\nCOMPETENCIA: {comp_nombre}\nESTÁNDAR OFICIAL ({ciclo_actual}):\n{est_txt}\nDESEMPEÑOS OFICIALES ({grado_seccion}):\n" + "\n".join(des_list)
+
     return f"""
-Actúa como Especialista en Educación Física del MINEDU Perú. Elabora un PROYECTO LÚDICO / DEPORTIVO COMPLETO de {duracion_semanas} semanas.
-Área exclusiva: Educación Física. Tema/Problema: {problema_contexto}.
+Actúa como un Especialista Pedagógico del Ministerio de Educación del Perú, experto en el Currículo Nacional de Educación Básica (CNEB), Programa Curricular de Educación Primaria, Didáctica de la Educación Física y Evaluación Formativa.
 
-ESTRUCTURA DE SALIDA (MARKDOWN LIMPIO EN TABLAS):
-# **PROYECTO LÚDICO - DEPORTIVO DE EDUCACIÓN FÍSICA N.º {num_doc}**
-## **"{producto_unidad.upper()}"**
+Tu tarea es elaborar un PROYECTO DE APRENDIZAJE COMPLETO, EXHAUSTIVO, TÉCNICO Y COHERENTE para el área de Educación Física, alineado al enfoque por competencias, estándares, desempeños precisados y evaluación formativa.
 
-1. DATOS INFORMATIVOS (Tabla con DRE/UGEL, IE: {ie_nombre}, Director: {director}, Docente Ed. Física: {docente}, Grado: {grado_seccion}, Fechas: {fechas_duracion}).
-2. SITUACIÓN SIGNIFICATIVA (3 párrafos enfocados en la motricidad, salud, juego en equipo y preguntas retadoras).
-3. PLANIFICACIÓN DEL PROYECTO CON LOS ESTUDIANTES (Tabla: ¿Qué haremos?, ¿Qué sabemos?, ¿Cómo nos organizaremos?, ¿Qué materiales del patio necesitamos?).
-4. MATRIZ DE PROPÓSITOS DE APRENDIZAJE DE EDUCACIÓN FÍSICA POR SEMANA (Semana 1 a {duracion_semanas}):
-   - Aborda las 3 competencias de Ed. Física (Se desenvuelve..., Asume una vida saludable, Interactúa...).
-   - Incluye el Estándar COMPLETO del CNEB con **negrita** en la parte aplicada y el Desempeño COMPLETO con **negrita** en la precisión.
-5. SECUENCIA DE SESIONES PRÁCTICAS SEMANA A SEMANA ({duracion_semanas} semanas):
-   - Tabla con actividades de calentamiento, desarrollo de juegos/deportes e higiene personal posjuego.
-6. PRODUCTO FINAL TANGIBLE/DEMOSTRABLE ({producto_unidad}).
-7. LISTA DE MATERIALES DEL PATIO Y KIT DE ASEO.
-8. REFLEXIONES Y METAGOGNICIÓN DOCENTE.
+🚨 REGLAS CRÍTICAS DE COMPLETITUD Y ANTI-RESUMEN (CUMPLIMIENTO OBLIGATORIO):
+1. DEBES DESARROLLAR EL PROYECTO COMPLETO LLEGANDO OBLIGATORIAMENTE HASTA LA SECCIÓN IX (RECURSOS Y MATERIALES Y FIRMAS). QUEDA PROHIBIDO CORTAR O DEJAR INCOMPLETO EL DOCUMENTO AL FINAL.
+2. EN LA SECCIÓN VII (CUADRO CRONOLÓGICO DE SESIONES), DESARROLLA CADA UNA DE LAS {duracion_semanas} SESIONES UNA POR UNA SIN OMITIR NINGUNA. ESTÁ PROHIBIDO PONER PUNTOS SUSPENSIVOS (...), RESÚMENES O FRASES COMO "se repite para las demás sesiones".
+3. EN LA SECCIÓN VI (MATRIZ DE PROPÓSITOS), TRANSCRIBE EL ESTÁNDAR COMPLETO DEL CNEB EN LA PARTE SUPERIOR DE CADA TABLA CON NEGRITA EN LA PARTE TRABAJADA, Y EL DESEMPEÑO COMPLETO EN LA COLUMNA CORRESPONDIENTE CON NEGRITA EN LO UTILIZADO Y PRECISADO.
+
+DATOS OFICIALES EXTRAÍDOS DEL CNEB DE EDUCACIÓN FÍSICA PARA UTILIZAR EN ESTE PROYECTO ({grado_seccion} - {ciclo_actual}):
+{cneb_datos_text}
+
+DATOS PARA LA GENERACIÓN:
+- N° de Proyecto: Proyecto N° {num_doc}
+- DRE / UGEL: {dre_ugel}
+- Institución Educativa: {ie_nombre}
+- Nivel: Educación Primaria
+- Ciclo: {ciclo_actual}
+- Grado y Sección: {grado_seccion}
+- Área Curricular: Educación Física
+- Duración / Fechas: {duracion_semanas} semanas ({fechas_duracion})
+- Número de sesiones: {duracion_semanas} sesiones principales
+- Docente de Ed. Física: {docente}
+- Director(a): {director}
+- Tema central / Problemática a abordar: {problema_contexto}
+- Producto Final Esperado: {producto_unidad}
+
+---
+
+ESTRUCTURA OBLIGATORIA DEL PROYECTO DE APRENDIZAJE DE EDUCACIÓN FÍSICA:
+
+I. TÍTULO DEL PROYECTO
+- Debe ser motivador, creativo, retador y entre comillas (Ejemplo: "¡CELEBRAMOS NUESTRA PERUANIDAD EN EL GRAN FESTIVAL LÚDICO-MOTOR!").
+
+II. DATOS INFORMATIVOS
+- DRE/UGEL, IE, Nivel, Ciclo, Grado y Sección, Área (Educación Física), Duración, N° de sesiones, Docente, Director(a).
+
+III. SITUACIÓN SIGNIFICATIVA
+Redacta una situación significativa completa estructurada en 4 bloques:
+- Contexto: Describe la situación real del entorno escolar, familiar o comunitario en la clase de Educación Física.
+- Problema o necesidad: Explica qué ocurre con la motricidad, salud o convivencia y por qué requiere intervención pedagógica.
+- Reto: Formula preguntas retadoras vinculadas al movimiento corporal y los juegos.
+- Propósito: Explica qué aprenderán los estudiantes mediante el proyecto.
+
+IV. CUADRO DE ENFOQUES TRANSVERSALES
+Elabora una tabla con 1 o 2 enfoques transversales más pertinentes:
+| ENFOQUE TRANSVERSAL | VALOR(ES) | ACCIONES O ACTITUDES OBSERVABLES EN EDUCACIÓN FÍSICA |
+
+V. CUADRO DE NEGOCIACIÓN Y PLANIFICACIÓN CON LOS ESTUDIANTES
+Elabora una tabla con las columnas:
+| ¿Qué queremos hacer? | ¿Cómo lo haremos? | ¿Qué necesitamos? | ¿Cómo nos organizamos? | ¿Cómo sabemos que estamos aprendiendo? |
+Redacta respuestas auténticas, realistas y participativas que darían los estudiantes durante una asamblea de aula de Educación Física.
+
+VI. MATRIZ DE PROPÓSITOS DE APRENDIZAJE Y EVALUACIÓN
+Desarrolla una tabla independiente por cada competencia seleccionada de Educación Física (C1: Se desenvuelve..., C2: Asume una vida saludable, C3: Interactúa...):
+- En la PARTE SUPERIOR de cada tabla coloca el ESTÁNDAR COMPLETO del {ciclo_actual} transcrito íntegramente del CNEB (sin alterar ni recortar su texto original), RESALTANDO EN NEGRITA únicamente la parte movilizada en el proyecto.
+- Columnas de la Matriz:
+  | Competencia / Capacidades | Desempeño Precisado Completo | Sesiones Asociadas | Actividades Motrices | Criterios de Evaluación | Evidencias | Instrumentos de Evaluación |
+- REGLA DEL DESEMPEÑO: Transcribe el desempeño COMPLETO oficial del CNEB para {grado_seccion}, RESALTANDO EN NEGRITA tanto la parte del desempeño utilizada como las palabras/términos precisados agregados.
+
+VII. CUADRO CRONOLÓGICO DE SESIONES
+Desarrolla TODAS las {duracion_semanas} sesiones programadas una por una sin omitir ninguna.
+Tabla con las columnas:
+| N° de Sesión | Nombre de la sesión | Propósito pedagógico de la sesión |
+(Asegúrate de que el propósito sea explícito e incluya la secuencia de calentamiento/activación, desarrollo de actividades motrices y rutina de higiene personal).
+
+VIII. PRODUCTOS DEL PROYECTO
+- Producto Intangible / Práctico: (Ej. Festival deportivo, Mini olimpiadas, Gincana, Circuito motriz demostrativo).
+- Producto Tangible: {producto_unidad} (Ej. Cartelera de compromisos de salud, mapa del circuito de juegos, etc.).
+
+IX. RECURSOS Y MATERIALES
+Detallar exhaustivamente:
+- Material deportivo del patio (conos, aros, pelotas, cuerdas, silbato).
+- Material reciclado / alternativo.
+- Material de señalización y kit de aseo (jabón, toalla, polo de repuesto).
+- Espacios educativos (patio, losa deportiva, campo).
+- Fecha y espacio para firmas (Directora y Docente de Educación Física).
 """
 
 def generar_prompt_sesion_ef():
@@ -824,9 +889,9 @@ if st.button(f"✨ Generar {tipo_documento}"):
         try:
             client = genai.Client(api_key=api_key)
             
-            if tipo_documento == "Unidad de Aprendizaje (CNEB EF 10 Secciones)":
+            if tipo_documento == "Unidad de Aprendizaje":
                 prompt_maestro = generar_prompt_unidad_ef_10_secciones()
-            elif tipo_documento == "Proyecto Lúdico / Deportivo EF":
+            elif tipo_documento == "Proyecto de Aprendizaje":
                 prompt_maestro = generar_prompt_proyecto_ef()
             elif tipo_documento == "Sesión de Clase de Ed. Física":
                 prompt_maestro = generar_prompt_sesion_ef()
