@@ -245,20 +245,7 @@ st.markdown("""
         box-shadow: 0 6px 18px rgba(37, 99, 235, 0.6) !important;
     }
 
-    div.st-key-btn_ficha > button {
-        background: linear-gradient(135deg, #D97706 0%, #B45309 100%) !important;
-        background-color: #D97706 !important;
-        border: 2px solid #B45309 !important;
-        border-radius: 12px !important;
-        box-shadow: 0 4px 14px rgba(217, 119, 6, 0.4) !important;
-        transition: all 0.3s ease !important;
-    }
-    div.st-key-btn_ficha > button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 18px rgba(217, 119, 6, 0.6) !important;
-    }
-
-    div.stButton > button:not([key="btn_unidad"]):not([key="btn_proyecto"]):not([key="btn_sesion"]):not([key="btn_ficha"]) {
+    div.stButton > button:not([key="btn_unidad"]):not([key="btn_proyecto"]):not([key="btn_sesion"]) {
         background: linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%) !important;
         background-color: #1E40AF !important;
         border: 2px solid #1D4ED8 !important;
@@ -267,7 +254,7 @@ st.markdown("""
         box-shadow: 0 4px 16px rgba(30, 64, 175, 0.5) !important;
         transition: all 0.3s ease !important;
     }
-    div.stButton > button:not([key="btn_unidad"]):not([key="btn_proyecto"]):not([key="btn_sesion"]):not([key="btn_ficha"]):hover {
+    div.stButton > button:not([key="btn_unidad"]):not([key="btn_proyecto"]):not([key="btn_sesion"]):hover {
         background: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%) !important;
         transform: translateY(-2px) !important;
         box-shadow: 0 6px 20px rgba(37, 99, 235, 0.7) !important;
@@ -350,7 +337,7 @@ model_choice = st.sidebar.selectbox(
 # ==============================================================================
 st.markdown("### 📋 Selecciona el Documento de Educación Física a Elaborar:")
 
-col_b1, col_b2, col_b3, col_b4 = st.columns(4)
+col_b1, col_b2, col_b3 = st.columns(3)
 
 with col_b1:
     if st.button("📘 Unidad de Aprendizaje", key="btn_unidad", use_container_width=True):
@@ -367,18 +354,12 @@ with col_b3:
         st.session_state['tipo_documento'] = "Sesión de Aprendizaje de Ed. Física"
         st.rerun()
 
-with col_b4:
-    if st.button("📝 Ficha de Autoevaluación EF", key="btn_ficha", use_container_width=True):
-        st.session_state['tipo_documento'] = "Ficha de Trabajo / Autoevaluación EF"
-        st.rerun()
-
 tipo_documento = st.session_state['tipo_documento']
 
 COLOR_MAP = {
     "Unidad de Aprendizaje": "#7C3AED",
     "Proyecto de Aprendizaje": "#059669",
-    "Sesión de Aprendizaje de Ed. Física": "#2563EB",
-    "Ficha de Trabajo / Autoevaluación EF": "#D97706"
+    "Sesión de Aprendizaje de Ed. Física": "#2563EB"
 }
 banner_color = COLOR_MAP.get(tipo_documento, "#7C3AED")
 
@@ -566,21 +547,6 @@ if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
     sesiones_por_semana = 1
     producto_unidad = ""
     problema_contexto = titulo_sesion_input.strip() if titulo_sesion_input.strip() else "Desarrollo de nociones espaciales, coordinación motriz y convivencia en juegos de Educación Física."
-
-elif tipo_documento == "Ficha de Trabajo / Autoevaluación EF":
-    f1, f2, f3 = st.columns(3)
-    with f1:
-        num_doc = st.text_input("N.° de Ficha:", "01")
-    with f2:
-        fecha_sugerida = st.text_input("Fecha:", "22 de junio de 2026")
-    with f3:
-        duracion_sesion = st.selectbox("Duración de la Clase:", ["45 minutos", "90 minutos", "135 minutos"], index=1)
-    
-    fechas_duracion = fecha_sugerida
-    duracion_semanas = 1
-    sesiones_por_semana = 1
-    producto_unidad = ""
-    problema_contexto = st.text_area("📋 Describe el Tema de la Ficha:", height=100, value="Autoevaluación de desplazamientos, normas de juego y hábitos de higiene en Educación Física.")
 
 else:  # Unidad o Proyecto EF
     f1, f2, f3, f4, f5 = st.columns(5)
@@ -844,23 +810,7 @@ Coloca la tabla con las Competencias Transversales que se emplean en la sesión 
   2. **Metacognición motriz:** Redacta de 3 a 4 preguntas reflexivas pedagógicas explícitas (ej. ¿Qué aprendimos sobre nuestro cuerpo hoy? ¿Cómo superamos las dificultades en el juego? ¿Para qué nos sirve lo aprendido?).
   3. **Rutina Obligatoria de Higiene Personal:** Describe en detalle la práctica autónoma de aseo personal, lavado de manos con agua y jabón, secado con toalla y cambio de polo deportivo al concluir la clase.
 
-8. TABLA VI: LISTA DE COTEJO DE EDUCACIÓN FÍSICA (Tabla con criterios de evaluación y 03 estudiantes ficticios).
-"""
-
-def generar_prompt_ficha_ef():
-    return f"""
-Actúa como Especialista en Educación Física Primaria CNEB.
-Elabora una FICHA DE TRABAJO Y AUTOEVALUACIÓN DE EDUCACIÓN FÍSICA PARA EL ESTUDIANTE sobre {problema_contexto} para {grado_seccion}.
-
-ESTRUCTURA REQUERIDA:
-# **FICHA DE AUTOEVALUACIÓN Y SALUD EN EDUCACIÓN FÍSICA N.º {num_doc}**
-## **{problema_contexto.upper()}**
-
-- DATOS INFORMATIVOS (IE: {ie_nombre}, Estudiante: ___________________, Grado: {grado_seccion}, Fecha: {fecha_sugerida}).
-- PROPÓSITO DEL DÍA (Explicado para niños).
-- SECCIÓN 1: MIS REACCIONES CORPORALES (Dibujar o marcar ritmo cardiaco, sudoración y respiración tras el juego).
-- SECCIÓN 2: MI COMPROMISO DE HIGIENE Y SALUD (Marcar con check la rutina de aseo personal realizada).
-- SECCIÓN 3: FICHA DE AUTOEVALUACIÓN MOTRIZ Y CONVIVENCIA (Tabla con emoticones para autoevaluarse).
+8. TABLA VI: LISTA DE COTEJO DE EDUCACIÓN FÍSICA (Tabla con criterios de evaluación y 30 estudiantes ficticios).
 """
 
 # ==============================================================================
@@ -881,10 +831,8 @@ if st.button(f"✨ Generar {tipo_documento}"):
                 prompt_maestro = generar_prompt_unidad_ef_10_secciones()
             elif tipo_documento == "Proyecto de Aprendizaje":
                 prompt_maestro = generar_prompt_proyecto_ef()
-            elif tipo_documento == "Sesión de Aprendizaje de Ed. Física":
-                prompt_maestro = generar_prompt_sesion_ef()
             else:
-                prompt_maestro = generar_prompt_ficha_ef()
+                prompt_maestro = generar_prompt_sesion_ef()
 
             sys_inst = "Eres un Especialista Curricular del MINEDU Perú dedicado exclusivamente al área de Educación Física. Generas documentos completos en Markdown alineados strictly al CNEB."
 
