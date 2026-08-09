@@ -64,7 +64,7 @@ CNEB_EF_PRIMARIA = {
     },
     "Asume una vida saludable": {
         "estandares": {
-            "III Ciclo": "Asume una vida saludable cuando diferencia los alimentos saludables de su dieta familiar, los momentos adecuados para ingerirlos y las posturas que lo ayudan al buen desempeño en la práctica de actividad física y de la vida cotidiana, reconociendo la importancia del autocuidado. Participa regularmente en la práctica de actividades lúdicas identificando su ritmo cardiaco, respiración y sudoración; utiliza prácticas de activación corporal y psicológica antes de la actividad lúdica.",
+            "III Ciclo": "Asume una vida saludable cuando diferencia los alimentos saludables de su dieta familiar, los momentos adecuados para ingerirlos y las posturas que lo ayudan al buen desempeño en la práctica de actividad física y de la vida cotidiana, reconociendo la importancia del autocuidado. Participa regularly en la práctica de actividades lúdicas identificando su ritmo cardiaco, respiración y sudoración; utiliza prácticas de activación corporal y psicológica antes de la actividad lúdica.",
             "IV Ciclo": "Asume una vida saludable cuando diferencia los alimentos de su dieta familiar y de su región que son saludables de los que no lo son. Previene riesgos relacionados con la postura e higiene conociendo aquellas que favorecen y no favorecen su salud e identifica su fuerza, resistencia y velocidad en la práctica de actividades lúdicas. Adapta su esfuerzo en la práctica de actividad física de acuerdo a las características de la actividad y a sus posibilidades, aplicando conocimientos relacionados con el ritmo cardiaco, la respiración y la sudoración. Realiza prácticas de activación corporal y psicológica, e incorpora el autocuidado relacionado con los ritmos de actividad y descanso para mejorar el funcionamiento de su organismo.",
             "V Ciclo": "Asume una vida saludable cuando utiliza instrumentos que miden la aptitud física y estado nutricional e interpreta la información de los resultados obtenidos para mejorar su calidad de vida. Replantea sus hábitos higiénicos y alimenticios tomando en cuenta los cambios físicos propios de la edad, evita la realización de ejercicios y posturas contraindicadas para la salud en la práctica de actividad física. Incorpora prácticas saludables para su organismo consumiendo alimentos adecuados a las características personales y evitando el consumo de drogas. Propone ejercicios de activación y relajación antes, durante y después de la práctica y participa en actividad física de distinta intensidad regulando su esfuerzo."
         },
@@ -586,6 +586,7 @@ else:  # Unidad o Proyecto EF
         num_doc = st.text_input("N.° de Unidad / Proyecto:", "04")
     with f2:
         fechas_duracion = st.text_input("Fechas / Periodo:", "Del 22 de junio al 17 de julio de 2026")
+        fecha_sugerida = fechas_duracion  # Garantiza que ambas variables existan
     with f3:
         duracion_semanas = st.slider("Número de Semanas:", min_value=2, max_value=8, value=4)
     with f4:
@@ -692,84 +693,54 @@ def generar_prompt_proyecto_ef():
         des_list = comp_info["desempenos"].get(grado_seccion, [])
         cneb_datos_text += f"\n\nCOMPETENCIA: {comp_nombre}\nESTÁNDAR OFICIAL ({ciclo_actual}):\n{est_txt}\nDESEMPEÑOS OFICIALES ({grado_seccion}):\n" + "\n".join(des_list)
 
+    total_sesiones_estimadas = duracion_semanas * 2
+
     return f"""
-Actúa como un Especialista Pedagógico del Ministerio de Educación del Perú, experto en el Currículo Nacional de Educación Básica (CNEB), Programa Curricular de Educación Primaria, Didáctica de la Educación Física y Evaluación Formativa.
-
-Tu tarea es elaborar un PROYECTO DE APRENDIZAJE COMPLETO, EXHAUSTIVO, TÉCNICO Y COHERENTE para el área de Educación Física, alineado al enfoque por competencias, estándares, desempeños precisados y evaluación formativa.
-
-🚨 REGLAS CRÍTICAS DE COMPLETITUD Y ANTI-RESUMEN (CUMPLIMIENTO OBLIGATORIO):
-1. DEBES DESARROLLAR EL PROYECTO COMPLETO LLEGANDO OBLIGATORIAMENTE HASTA LA SECCIÓN IX (RECURSOS Y MATERIALES Y FIRMAS). QUEDA PROHIBIDO CORTAR O DEJAR INCOMPLETO EL DOCUMENTO AL FINAL.
-2. EN LA SECCIÓN VII (CUADRO CRONOLÓGICO DE SESIONES), DESARROLLA CADA UNA DE LAS {duracion_semanas} SESIONES UNA POR UNA SIN OMITIR NINGUNA. ESTÁ PROHIBIDO PONER PUNTOS SUSPENSIVOS (...), RESÚMENES O FRASES COMO "se repite para las demás sesiones".
-3. EN LA SECCIÓN VI (MATRIZ DE PROPÓSITOS), TRANSCRIBE EL ESTÁNDAR COMPLETO DEL CNEB EN LA PARTE SUPERIOR DE CADA TABLA CON NEGRITA EN LA PARTE TRABAJADA, Y EL DESEMPEÑO COMPLETO EN LA COLUMNA CORRESPONDIENTE CON NEGRITA EN LO UTILIZADO Y PRECISADO.
+Actúa como un Especialista Pedagógico experto en Educación Física del Ministerio de Educación de Perú (MINEDU). Tu tarea es diseñar un Proyecto de Aprendizaje completo bajo el enfoque por competencias del Currículo Nacional de la Educación Básica (CNEB), manteniendo de manera estricta y detallada una estructura formal.
 
 DATOS OFICIALES EXTRAÍDOS DEL CNEB DE EDUCACIÓN FÍSICA PARA UTILIZAR EN ESTE PROYECTO ({grado_seccion} - {ciclo_actual}):
 {cneb_datos_text}
 
-DATOS PARA LA GENERACIÓN:
-- N° de Proyecto: Proyecto N° {num_doc}
+Para este nuevo proyecto, los datos de entrada son:
+- Nivel y Grado: Educación Primaria, {grado_seccion} - {ciclo_actual}
 - DRE / UGEL: {dre_ugel}
 - Institución Educativa: {ie_nombre}
-- Nivel: Educación Primaria
-- Ciclo: {ciclo_actual}
-- Grado y Sección: {grado_seccion}
-- Área Curricular: Educación Física
-- Duración / Fechas: {duracion_semanas} semanas ({fechas_duracion})
-- Número de sesiones: {duracion_semanas} sesiones principales
-- Docente de Ed. Física: {docente}
 - Director(a): {director}
-- Tema central / Problemática a abordar: {problema_contexto}
-- Producto Final Esperado: {producto_unidad}
+- Docente de Ed. Física: {docente}
+- Duración y Frecuencia: {duracion_semanas} semanas, 2 sesiones por semana = {total_sesiones_estimadas} sesiones en total ({fechas_duracion})
+- Tema o Problemática Central: {problema_contexto}
+- Producto Final: {producto_unidad}
 
----
+Genera el proyecto de manera exhaustiva respetando fielmente las siguientes secciones:
 
-ESTRUCTURA OBLIGATORIA DEL PROYECTO DE APRENDIZAJE DE EDUCACIÓN FÍSICA:
+I. DATOS GENERALES:
+Muestra la tabla de Datos Informativos con: DRE / UGEL ({dre_ugel}), I.E. ({ie_nombre}), Director ({director}), Docente ({docente}), Grado y Sección ({grado_seccion} - {ciclo_actual}), Duración ({duracion_semanas} semanas, {total_sesiones_estimadas} sesiones, {fechas_duracion}).
 
-I. TÍTULO DEL PROYECTO
-- Debe ser motivador, creativo, retador y entre comillas (Ejemplo: "¡CELEBRAMOS NUESTRA PERUANIDAD EN EL GRAN FESTIVAL LÚDICO-MOTOR!").
+II. TÍTULO DEL PROYECTO: Redacta un título motivador entre comillas que evidencie el producto y el propósito (Ejemplo: "¡{producto_unidad.upper()} PARA PROMOVER LA VIDA SALUDABLE!").
 
-II. DATOS INFORMATIVOS
-- DRE/UGEL, IE, Nivel, Ciclo, Grado y Sección, Área (Educación Física), Duración, N° de sesiones, Docente, Director(a).
+III. SITUACIÓN SIGNIFICATIVA: Redacta una situación basada en un contexto real de la escuela, describiendo la problemática ({problema_contexto}), las consecuencias y planteando obligatoriamente de 2 a 3 retos en forma de preguntas para los estudiantes.
 
-III. SITUACIÓN SIGNIFICATIVA
-Redacta una situación significativa completa estructurada en 4 bloques:
-- Contexto: Describe la situación real del entorno escolar, familiar o comunitario en la clase de Educación Física.
-- Problema o necesidad: Explica qué ocurre con la motricidad, salud o convivencia y por qué requiere intervención pedagógica.
-- Reto: Formula preguntas retadoras vinculadas al movimiento corporal y los juegos.
-- Propósito: Explica qué aprenderán los estudiantes mediante el proyecto.
+IV. CUADRO DE ENFOQUES TRANSVERSALES: Una tabla con 3 columnas (Enfoque Transversal, Valores, Actitudes observables o Acciones concretas) adaptados a la problemática.
 
-IV. CUADRO DE ENFOQUES TRANSVERSALES
-Elabora una tabla con 1 o 2 enfoques transversales más pertinentes:
-| ENFOQUE TRANSVERSAL | VALOR(ES) | ACCIONES O ACTITUDES OBSERVABLES EN EDUCACIÓN FÍSICA |
+V. CUADRO DE NEGOCIACIÓN / PLANIFICACIÓN CON LOS ESTUDIANTES: Una tabla de 4 columnas (¿Qué queremos hacer?, ¿Cómo lo haremos?, ¿Qué necesitamos?, ¿Cómo nos daremos cuenta de que lo logramos?) simulando las respuestas participativas de los niños en la sesión 1.
 
-V. CUADRO DE NEGOCIACIÓN Y PLANIFICACIÓN CON LOS ESTUDIANTES
-Elabora una tabla con las columnas:
-| ¿Qué queremos hacer? | ¿Cómo lo haremos? | ¿Qué necesitamos? | ¿Cómo nos organizamos? | ¿Cómo sabemos que estamos aprendiendo? |
-Redacta respuestas auténticas, realistas y participativas que darían los estudiantes durante una asamblea de aula de Educación Física.
+VI. CUADRO DE PROPÓSITOS DE APRENDIZAJE Y EVALUACIÓN MATRIZADA:
+Organiza la matriz dividida por cada Competencia del área que intervenga (Se desenvuelve de manera autónoma..., Asume una vida saludable, Interactúa a través de sus habilidades sociomotrices). Para cada competencia, debes estructurar una tabla con las siguientes 7 columnas exactas:
+  1. Actividad General por Semana: Coloca el título del bloque general o eje de la semana.
+  2. Sesiones Vinculadas: Indica el número y nombre de la sesión (ejemplo: Sesión 1: "Nombre").
+  3. Estándar de Aprendizaje Completo (CNEB): Copia de forma LITERAL y completa el estándar del {ciclo_actual} según el CNEB, sin recortar nada. Resalta en NEGRITA únicamente el fragmento específico que se movilizará en esa sesión.
+  4. Desempeño Completo del Grado (CNEB) con Precisión: Copia de forma LITERAL y completa el desempeño oficial de {grado_seccion} del CNEB. Resalta en NEGRITA lo que se está utilizando de la norma y añade al final (también en NEGRITA) la precisión o el contexto específico de la sesión que tú le estás agregando como docente.
+  5. 3 Criterios de Evaluación por Sesión: Redacta exactamente tres criterios claros, medibles y específicos por cada sesión lineal.
+  6. Evidencia de Aprendizaje: Define el producto parcial o actuación tangible que dejará el alumno en esa sesión.
+  7. Instrumento de Evaluación: Indica la herramienta de calificación formativa (Lista de cotejo, rúbrica, escala de valoración, etc.).
 
-VI. MATRIZ DE PROPÓSITOS DE APRENDIZAJE Y EVALUACIÓN
-Desarrolla una tabla independiente por cada competencia seleccionada de Educación Física (C1: Se desenvuelve..., C2: Asume una vida saludable, C3: Interactúa...):
-- En la PARTE SUPERIOR de cada tabla coloca el ESTÁNDAR COMPLETO del {ciclo_actual} transcrito íntegramente del CNEB (sin alterar ni recortar su texto original), RESALTANDO EN NEGRITA únicamente la parte movilizada en el proyecto.
-- Columnas de la Matriz:
-  | Competencia / Capacidades | Desempeño Precisado Completo | Sesiones Asociadas | Actividades Motrices | Criterios de Evaluación | Evidencias | Instrumentos de Evaluación |
-- REGLA DEL DESEMPEÑO: Transcribe el desempeño COMPLETO oficial del CNEB para {grado_seccion}, RESALTANDO EN NEGRITA tanto la parte del desempeño utilizada como las palabras/términos precisados agregados.
+VII. PLANIFICACIÓN CRONOLÓGICA DETALLADA DE LAS SESIONES:
+Desglosa secuencialmente el total de {total_sesiones_estimadas} sesiones indicadas. Para cada sesión individual, debes incluir de forma obligatoria su número, su título entre comillas y un resumen de las actividades estructuradas en tres momentos pedagógicos explícitos:
+- Inicio: (Motivación, saberes previos y propósito)
+- Desarrollo: (Práctica corporal, estrategia o trabajo lúdico)
+- Cierre: (Vuelta a la calma, respiración y reflexión metacognitiva)
 
-VII. CUADRO CRONOLÓGICO DE SESIONES
-Desarrolla TODAS las {duracion_semanas} sesiones programadas una por una sin omitir ninguna.
-Tabla con las columnas:
-| N° de Sesión | Nombre de la sesión | Propósito pedagógico de la sesión |
-(Asegúrate de que el propósito sea explícito e incluya la secuencia de calentamiento/activación, desarrollo de actividades motrices y rutina de higiene personal).
-
-VIII. PRODUCTOS DEL PROYECTO
-- Producto Intangible / Práctico: (Ej. Festival deportivo, Mini olimpiadas, Gincana, Circuito motriz demostrativo).
-- Producto Tangible: {producto_unidad} (Ej. Cartelera de compromisos de salud, mapa del circuito de juegos, etc.).
-
-IX. RECURSOS Y MATERIALES
-Detallar exhaustivamente:
-- Material deportivo del patio (conos, aros, pelotas, cuerdas, silbato).
-- Material reciclado / alternativo.
-- Material de señalización y kit de aseo (jabón, toalla, polo de repuesto).
-- Espacios educativos (patio, losa deportiva, campo).
-- Fecha y espacio para firmas (Directora y Docente de Educación Física).
+VIII. MATERIALES Y RECURSOS: Una lista detallada de los insumos necesarios para llevar a cabo el proyecto práctico en el patio o aula.
 """
 
 def generar_prompt_sesion_ef():
@@ -893,7 +864,7 @@ if st.button(f"✨ Generar {tipo_documento}"):
                 prompt_maestro = generar_prompt_unidad_ef_10_secciones()
             elif tipo_documento == "Proyecto de Aprendizaje":
                 prompt_maestro = generar_prompt_proyecto_ef()
-            elif tipo_documento == "Sesión de Clase de Ed. Física":
+            elif tipo_documento == "Sesión de Aprendizaje de Ed. Física":
                 prompt_maestro = generar_prompt_sesion_ef()
             else:
                 prompt_maestro = generar_prompt_ficha_ef()
@@ -959,7 +930,7 @@ if st.session_state['resultado_md'] is not None:
         st.markdown(st.session_state['resultado_md'])
         
     with tab_download:
-        es_horizontal_doc = st.session_state['tipo_doc_generado'] in ["Unidad de Aprendizaje (CNEB EF 10 Secciones)", "Proyecto Lúdico / Deportivo EF"]
+        es_horizontal_doc = st.session_state['tipo_doc_generado'] in ["Unidad de Aprendizaje", "Proyecto de Aprendizaje"]
         
         buffer_doc = markdown_to_docx(
             st.session_state['resultado_md'], 
