@@ -353,17 +353,17 @@ st.markdown("### 📋 Selecciona el Documento de Educación Física a Elaborar:"
 col_b1, col_b2, col_b3, col_b4 = st.columns(4)
 
 with col_b1:
-    if st.button("📘 Unidad CNEB EF (10 Secciones)", key="btn_unidad", use_container_width=True):
+    if st.button("📘 Unidad de Aprendizaje", key="btn_unidad", use_container_width=True):
         st.session_state['tipo_documento'] = "Unidad de Aprendizaje"
         st.rerun()
 
 with col_b2:
-    if st.button("🚀 Proyecto Lúdico / Deportivo EF", key="btn_proyecto", use_container_width=True):
+    if st.button("🚀 Proyecto de Aprendizaje", key="btn_proyecto", use_container_width=True):
         st.session_state['tipo_documento'] = "Proyecto de Aprendizaje"
         st.rerun()
 
 with col_b3:
-    if st.button("🏃 Sesión de Clase de Ed. Física", key="btn_sesion", use_container_width=True):
+    if st.button("🏃 Sesión de Aprendizaje de Ed. Física", key="btn_sesion", use_container_width=True):
         st.session_state['tipo_documento'] = "Sesión de Aprendizaje de Ed. Física"
         st.rerun()
 
