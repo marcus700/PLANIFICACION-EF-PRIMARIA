@@ -324,7 +324,7 @@ if 'tipo_doc_generado' not in st.session_state:
 if 'fname_clean' not in st.session_state:
     st.session_state['fname_clean'] = None
 if 'tipo_documento' not in st.session_state:
-    st.session_state['tipo_documento'] = "Unidad de Aprendizaje (CNEB EF 10 Secciones)"
+    st.session_state['tipo_documento'] = "Unidad de Aprendizaje"
 
 # SIDEBAR CON MODELOS ESTABLES DE GOOGLE STUDIO
 st.sidebar.title("⚙️ Configuración EF")
@@ -354,17 +354,17 @@ col_b1, col_b2, col_b3, col_b4 = st.columns(4)
 
 with col_b1:
     if st.button("📘 Unidad CNEB EF (10 Secciones)", key="btn_unidad", use_container_width=True):
-        st.session_state['tipo_documento'] = "Unidad de Aprendizaje (CNEB EF 10 Secciones)"
+        st.session_state['tipo_documento'] = "Unidad de Aprendizaje"
         st.rerun()
 
 with col_b2:
     if st.button("🚀 Proyecto Lúdico / Deportivo EF", key="btn_proyecto", use_container_width=True):
-        st.session_state['tipo_documento'] = "Proyecto Lúdico / Deportivo EF"
+        st.session_state['tipo_documento'] = "Proyecto de Aprendizaje"
         st.rerun()
 
 with col_b3:
     if st.button("🏃 Sesión de Clase de Ed. Física", key="btn_sesion", use_container_width=True):
-        st.session_state['tipo_documento'] = "Sesión de Clase de Ed. Física"
+        st.session_state['tipo_documento'] = "Sesión de Aprendizaje de Ed. Física"
         st.rerun()
 
 with col_b4:
@@ -612,13 +612,13 @@ def generar_prompt_unidad_ef_10_secciones():
     return f"""
 Actúa como un especialista en currículo educativo peruano y docente experto en el área de Educación Física para Educación Básica Regular (CNEB). 
 
-Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa, extensa, rigurosa y alineada al Currículo Nacional (CNEB), siguiendo estrictamente las 10 secciones obligatorias y las reglas anti-resumen.
+Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa, extensa, rigurosa y alineada al Currículo Nacional (CNEB), siguiendo estrictamente las 10 secciones obligatorias sin cortar ni interrumpir el documento al final.
 
-🚨 REGLAS CRÍTICAS ANTI-RESUMEN (CUMPLIMIENTO OBLIGATORIO):
-1. NO RESUMAS, NO ABREVIES Y NO OMITAS NINGUNA SECCIÓN NI NINGUNA SESIÓN.
-2. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN) DEBES DESARROLLAR OBLIGATORIAMENTE LAS {duracion_semanas} SESIONES COMPLETAS. ESTÁ PROHIBIDO PONER PUNTOS SUSPENSIVOS (...), RESÚMENES O FRASES COMO "se repite para las siguientes sesiones".
-3. TRANSCRIBE EL ESTÁNDAR COMPLETO DEL CNEB EN CADA BLOQUE DE ACTIVIDAD DE LA MATRIZ SIN RECORTAR TEXTO, RESALTANDO EN NEGRITA LA PARTE EVALUADA EN ESA SESIÓN.
-4. TRANSCRIBE EL DESEMPEÑO COMPLETO DEL CNEB EN LA COLUMNA DE DESEMPEÑO SIN RECORTAR TEXTO, RESALTANDO EN NEGRITA LA PARTE UTILIZADA Y LOS TÉRMINOS PRECISADOS AGREGADOS PARA LA ACTIVIDAD.
+🚨 REGLAS CRÍTICAS DE COMPLETITUD Y ESTRUCTURA (OBLIGATORIO LLEGAR HASTA LA SECCIÓN X):
+1. DEBES FINALIZAR EL DOCUMENTO OBLIGATORIAMENTE HASTA LA SECCIÓN X (RECURSOS Y FIRMAS). QUEDA PROHIBIDO CORTAR O DEJAR INCOMPLETA LA UNIDAD AL FINAL.
+2. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), DESARROLLA CADA UNA DE LAS {duracion_semanas} SESIONES DE FORMA CLARA Y CONCISA (Criterios de 1 a 2 líneas cada uno para optimizar espacio y garantizar que el documento se genere hasta el final). ESTÁ PROHIBIDO PONER PUNTOS SUSPENSIVOS (...), RESÚMENES O OMITIR SESIONES.
+3. EN LA MATRIZ DE PLANIFICACIÓN: TRANSCRIBE EL ESTÁNDAR COMPLETO DEL CNEB EN LA PARTE SUPERIOR DE CADA SESIÓN CON NEGRITA EN LA PARTE EVALUADA, Y EL DESEMPEÑO COMPLETO EN LA COLUMNA CORRESPONDIENTE CON NEGRITA EN LO UTILIZADO Y PRECISADO.
+4. COMPLETA SIEMPRE LA SECCIÓN IX (SECUENCIA DE SESIONES CON SUS PROPÓSITOS Y REPRESENTACIONES GRÁFICAS) Y LA SECCIÓN X (RECURSOS Y ESPACIO PARA FIRMAS DE DIRECTORA Y DOCENTE).
 
 DATOS OFICIALES EXTRAÍDOS DEL CNEB DE EDUCACIÓN FÍSICA PARA UTILIZAR EN ESTA UNIDAD ({grado_seccion} - {ciclo_actual}):
 {cneb_datos_text}
@@ -676,7 +676,7 @@ Desarrolla {duracion_semanas} bloques de tablas independientes (uno por cada ses
 9. IX. SECUENCIA DE SESIONES (Formato Tabla)
 Genera una tabla completa para las {duracion_semanas} sesiones detallando:
 | N° | Título de la actividad | Propósito de la actividad | Representación gráfica |
-- El propósito debe ser detallado e incluir la secuencia metodológica (calentamiento/activación, desarrollo motriz/juego, hábitos de higiene personal y reflexión).
+- El propósito debe ser explícito e incluir la secuencia metodológica (calentamiento/activación, desarrollo motriz/juego, hábitos de higiene personal y reflexión).
 - La representación gráfica describe brevemente el esquema visual o distribución de materiales en el patio.
 
 10. X. RECURSOS
