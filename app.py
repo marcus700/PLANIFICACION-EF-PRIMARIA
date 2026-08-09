@@ -810,7 +810,7 @@ Coloca la tabla con las Competencias Transversales que se emplean en la sesión 
   2. **Metacognición motriz:** Redacta de 3 a 4 preguntas reflexivas pedagógicas explícitas (ej. ¿Qué aprendimos sobre nuestro cuerpo hoy? ¿Cómo superamos las dificultades en el juego? ¿Para qué nos sirve lo aprendido?).
   3. **Rutina Obligatoria de Higiene Personal:** Describe en detalle la práctica autónoma de aseo personal, lavado de manos con agua y jabón, secado con toalla y cambio de polo deportivo al concluir la clase.
 
-8. TABLA VI: LISTA DE COTEJO DE EDUCACIÓN FÍSICA (Tabla con criterios de evaluación y 30 estudiantes ficticios).
+8. TABLA VI: LISTA DE COTEJO DE EDUCACIÓN FÍSICA (Tabla con criterios de evaluación y 03 estudiantes ficticios).
 """
 
 # ==============================================================================
