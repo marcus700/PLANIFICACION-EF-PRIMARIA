@@ -64,7 +64,7 @@ CNEB_EF_PRIMARIA = {
     },
     "Asume una vida saludable": {
         "estandares": {
-            "III Ciclo": "Asume una vida saludable cuando diferencia los alimentos saludables de su dieta familiar, los momentos adecuados para ingerirlos y las posturas que lo ayudan al buen desempeño en la práctica de actividad física y de la vida cotidiana, reconociendo la importancia del autocuidado. Participa regularly en la práctica de actividades lúdicas identificando su ritmo cardiaco, respiración y sudoración; utiliza prácticas de activación corporal y psicológica antes de la actividad lúdica.",
+            "III Ciclo": "Asume una vida saludable cuando diferencia los alimentos saludables de su dieta familiar, los momentos adecuados para ingerirlos y las posturas que lo ayudan al buen desempeño en la práctica de actividad física y de la vida cotidiana, reconociendo la importancia del autocuidado. Participa regularmente en la práctica de actividades lúdicas identificando su ritmo cardiaco, respiración y sudoración; utiliza prácticas de activación corporal y psicológica antes de la actividad lúdica.",
             "IV Ciclo": "Asume una vida saludable cuando diferencia los alimentos de su dieta familiar y de su región que son saludables de los que no lo son. Previene riesgos relacionados con la postura e higiene conociendo aquellas que favorecen y no favorecen su salud e identifica su fuerza, resistencia y velocidad en la práctica de actividades lúdicas. Adapta su esfuerzo en la práctica de actividad física de acuerdo a las características de la actividad y a sus posibilidades, aplicando conocimientos relacionados con el ritmo cardiaco, la respiración y la sudoración. Realiza prácticas de activación corporal y psicológica, e incorpora el autocuidado relacionado con los ritmos de actividad y descanso para mejorar el funcionamiento de su organismo.",
             "V Ciclo": "Asume una vida saludable cuando utiliza instrumentos que miden la aptitud física y estado nutricional e interpreta la información de los resultados obtenidos para mejorar su calidad de vida. Replantea sus hábitos higiénicos y alimenticios tomando en cuenta los cambios físicos propios de la edad, evita la realización de ejercicios y posturas contraindicadas para la salud en la práctica de actividad física. Incorpora prácticas saludables para su organismo consumiendo alimentos adecuados a las características personales y evitando el consumo de drogas. Propone ejercicios de activación y relajación antes, durante y después de la práctica y participa en actividad física de distinta intensidad regulando su esfuerzo."
         },
@@ -563,6 +563,7 @@ if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
 
     fechas_duracion = fecha_sugerida
     duracion_semanas = 1
+    sesiones_por_semana = 1
     producto_unidad = ""
     problema_contexto = titulo_sesion_input.strip() if titulo_sesion_input.strip() else "Desarrollo de nociones espaciales, coordinación motriz y convivencia en juegos de Educación Física."
 
@@ -577,19 +578,22 @@ elif tipo_documento == "Ficha de Trabajo / Autoevaluación EF":
     
     fechas_duracion = fecha_sugerida
     duracion_semanas = 1
+    sesiones_por_semana = 1
     producto_unidad = ""
     problema_contexto = st.text_area("📋 Describe el Tema de la Ficha:", height=100, value="Autoevaluación de desplazamientos, normas de juego y hábitos de higiene en Educación Física.")
 
 else:  # Unidad o Proyecto EF
-    f1, f2, f3, f4 = st.columns(4)
+    f1, f2, f3, f4, f5 = st.columns(5)
     with f1:
         num_doc = st.text_input("N.° de Unidad / Proyecto:", "04")
     with f2:
         fechas_duracion = st.text_input("Fechas / Periodo:", "Del 22 de junio al 17 de julio de 2026")
-        fecha_sugerida = fechas_duracion  # Garantiza que ambas variables existan
+        fecha_sugerida = fechas_duracion  # Garantiza que ambas variables existan siempre
     with f3:
         duracion_semanas = st.slider("Número de Semanas:", min_value=2, max_value=8, value=4)
     with f4:
+        sesiones_por_semana = st.selectbox("Sesiones por Semana:", [1, 2, 3], index=1)
+    with f5:
         producto_unidad = st.text_input("Producto Final Tangible:", "Festival Lúdico-Motor Peruanito")
         duracion_sesion = "90 minutos"
 
@@ -610,6 +614,8 @@ def generar_prompt_unidad_ef_10_secciones():
         des_list = comp_info["desempenos"].get(grado_seccion, [])
         cneb_datos_text += f"\n\nCOMPETENCIA: {comp_nombre}\nESTÁNDAR OFICIAL ({ciclo_actual}):\n{est_txt}\nDESEMPEÑOS OFICIALES ({grado_seccion}):\n" + "\n".join(des_list)
 
+    total_sesiones_unidad = duracion_semanas * sesiones_por_semana
+
     return f"""
 Actúa como un especialista en currículo educativo peruano y docente experto en el área de Educación Física para Educación Básica Regular (CNEB). 
 
@@ -617,7 +623,7 @@ Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa, extensa, rigurosa y ali
 
 🚨 REGLAS CRÍTICAS DE COMPLETITUD Y ESTRUCTURA (OBLIGATORIO LLEGAR HASTA LA SECCIÓN X):
 1. DEBES FINALIZAR EL DOCUMENTO OBLIGATORIAMENTE HASTA LA SECCIÓN X (RECURSOS Y FIRMAS). QUEDA PROHIBIDO CORTAR O DEJAR INCOMPLETA LA UNIDAD AL FINAL.
-2. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), DESARROLLA CADA UNA DE LAS {duracion_semanas} SESIONES DE FORMA CLARA Y CONCISA (Criterios de 1 a 2 líneas cada uno para optimizar espacio y garantizar que el documento se genere hasta el final). ESTÁ PROHIBIDO PONER PUNTOS SUSPENSIVOS (...), RESÚMENES O OMITIR SESIONES.
+2. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), DESARROLLA CADA UNA DE LAS {total_sesiones_unidad} SESIONES DE FORMA CLARA Y CONCISA ({duracion_semanas} semanas, {sesiones_por_semana} sesión(es) por semana). ESTÁ PROHIBIDO PONER PUNTOS SUSPENSIVOS (...), RESÚMENES O OMITIR SESIONES.
 3. EN LA MATRIZ DE PLANIFICACIÓN: TRANSCRIBE EL ESTÁNDAR COMPLETO DEL CNEB EN LA PARTE SUPERIOR DE CADA SESIÓN CON NEGRITA EN LA PARTE EVALUADA, Y EL DESEMPEÑO COMPLETO EN LA COLUMNA CORRESPONDIENTE CON NEGRITA EN LO UTILIZADO Y PRECISADO.
 4. COMPLETA SIEMPRE LA SECCIÓN IX (SECUENCIA DE SESIONES CON SUS PROPÓSITOS Y REPRESENTACIONES GRÁFICAS) Y LA SECCIÓN X (RECURSOS Y ESPACIO PARA FIRMAS DE DIRECTORA Y DOCENTE).
 
@@ -630,7 +636,7 @@ DATOS PARA LA GENERACIÓN:
 - Nombre de la IE: {ie_nombre}
 - Nombre del Docente: {docente}
 - Nombre del Director(a): {director}
-- Duración / Fechas: {duracion_semanas} semanas ({fechas_duracion})
+- Duración / Fechas: {duracion_semanas} semanas ({total_sesiones_unidad} sesiones en total, {sesiones_por_semana} por semana) - ({fechas_duracion})
 - Tema central / Problemática a abordar: {problema_contexto}
 - Producto de la Unidad: {producto_unidad}
 
@@ -666,8 +672,8 @@ ESTRUCTURA OBLIGATORIA DE LA UNIDAD DE APRENDIZAJE DE EDUCACIÓN FÍSICA:
   * Competencia 2: Asume una vida saludable.
   * Competencia 3: Interactúa a través de sus habilidades sociomotrices.
 
-8. VIII. MATRIZ DE PLANIFICACIÓN (Formato Tabla detallado por las {duracion_semanas} sesiones)
-Desarrolla {duracion_semanas} bloques de tablas independientes (uno por cada sesión/semana):
+8. VIII. MATRIZ DE PLANIFICACIÓN (Formato Tabla detallado por las {total_sesiones_unidad} sesiones)
+Desarrolla {total_sesiones_unidad} bloques de tablas independientes (uno por cada sesión):
 - En la parte superior de cada bloque de sesión, incluye la fila con el ESTÁNDAR COMPLETO del CNEB correspondiente a la competencia evaluada, redactado de manera íntegra (sin modificar ni alterar su texto original), RESALTANDO EN NEGRITA la parte específica que se trabaja/evalúa en esa actividad.
 - Columnas de la Matriz por cada sesión:
   | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño | Criterios de Evaluación | Evidencia y Producto | Instrumento de Evaluación |
@@ -675,7 +681,7 @@ Desarrolla {duracion_semanas} bloques de tablas independientes (uno por cada ses
 *NOTA: NO incluir la columna "Propósito" en la Matriz de Planificación.*
 
 9. IX. SECUENCIA DE SESIONES (Formato Tabla)
-Genera una tabla completa para las {duracion_semanas} sesiones detallando:
+Genera una tabla completa para las {total_sesiones_unidad} sesiones detallando:
 | N° | Título de la actividad | Propósito de la actividad | Representación gráfica |
 - El propósito debe ser explícito e incluir la secuencia metodológica (calentamiento/activación, desarrollo motriz/juego, hábitos de higiene personal y reflexión).
 - La representación gráfica describe brevemente el esquema visual o distribución de materiales en el patio.
@@ -693,7 +699,7 @@ def generar_prompt_proyecto_ef():
         des_list = comp_info["desempenos"].get(grado_seccion, [])
         cneb_datos_text += f"\n\nCOMPETENCIA: {comp_nombre}\nESTÁNDAR OFICIAL ({ciclo_actual}):\n{est_txt}\nDESEMPEÑOS OFICIALES ({grado_seccion}):\n" + "\n".join(des_list)
 
-    total_sesiones_estimadas = duracion_semanas * 2
+    total_sesiones_proyecto = duracion_semanas * sesiones_por_semana
 
     return f"""
 Actúa como un Especialista Pedagógico experto en Educación Física del Ministerio de Educación de Perú (MINEDU). Tu tarea es diseñar un Proyecto de Aprendizaje completo bajo el enfoque por competencias del Currículo Nacional de la Educación Básica (CNEB), manteniendo de manera estricta y detallada una estructura formal.
@@ -707,14 +713,14 @@ Para este nuevo proyecto, los datos de entrada son:
 - Institución Educativa: {ie_nombre}
 - Director(a): {director}
 - Docente de Ed. Física: {docente}
-- Duración y Frecuencia: {duracion_semanas} semanas, 2 sesiones por semana = {total_sesiones_estimadas} sesiones en total ({fechas_duracion})
+- Duración y Frecuencia: {duracion_semanas} semanas, {sesiones_por_semana} sesiones por semana = {total_sesiones_proyecto} sesiones en total ({fechas_duracion})
 - Tema o Problemática Central: {problema_contexto}
 - Producto Final: {producto_unidad}
 
 Genera el proyecto de manera exhaustiva respetando fielmente las siguientes secciones:
 
 I. DATOS GENERALES:
-Muestra la tabla de Datos Informativos con: DRE / UGEL ({dre_ugel}), I.E. ({ie_nombre}), Director ({director}), Docente ({docente}), Grado y Sección ({grado_seccion} - {ciclo_actual}), Duración ({duracion_semanas} semanas, {total_sesiones_estimadas} sesiones, {fechas_duracion}).
+Muestra la tabla de Datos Informativos con: DRE / UGEL ({dre_ugel}), I.E. ({ie_nombre}), Director ({director}), Docente ({docente}), Grado y Sección ({grado_seccion} - {ciclo_actual}), Duración ({duracion_semanas} semanas, {total_sesiones_proyecto} sesiones en total, {fechas_duracion}).
 
 II. TÍTULO DEL PROYECTO: Redacta un título motivador entre comillas que evidencie el producto y el propósito (Ejemplo: "¡{producto_unidad.upper()} PARA PROMOVER LA VIDA SALUDABLE!").
 
@@ -735,12 +741,23 @@ Organiza la matriz dividida por cada Competencia del área que intervenga (Se de
   7. Instrumento de Evaluación: Indica la herramienta de calificación formativa (Lista de cotejo, rúbrica, escala de valoración, etc.).
 
 VII. PLANIFICACIÓN CRONOLÓGICA DETALLADA DE LAS SESIONES:
-Desglosa secuencialmente el total de {total_sesiones_estimadas} sesiones indicadas. Para cada sesión individual, debes incluir de forma obligatoria su número, su título entre comillas y un resumen de las actividades estructuradas en tres momentos pedagógicos explícitos:
-- Inicio: (Motivación, saberes previos y propósito)
-- Desarrollo: (Práctica corporal, estrategia o trabajo lúdico)
-- Cierre: (Vuelta a la calma, respiración y reflexión metacognitiva)
+Desglosa secuencialmente las {total_sesiones_proyecto} sesiones indicadas ({duracion_semanas} semanas, {sesiones_por_semana} sesión(es) por semana). Presenta OBLIGATORIAMENTE una tabla con exactamente las siguientes 3 COLUMNAS:
+| Denominación de la sesión | Propósito detallado de la sesión | Representación gráfica |
+- Denominación de la sesión: Número y título motivador de la sesión entre comillas (ejemplo: Sesión 1: "Descubrimos trayectorias en el patio").
+- Propósito detallado de la sesión: Explicación pedagógica explícita que incluya la secuencia metodológica (activación corporal/calentamiento, desarrollo motriz/juego práctico y rutina de higiene personal).
+- Representación gráfica: Descripción breve de la imagen, esquema visual o distribución de materiales en el patio que representa la sesión.
 
-VIII. MATERIALES Y RECURSOS: Una lista detallada de los insumos necesarios para llevar a cabo el proyecto práctico en el patio o aula.
+VIII. PRODUCTOS DEL PROYECTO
+- Producto Intangible / Práctico: (Ej. Festival deportivo, Mini olimpiadas, Gincana, Circuito motriz demostrativo).
+- Producto Tangible: {producto_unidad} (Ej. Cartelera de compromisos de salud, mapa del circuito de juegos, etc.).
+
+IX. RECURSOS Y MATERIALES
+Detallar exhaustivamente:
+- Material deportivo del patio (conos, aros, pelotas, cuerdas, silbato).
+- Material reciclado / alternativo.
+- Material de señalización y kit de aseo (jabón, toalla, polo de repuesto).
+- Espacios educativos (patio, losa deportiva, campo).
+- Fecha y espacio para firmas (Directora y Docente de Educación Física).
 """
 
 def generar_prompt_sesion_ef():
