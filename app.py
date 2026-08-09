@@ -19,7 +19,7 @@ import streamlit as st
 from cneb_datos import CNEB_PRIMARIA, obtener_ciclo_primaria
 
 def normalizar_grado_cneb(grado_str: str) -> str:
-    """Convierte las opciones del formulario al formato exacto de la llave en cneb_datos.py"""
+    """Mapea la opción seleccionada al formato de llave exacta en cneb_datos.py"""
     if "1" in grado_str: return "1° de Primaria"
     if "2" in grado_str: return "2° de Primaria"
     if "3" in grado_str: return "3° de Primaria"
@@ -29,7 +29,7 @@ def normalizar_grado_cneb(grado_str: str) -> str:
     return "2° de Primaria"
 
 # ==============================================================================
-# CONFIGURACIÓN DE PÁGINA Y CSS PLANIFICAPRIMARIA (EDUCACIÓN FÍSICA)
+# CONFIGURACIÓN DE PÁGINA Y CSS MEJORADO PARA ALTA VISIBILIDAD DE BOTONES
 # ==============================================================================
 st.set_page_config(
     page_title="PlanificaEF Primaria - Plataforma de Educación Física",
@@ -484,7 +484,6 @@ else:  # Unidad o Proyecto EF
 # ==============================================================================
 
 def generar_prompt_unidad_ef_10_secciones():
-    # Extraemos directamente desde cneb_datos.py
     cneb_datos_text = ""
     for comp_nombre, comp_info in CNEB_PRIMARIA.items():
         est_txt = comp_info["estandares"].get(ciclo_actual, "")
@@ -496,7 +495,7 @@ def generar_prompt_unidad_ef_10_secciones():
     return f"""
 Actúa como un especialista en currículo educativo peruano y docente experto en el área de Educación Física para Educación Básica Regular (CNEB). 
 
-Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa, extensa, rigurosa y alineada al Currículo Nacional (CNEB), siguiendo estrictamente las 10 secciones obligatorias sin cortar el documento al final.
+Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa, extensa, rigurosa y alineada al Currículo Nacional (CNEB), siguiendo strictly las 10 secciones obligatorias sin cortar el documento al final.
 
 🚨 REGLAS CRÍTICAS DE COMPLETITUD Y SÍNTESIS DE CELDAS (OBLIGATORIO LLEGAR HASTA LA SECCIÓN X):
 1. DEBES FINALIZAR EL DOCUMENTO OBLIGATORIAMENTE HASTA LA SECCIÓN X (RECURSOS Y FIRMAS). QUEDA STRICTAMENTE PROHIBIDO DEJAR EL DOCUMENTO INCOMPLETO.
@@ -569,7 +568,6 @@ Genera una tabla completa para las {total_sesiones_unidad} sesiones detallando (
 """
 
 def generar_prompt_proyecto_ef():
-    # Extraemos directamente desde cneb_datos.py
     cneb_datos_text = ""
     for comp_nombre, comp_info in CNEB_PRIMARIA.items():
         est_txt = comp_info["estandares"].get(ciclo_actual, "")
