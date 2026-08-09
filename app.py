@@ -359,7 +359,7 @@ with col_b1:
 
 with col_b2:
     if st.button("🚀 Proyecto de Aprendizaje", key="btn_proyecto", use_container_width=True):
-        st.session_state['tipo_documento'] = "Proyecto de Apredizaje"
+        st.session_state['tipo_documento'] = "Proyecto de Aprendizaje"
         st.rerun()
 
 with col_b3:
