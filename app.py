@@ -14,146 +14,19 @@ from google.genai import types
 import streamlit as st
 
 # ==============================================================================
-# BASE DE DATOS EXACTA CNEB EDUCACIÓN FÍSICA PRIMARIA (MINEDU PERÚ)
+# IMPORTACIÓN DESDE TU BASE DE DATOS EXTERNA (cneb_datos.py)
 # ==============================================================================
-CNEB_EF_PRIMARIA = {
-    "Se desenvuelve de manera autónoma a través de su motricidad": {
-        "estandares": {
-            "III Ciclo": "Se desenvuelve de manera autónoma a través de su motricidad cuando comprende cómo usar su cuerpo en las diferentes acciones que realiza utilizando su lado dominante y realiza movimientos coordinados que le ayudan a sentirse seguro en la práctica de actividades físicas. Se orienta espacialmente en relación a sí mismo y a otros puntos de referencia. Se expresa corporalmente con sus pares de diferentes utilizando el ritmo, gestos y movimientos como recursos para comunicar.",
-            "IV Ciclo": "Se desenvuelve de manera autónoma a través de su motricidad cuando comprende cómo usar su cuerpo explorando la alternancia de sus lados corporales de acuerdo a su utilidad y ajustando la posición del cuerpo en el espacio y en el tiempo en diferentes etapas de las acciones motrices, con una actitud positiva y una voluntad de experimentar situaciones diversas. Experimenta nuevas posibilidades expresivas de su cuerpo y las utiliza para relacionarse y comunicar ideas, emociones, sentimientos, pensamientos.",
-            "V Ciclo": "Se desenvuelve de manera autónoma a través de su motricidad cuando acepta sus posibilidades y limitaciones según su desarrollo e imagen corporal. Realiza secuencias de movimientos coordinados aplicando la alternancia de sus lados corporales de acuerdo a su utilidad. Produce con sus pares secuencias de movimientos corporales, expresivos o rítmicos en relación a una intención."
-        },
-        "desempenos": {
-            "1er Grado A": [
-                "Es autónomo al explorar las posibilidades de su cuerpo en diferentes acciones para mejorar sus movimientos (saltar, correr, lanzar) al mantener y/o recuperar el equilibrio en el espacio y con los objetos.",
-                "Se orienta a través de sus nociones espacio-temporales (arriba - abajo, dentro - fuera, cerca - lejos) en relación a sí mismo.",
-                "Descubre nuevos movimientos y gestos para representar objetos, personajes y estados de ánimo y ritmos sencillos.",
-                "Se expresa motrizmente para comunicar sus emociones y representa en el juego acciones cotidianas de su familia y comunidad."
-            ],
-            "2do Grado A": [
-                "Explora de manera autónoma sus posibilidades de movimiento al realizar con seguridad y confianza habilidades motrices básicas realizando movimientos coordinados.",
-                "Se orienta en el espacio y tiempo en relación a sí mismo y a otros puntos de referencia, reconociendo su lado derecho e izquierdo y sus posibilidades de equilibrio en acciones lúdicas.",
-                "Resuelve situaciones motrices al utilizar su lenguaje corporal (gesto, contacto visual, actitud corporal) para comunicarse mejor.",
-                "Utiliza su cuerpo y el movimiento para expresar ideas y emociones en la práctica de actividades lúdicas con diferentes tipos de ritmos."
-            ],
-            "3er Grado A": [
-                "Reconoce la izquierda y derecha en relación a objetos y en sus pares para mejorar sus posibilidades de movimiento en acciones lúdicas.",
-                "Se orienta en un espacio y tiempo determinado en relación a sí mismo, objetos y compañeros, coordinando sus movimientos y regulando su equilibrio.",
-                "Resuelve situaciones motrices al utilizar su lenguaje corporal, verbal y sonoro para comunicar actitudes y estados de ánimo.",
-                "Vivencia el ritmo y se apropia de secuencias rítmicas corporales en situaciones de juego."
-            ],
-            "4to Grado A": [
-                "Regula la posición del cuerpo en situaciones de equilibrio con modificación del espacio teniendo como referencia la trayectoria de objetos y sus desplazamientos.",
-                "Alterna sus lados corporales de acuerdo a su utilidad/necesidad y se orienta en el espacio y tiempo en actividades lúdicas y predeportivas.",
-                "Utiliza su cuerpo (posturas, gestos y mímica) y diferentes movimientos para expresar formas, ideas, emociones y pensamientos.",
-                "Utiliza su lenguaje corporal para expresar su forma particular de moverse creando secuencias sencillas de movimiento."
-            ],
-            "5to Grado A": [
-                "Anticipa las acciones motrices a realizar en un espacio y tiempo para mejorar las posibilidades de respuesta en la acción aplicando alternancia corporal.",
-                "Pone en práctica las habilidades motrices específicas (carrera, salto y lanzamientos) para dar respuesta a situaciones motrices lúdicas y predeportivas.",
-                "Crea movimientos y desplazamientos rítmicos teniendo como base la música de su región.",
-                "Valora en sí mismo y en sus pares nuevas formas de movimiento y gestos corporales aceptando la diversidad de expresión."
-            ],
-            "6to Grado A": [
-                "Anticipa las acciones motrices a realizar en un espacio y tiempo para mejorar la respuesta aplicando alternancia de lados corporales según su preferencia.",
-                "Afianza las habilidades motrices específicas (carrera, salto y lanzamientos) a través de la regulación de su cuerpo en contextos predeportivos.",
-                "Aplica su lenguaje corporal para expresar su forma particular de moverse al asumir y adjudicar diferentes roles.",
-                "Crea con sus pares una secuencia de movimientos corporales, expresivos o rítmicos de manera programada y estructurada."
-            ]
-        }
-    },
-    "Asume una vida saludable": {
-        "estandares": {
-            "III Ciclo": "Asume una vida saludable cuando diferencia los alimentos saludables de su dieta familiar, los momentos adecuados para ingerirlos y las posturas que lo ayudan al buen desempeño en la práctica de actividad física y de la vida cotidiana, reconociendo la importancia del autocuidado. Participa regularmente en la práctica de actividades lúdicas identificando su ritmo cardiaco, respiración y sudoración; utiliza prácticas de activación corporal y psicológica antes de la actividad lúdica.",
-            "IV Ciclo": "Asume una vida saludable cuando diferencia los alimentos de su dieta familiar y de su región que son saludables de los que no lo son. Previene riesgos relacionados con la postura e higiene conociendo aquellas que favorecen y no favorecen su salud e identifica su fuerza, resistencia y velocidad en la práctica de actividades lúdicas. Adapta su esfuerzo en la práctica de actividad física de acuerdo a las características de la actividad y a sus posibilidades, aplicando conocimientos relacionados con el ritmo cardiaco, la respiración y la sudoración. Realiza prácticas de activación corporal y psicológica, e incorpora el autocuidado relacionado con los ritmos de actividad y descanso para mejorar el funcionamiento de su organismo.",
-            "V Ciclo": "Asume una vida saludable cuando utiliza instrumentos que miden la aptitud física y estado nutricional e interpreta la información de los resultados obtenidos para mejorar su calidad de vida. Replantea sus hábitos higiénicos y alimenticios tomando en cuenta los cambios físicos propios de la edad, evita la realización de ejercicios y posturas contraindicadas para la salud en la práctica de actividad física. Incorpora prácticas saludables para su organismo consumiendo alimentos adecuados a las características personales y evitando el consumo de drogas. Propone ejercicios de activación y relajación antes, durante y después de la práctica y participa en actividad física de distinta intensidad regulando su esfuerzo."
-        },
-        "desempenos": {
-            "1er Grado A": [
-                "Reconoce los alimentos de su dieta familiar y las posturas que son beneficiosas para su salud en la vida cotidiana y lúdica.",
-                "Identifica en sí mismo y en otros la diferencia entre inspiración y espiración, en reposo y movimiento, regulando su esfuerzo.",
-                "Realiza con autonomía prácticas de cuidado personal al asearse, vestirse y adoptar posturas adecuadas en el juego.",
-                "Busca satisfacer sus necesidades corporales cuando tiene sed y resuelve dificultades producidas por el cansancio e inactividad."
-            ],
-            "2do Grado A": [
-                "Comprende la importancia de la activación corporal (calentamiento) y psicológica antes de la actividad lúdica identificando signos como ritmo cardiaco, respiración y sudoración.",
-                "Reflexiona sobre los alimentos saludables de su dieta familiar/regional, la hidratación y las posturas adecuadas en la práctica física.",
-                "Incorpora prácticas de cuidado personal al asearse, vestirse y adoptar posturas adecuadas sin afectar su desempeño.",
-                "Reconoce la importancia del autocuidado regulando su esfuerzo en la práctica de actividades lúdicas."
-            ],
-            "3er Grado A": [
-                "Explica la importancia de la activación corporal (calentamiento) y psicológica que le ayuda a estar predispuesto a la actividad.",
-                "Diferencia los alimentos de su dieta familiar y regional que son saludables de los que no lo son para la actividad física.",
-                "Aplica los conocimientos de los beneficios de la actividad física relacionados con el ritmo cardiaco, respiración y sudoración adaptando su esfuerzo.",
-                "Incorpora el autocuidado relacionado con los ritmos de actividad-descanso para mejorar el funcionamiento de su organismo."
-            ],
-            "4to Grado A": [
-                "Selecciona actividades para la activación corporal y psicológica e identifica variaciones en la frecuencia cardiaca y respiratoria según el nivel de esfuerzo.",
-                "Selecciona e incorpora en su dieta alimentos nutritivos y energéticos de su región que contribuyen a la práctica física.",
-                "Incorpora el autocuidado relacionado con los ritmos de actividad-descanso, hidratación y protección solar.",
-                "Adopta posturas adecuadas para prevenir problemas musculares y óseos incorporando ritmos de descanso."
-            ],
-            "5to Grado A": [
-                "Identifica las condiciones que favorecen la aptitud física (pruebas físicas e IMC) para mejorar su calidad de vida.",
-                "Comprende los cambios físicos propios de la edad y su repercusión en la higiene en la práctica física y reflexión alimenticia.",
-                "Identifica posturas y ejercicios contraindicados para la salud en la práctica de actividad física.",
-                "Aplica los beneficios relacionados con la salud al realizar actividades de activación corporal, psicológica y de recuperación."
-            ],
-            "6to Grado A": [
-                "Conoce diferentes métodos de evaluación para determinar la aptitud física y selecciona los que mejor se adecúen a sus posibilidades.",
-                "Comprende la importancia de la actividad física incorporándola a su vida cotidiana e identifica cambios físicos e higiene.",
-                "Evita la realización de posturas y ejercicios contraindicados o cualquier práctica que perjudique su salud.",
-                "Previene hábitos perjudiciales para su organismo como comida chatarra, sedentarismo y desórdenes alimenticios."
-            ]
-        }
-    },
-    "Interactúa a través de sus habilidades sociomotrices": {
-        "estandares": {
-            "III Ciclo": "Interactúa a través de sus habilidades sociomotrices al aceptar al otro como compañero de juego y busca el consenso sobre la manera de jugar para lograr el bienestar común y muestra una actitud de respeto evitando juegos violentos y humillantes; expresa su posición ante un conflicto con intención de resolverlo y escucha la posición de sus compañeros en los diferentes tipos de juegos. Resuelve situaciones motrices a través de estrategias colectivas y participa en la construcción de reglas de juego adaptadas a la situación y al entorno, para lograr un objetivo común en la práctica de actividades lúdicas.",
-            "IV Ciclo": "Interactúa a través de sus habilidades sociomotrices al tomar acuerdos sobre la manera de jugar y los posibles cambios o conflictos que se den y propone adaptaciones o modificaciones para favorecer la inclusión de compañeros en actividades lúdicas, aceptando al oponente como compañero de juego. Adapta la estrategia de juego anticipando las intenciones de sus compañeros y oponentes para cumplir con los objetivos planteados. Propone reglas y las modifica de acuerdo a las necesidades del contexto y los intereses del grupo en la práctica de actividades físicas.",
-            "V Ciclo": "Interactúa a través de sus habilidades sociomotrices proactivamente con un sentido de cooperación teniendo en cuenta las adaptaciones o modificaciones propuestas por el grupo en diferentes actividades físicas. Hace uso de estrategias de cooperación y oposición seleccionando los diferentes elementos técnicos y tácticos que se pueden dar en la práctica de actividades lúdicas y predeportivas, para resolver la situación de juego que le dé un mejor resultado y que responda a las variaciones que se presentan en el entorno."
-        },
-        "desempenos": {
-            "1er Grado A": [
-                "Asume roles y funciones de manera individual y dentro de un grupo interactuando espontáneamente en actividades lúdicas.",
-                "Participa en juegos cooperativos y de oposición en parejas y pequeños grupos, aceptando al oponente como compañero de juego.",
-                "Propone soluciones a situaciones motrices poniéndose de acuerdo con sus pares y respetando las reglas de juego."
-            ],
-            "2do Grado A": [
-                "Participa en juegos cooperativos y de oposición tomando consensos sobre la manera de jugar y respetando al oponente.",
-                "Muestra una actitud de respeto en la práctica lúdica evitando juegos bruscos, amenazas o apodos e incluyendo a todos.",
-                "Resuelve de manera compartida situaciones en juegos tradicionales/autóctonos y adecúa reglas para la inclusión."
-            ],
-            "3er Grado A": [
-                "Propone cambios en las condiciones de juego para posibilitar la inclusión de sus pares, promoviendo el respeto y participación.",
-                "Participa en juegos cooperativos y de oposición aceptando al oponente como compañero de juego y tomando consensos.",
-                "Asocia el resultado favorable en el juego a la necesidad de generar estrategias colectivas conociendo el rol de cada integrante."
-            ],
-            "4to Grado A": [
-                "Propone normas y reglas en las actividades lúdicas modificándolas según las necesidades para favorecer la inclusión.",
-                "Propone juegos populares/tradicionales con adaptaciones consensuadas por el grupo respetando al oponente.",
-                "Adapta la estrategia de juego cuando prevé las intenciones de sus compañeros y oponentes para cumplir el objetivo."
-            ],
-            "5to Grado A": [
-                "Emplea la resolución reflexiva y el diálogo para solucionar conflictos surgidos durante la práctica de actividades lúdicas y predeportivas.",
-                "Realiza actividades lúdicas interactuando con compañeros y oponentes con respeto a las diferencias personales y cambio de roles.",
-                "Propone junto a sus pares soluciones estratégicas oportunas al practicar juegos tradicionales, autóctonos y predeportivos."
-            ],
-            "6to Grado A": [
-                "Participa en actividades en la naturaleza, eventos predeportivos y juegos populares tomando decisiones en favor del grupo con sentido solidario.",
-                "Modifica juegos y actividades para que se adecúen a las posibilidades del grupo y a la lógica del juego deportivo.",
-                "Discrimina y pone en práctica estrategias en actividades lúdicas, predeportivas y deportivas adecuando normas y soluciones tácticas."
-            ]
-        }
-    }
-}
+from cneb_datos import CNEB_PRIMARIA, obtener_ciclo_primaria
 
-def obtener_ciclo_ef(grado: str) -> str:
-    if "1er" in grado or "2do" in grado:
-        return "III Ciclo"
-    elif "3er" in grado or "4to" in grado:
-        return "IV Ciclo"
-    return "V Ciclo"
+def normalizar_grado_cneb(grado_str: str) -> str:
+    """Mapea la opción seleccionada al formato de llave exacta en cneb_datos.py"""
+    if "1" in grado_str: return "1° de Primaria"
+    if "2" in grado_str: return "2° de Primaria"
+    if "3" in grado_str: return "3° de Primaria"
+    if "4" in grado_str: return "4° de Primaria"
+    if "5" in grado_str: return "5° de Primaria"
+    if "6" in grado_str: return "6° de Primaria"
+    return "2° de Primaria"
 
 # ==============================================================================
 # CONFIGURACIÓN DE PÁGINA Y CSS MEJORADO PARA ALTA VISIBILIDAD DE BOTONES
