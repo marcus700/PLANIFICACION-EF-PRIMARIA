@@ -463,12 +463,12 @@ Actúa como un especialista en currículo educativo peruano y docente experto en
 
 Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa, extensa, rigurosa y alineada al Currículo Nacional (CNEB), siguiendo estrictamente las 10 secciones obligatorias sin cortar el documento al final.
 
-🚨 REGLAS CRÍTICAS DE COMPLETITUD Y SÍNTESIS DE CELDAS (OBLIGATORIO LLEGAR HASTA LA SECCIÓN X):
+🚨 REGLAS CRÍTICAS DE COMPLETITUD Y ESTRUCTURA ORGANIZADA POR COMPETENCIA (OBLIGATORIO LLEGAR HASTA LA SECCIÓN X):
 1. DEBES FINALIZAR EL DOCUMENTO OBLIGATORIAMENTE HASTA LA SECCIÓN X (RECURSOS Y FIRMAS DE DIRECTORA Y DOCENTE). QUEDA STRICTAMENTE PROHIBIDO DEJAR EL DOCUMENTO INCOMPLETO.
-2. SÍNTESIS EN TABLAS: MANTÉN EL TEXTO DENTRO DE LAS CELDAS DE LAS TABLAS DE FORMA SINTÉTICA Y CONCISA (1 A 2 LÍNEAS POR CELDA) PARA NUNCA EXCEDER EL LÍMITE DE MEMORIA Y LOGRAR DESARROLLAR LAS 10 SECCIONES ENTERAS.
-3. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), DESARROLLA CADA UNA DE LAS {total_sesiones_unidad} SESIONES ({duracion_semanas} semanas, {sesiones_por_semana} sesión(es) por semana). ESTÁ PROHIBIDO PONER PUNTOS SUSPENSIVOS (...) O SALTARSE SESIONES.
-4. EN LA MATRIZ DE PLANIFICACIÓN: TRANSCRIBE EL ESTÁNDAR COMPLETO DEL CNEB EN LA PARTE SUPERIOR DE CADA SESIÓN CON NEGRITA EN LA PARTE EVALUADA, Y EL DESEMPEÑO COMPLETO EN LA COLUMNA CORRESPONDIENTE CON NEGRITA EN LO UTILIZADO Y PRECISADO.
-5. COMPLETA SIEMPRE LA SECCIÓN IX (SECUENCIA DE SESIONES) Y LA SECCIÓN X (RECURSOS Y ESPACIO PARA FIRMAS).
+2. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), ORGANIZA LA MATRIZ SEPARADA COMPETENCIA POR COMPETENCIA (C1, C2, C3 de Educación Física).
+3. PARA CADA COMPETENCIA, COLOCA EN LA PARTE SUPERIOR SU ESTÁNDAR COMPLETO DEL CNEB CON NEGRITA EN LO EVALUADO, Y DESARROLLA CADA UNA DE SUS SESIONES ASOCIADAS ({total_sesiones_unidad} sesiones en total, {duracion_semanas} semanas).
+4. MANTÉN EL TEXTO DENTRO DE LAS CELDAS DE FORMA SINTÉTICA Y CONCISA (1 A 2 LÍNEAS POR CELDA) PARA NUNCA EXCEDER EL LÍMITE DE MEMORIA Y LOGRAR DESARROLLAR LAS 10 SECCIONES ENTERAS.
+5. COMPLETA SIEMPRE LA SECCIÓN IX (SECUENCIA DE SESIONES) Y LA SECCIÓN X (RECURSOS Y ESPACIO PARA FIRMAS DE DIRECTORA Y DOCENTE).
 
 DATOS OFICIALES EXTRAÍDOS DE cneb_datos.py PARA ESTA UNIDAD ({grado_seccion} - {ciclo_actual}):
 {cneb_datos_text}
@@ -515,11 +515,21 @@ ESTRUCTURA OBLIGATORIA DE LA UNIDAD DE APRENDIZAJE DE EDUCACIÓN FÍSICA:
   * Competencia 2: Asume una vida saludable.
   * Competencia 3: Interactúa a través de sus habilidades sociomotrices.
 
-8. VIII. MATRIZ DE PLANIFICACIÓN (Formato Tabla detallado por las {total_sesiones_unidad} sesiones)
-Desarrolla {total_sesiones_unidad} bloques de tablas independientes (uno por cada sesión):
-- En la parte superior de cada bloque de sesión, incluye la fila con el ESTÁNDAR COMPLETO del CNEB correspondiente a la competencia evaluada, redactado de manera íntegra (sin modificar ni alterar su texto original), RESALTANDO EN NEGRITA la parte específica que se trabaja/evalúa en esa actividad.
-- Columnas de la Matriz por cada sesión (Celdas sintéticas de 1 a 2 líneas):
-  | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño | Criterios de Evaluación | Evidencia y Producto | Instrumento de Evaluación |
+8. VIII. MATRIZ DE PLANIFICACIÓN (Formato Tabla organizado por Competencia)
+Desarrolla 3 bloques independientes, UNO POR CADA COMPETENCIA DE EDUCACIÓN FÍSICA:
+
+- **COMPETENCIA 1: Se desenvuelve de manera autónoma a través de su motricidad**
+  > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo transcrito literalmente sin recortar, con **negrita** en la parte movilizada]
+  | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño CNEB Completo (con **negrita**) | Criterios de Evaluación | Evidencia y Producto | Instrumento |
+
+- **COMPETENCIA 2: Asume una vida saludable**
+  > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo transcrito literalmente sin recortar, con **negrita** en la parte movilizada]
+  | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño CNEB Completo (con **negrita**) | Criterios de Evaluación | Evidencia y Producto | Instrumento |
+
+- **COMPETENCIA 3: Interactúa a través de sus habilidades sociomotrices**
+  > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo transcrito literalmente sin recortar, con **negrita** en la parte movilizada]
+  | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño CNEB Completo (con **negrita**) | Criterios de Evaluación | Evidencia y Producto | Instrumento |
+
 - REGLA DEL DESEMPEÑO: Redactado de manera COMPLETA tal cual aparece en el CNEB, RESALTANDO EN NEGRITA tanto la parte del desempeño utilizada como las palabras/términos agregados para su precisión y contextualización.
 *NOTA: NO incluir la columna "Propósito" en la Matriz de Planificación.*
 
@@ -546,7 +556,7 @@ def generar_prompt_proyecto_ef():
 Actúa como un Especialista Pedagógico experto en Educación Física del Ministerio de Educación de Perú (MINEDU). Tu tarea es diseñar un Proyecto de Aprendizaje completo bajo el enfoque por competencias del Currículo Nacional de la Educación Básica (CNEB), manteniendo de manera estricta y detallada una estructura formal sin cortar el documento al final.
 
 🚨 REGLAS CRÍTICAS DE COMPLETITUD Y SÍNTESIS EN TABLAS (OBLIGATORIO LLEGAR HASTA LA SECCIÓN IX):
-1. DEBES DESARROLLAR EL PROYECTO COMPLETO LLEGANDO OBLIGATORIAMENTE HASTA LA SECCIÓN IX (RECURSOS, MATERIALES Y FIRMAS DE DIRECTORA Y DOCENTE). QUEDA STRICTAMENTE PROHIBIDO CORTAR EL DOCUMENTO.
+1. DEBES DESARROLLAR EL PROYECTO COMPLETO LLEGANDO OBLIGATORIAMENTE HASTA LA SECCIÓN IX (RECURSOS Y MATERIALES Y FIRMAS DE DIRECTORA Y DOCENTE). QUEDA STRICTAMENTE PROHIBIDO CORTAR EL DOCUMENTO.
 2. MANTÉN LAS RESPUESTAS Y TEXTOS DENTRO DE LAS CELDAS DE LAS TABLAS DE FORMA SINTÉTICA Y CONCISA (1 A 2 LÍNEAS POR CELDA) PARA GARANTIZAR QUE EL DOCUMENTO SE GENERE COMPLETO.
 3. EN LA SECCIÓN VII (CUADRO CRONOLÓGICO DE SESIONES), DESARROLLA LAS {total_sesiones_proyecto} SESIONES ({duracion_semanas} semanas, {sesiones_por_semana} sesión(es) por semana) UNA POR UNA. ESTÁ PROHIBIDO USAR PUNTOS SUSPENSIVOS (...) O OMITIR SESIONES.
 4. EN LA SECCIÓN VI (MATRIZ DE PROPÓSITOS), ORGANIZA LA MATRIZ COMPETENCIA POR COMPETENCIA. Para cada competencia (C1, C2, C3), coloca arriba su Estándar COMPLETO con negrita en lo utilizado, y en la tabla transcribe el Desempeño COMPLETO con **negrita** en lo movilizado y precisado.
@@ -587,10 +597,27 @@ V. CUADRO DE NEGOCIACIÓN Y PLANIFICACIÓN CON LOS ESTUDIANTES
 Tabla sintética de 4 columnas (¿Qué queremos hacer?, ¿Cómo lo haremos?, ¿Qué necesitamos?, ¿Cómo nos daremos cuenta de que lo logramos?) con respuestas realistas de asamblea.
 
 VI. CUADRO DE PROPÓSITOS DE APRENDIZAJE Y EVALUACIÓN MATRIZADA (ORGANIZADO COMPETENCIA POR COMPETENCIA)
-Desarrolla 3 bloques independientes (uno por cada competencia de Educación Física: C1, C2, C3):
-- PARTE SUPERIOR DE CADA TABLA DE COMPETENCIA: Estándar COMPLETO del {ciclo_actual} del CNEB con **negrita** en la parte movilizada.
-- Tabla con 5 columnas por cada competencia:
-  | Sesión / Actividad | Desempeño CNEB Completo (con **negrita**) | 3 Criterios de Evaluación por Sesión | Evidencia de Aprendizaje | Instrumento de Evaluación |
+Desarrolla 3 bloques independientes, UNO POR CADA COMPETENCIA DE EDUCACIÓN FÍSICA:
+
+1. **COMPETENCIA 1: Se desenvuelve de manera autónoma a través de su motricidad**
+   > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo transcrito literalmente sin recortar, con **negrita** en la parte movilizada]
+   
+   Tabla de la Competencia 1 (con las sesiones asociadas a esta competencia):
+   | Sesión / Actividad | Desempeño CNEB Completo (con **negrita**) | 3 Criterios de Evaluación por Sesión | Evidencia de Aprendizaje | Instrumento de Evaluación |
+
+2. **COMPETENCIA 2: Asume una vida saludable**
+   > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo transcrito literalmente sin recortar, con **negrita** en la parte movilizada]
+   
+   Tabla de la Competencia 2 (con las sesiones asociadas a esta competencia):
+   | Sesión / Actividad | Desempeño CNEB Completo (con **negrita**) | 3 Criterios de Evaluación por Sesión | Evidencia de Aprendizaje | Instrumento de Evaluación |
+
+3. **COMPETENCIA 3: Interactúa a través de sus habilidades sociomotrices**
+   > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo transcrito literalmente sin recortar, con **negrita** en la parte movilizada]
+   
+   Tabla de la Competencia 3 (con las sesiones asociadas a esta competencia):
+   | Sesión / Actividad | Desempeño CNEB Completo (con **negrita**) | 3 Criterios de Evaluación por Sesión | Evidencia de Aprendizaje | Instrumento de Evaluación |
+
+*REGLA DEL DESEMPEÑO EN CADA TABLA: Copia el desempeño oficial completo del CNEB para {grado_seccion}, RESALTANDO EN NEGRITA lo utilizado y la precisión/contexto agregado.*
 
 VII. PLANIFICACIÓN CRONOLÓGICA DETALLADA DE LAS SESIONES
 Desglosa secuencialmente las {total_sesiones_proyecto} sesiones. Tabla obligatoria de 3 COLUMNAS:
@@ -687,22 +714,6 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 8. TABLA VI: LISTA DE COTEJO DE EDUCACIÓN FÍSICA (Genera una tabla limpia con los criterios de evaluación y 8 a 10 estudiantes ficticios representativos para optimizar espacio y garantizar la completitud del documento).
 """
 
-def generar_prompt_ficha_ef():
-    return f"""
-Actúa como Especialista en Educación Física Primaria CNEB.
-Elabora una FICHA DE TRABAJO Y AUTOEVALUACIÓN DE EDUCACIÓN FÍSICA PARA EL ESTUDIANTE sobre {problema_contexto} para {grado_seccion}.
-
-ESTRUCTURA REQUERIDA:
-# **FICHA DE AUTOEVALUACIÓN Y SALUD EN EDUCACIÓN FÍSICA N.º {num_doc}**
-## **{problema_contexto.upper()}**
-
-- DATOS INFORMATIVOS (IE: {ie_nombre}, Estudiante: ___________________, Grado: {grado_seccion}, Fecha: {fecha_sugerida}).
-- PROPÓSITO DEL DÍA (Explicado para niños).
-- SECCIÓN 1: MIS REACCIONES CORPORALES (Dibujar o marcar ritmo cardiaco, sudoración y respiración tras el juego).
-- SECCIÓN 2: MI COMPROMISO DE HIGIENE Y SALUD (Marcar con check la rutina de aseo personal realizada).
-- SECCIÓN 3: FICHA DE AUTOEVALUACIÓN MOTRIZ Y CONVIVENCIA (Tabla con emoticones para autoevaluarse).
-"""
-
 # ==============================================================================
 # EJECUCIÓN CON SISTEMA DUAL ROBUSTO ANTI-404 Y COMPLETITUD
 # ==============================================================================
@@ -721,10 +732,8 @@ if st.button(f"✨ Generar {tipo_documento}"):
                 prompt_maestro = generar_prompt_unidad_ef_10_secciones()
             elif tipo_documento == "Proyecto de Aprendizaje":
                 prompt_maestro = generar_prompt_proyecto_ef()
-            elif tipo_documento == "Sesión de Aprendizaje de Ed. Física":
-                prompt_maestro = generar_prompt_sesion_ef()
             else:
-                prompt_maestro = generar_prompt_ficha_ef()
+                prompt_maestro = generar_prompt_sesion_ef()
 
             sys_inst = """Eres un Especialista Curricular del MINEDU Perú dedicado exclusivamente al área de Educación Física. Generas documentos pedagógicos completos en Markdown alineados estrictamente al CNEB.
 REGLA ABSOLUTA DE COMPLETITUD: Queda STRICTAMENTE PROHIBIDO recortar, abreviar o dejar incompletos los documentos al final.
@@ -737,7 +746,7 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                     max_output_tokens=8192
                 )
                 
-                # LISTA DE MODELOS ESTABLES CON RESPALDO AUTOMÁTICO EN CASO DE 404 (RUTAS OFICIALES Y ACTIVAS)
+                # LISTA DE MODELOS ESTABLES CON RESPALDO AUTOMÁTICO EN CASO DE 404
                 modelos_a_probar = [
                     model_choice,
                     "gemini-2.5-flash",
