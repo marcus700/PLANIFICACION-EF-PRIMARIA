@@ -186,7 +186,7 @@ if 'fname_clean' not in st.session_state:
 if 'tipo_documento' not in st.session_state:
     st.session_state['tipo_documento'] = "Unidad de Aprendizaje"
 
-# SIDEBAR CON MODELOS VIGENTES Y ESTABLES DE GOOGLE STUDIO
+# SIDEBAR CON MODELOS ESTABLES DE GOOGLE STUDIO
 st.sidebar.title("⚙️ Configuración EF")
 if st.sidebar.button("🔒 Cerrar Sesión"):
     st.session_state["password_correct"] = False
@@ -199,10 +199,10 @@ if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_API_KEY"]:
 else:
     api_key = st.sidebar.text_input("🔑 Google AI Studio API Key:", type="password")
 
-# OPCIONES DE MODELOS OFICIALES, ACTIVOS Y ESTABLES
+# OPCIONES DE MODELOS OFICIALES Y ESTABLES
 model_choice = st.sidebar.selectbox(
     "Modelo de Gemini:", 
-    ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-pro", "gemini-3.5-flash", "gemini-3.6-flash"]
+    ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
 )
 
 # ==============================================================================
@@ -546,10 +546,10 @@ def generar_prompt_proyecto_ef():
 Actúa como un Especialista Pedagógico experto en Educación Física del Ministerio de Educación de Perú (MINEDU). Tu tarea es diseñar un Proyecto de Aprendizaje completo bajo el enfoque por competencias del Currículo Nacional de la Educación Básica (CNEB), manteniendo de manera estricta y detallada una estructura formal sin cortar el documento al final.
 
 🚨 REGLAS CRÍTICAS DE COMPLETITUD Y SÍNTESIS EN TABLAS (OBLIGATORIO LLEGAR HASTA LA SECCIÓN IX):
-1. DEBES DESARROLLAR EL PROYECTO COMPLETO LLEGANDO OBLIGATORIAMENTE HASTA LA SECCIÓN IX (RECURSOS Y MATERIALES Y FIRMAS DE DIRECTORA Y DOCENTE). QUEDA STRICTAMENTE PROHIBIDO CORTAR EL DOCUMENTO.
+1. DEBES DESARROLLAR EL PROYECTO COMPLETO LLEGANDO OBLIGATORIAMENTE HASTA LA SECCIÓN IX (RECURSOS, MATERIALES Y FIRMAS DE DIRECTORA Y DOCENTE). QUEDA STRICTAMENTE PROHIBIDO CORTAR EL DOCUMENTO.
 2. MANTÉN LAS RESPUESTAS Y TEXTOS DENTRO DE LAS CELDAS DE LAS TABLAS DE FORMA SINTÉTICA Y CONCISA (1 A 2 LÍNEAS POR CELDA) PARA GARANTIZAR QUE EL DOCUMENTO SE GENERE COMPLETO.
 3. EN LA SECCIÓN VII (CUADRO CRONOLÓGICO DE SESIONES), DESARROLLA LAS {total_sesiones_proyecto} SESIONES ({duracion_semanas} semanas, {sesiones_por_semana} sesión(es) por semana) UNA POR UNA. ESTÁ PROHIBIDO USAR PUNTOS SUSPENSIVOS (...) O OMITIR SESIONES.
-4. EN LA SECCIÓN VI (MATRIZ DE PROPÓSITOS), TRANSCRIBE EL ESTÁNDAR COMPLETO DEL CNEB EN LA PARTE SUPERIOR DE CADA TABLA CON NEGRITA EN LA PARTE TRABAJADA, Y EL DESEMPEÑO COMPLETO EN LA COLUMNA CORRESPONDIENTE CON NEGRITA EN LO UTILIZADO Y PRECISADO.
+4. EN LA SECCIÓN VI (MATRIZ DE PROPÓSITOS), ORGANIZA LA MATRIZ COMPETENCIA POR COMPETENCIA. Para cada competencia (C1, C2, C3), coloca arriba su Estándar COMPLETO con negrita en lo utilizado, y en la tabla transcribe el Desempeño COMPLETO con **negrita** en lo movilizado y precisado.
 
 DATOS OFICIALES EXTRAÍDOS DE cneb_datos.py PARA ESTE PROYECTO ({grado_seccion} - {ciclo_actual}):
 {cneb_datos_text}
@@ -586,11 +586,11 @@ Elabora una tabla con 1 o 2 enfoques transversales más pertinentes (Enfoque, Va
 V. CUADRO DE NEGOCIACIÓN Y PLANIFICACIÓN CON LOS ESTUDIANTES
 Tabla sintética de 4 columnas (¿Qué queremos hacer?, ¿Cómo lo haremos?, ¿Qué necesitamos?, ¿Cómo nos daremos cuenta de que lo logramos?) con respuestas realistas de asamblea.
 
-VI. CUADRO DE PROPÓSITOS DE APRENDIZAJE Y EVALUACIÓN MATRIZADA
-Organiza una tabla por competencia (C1, C2, C3 de Educación Física):
-- PARTE SUPERIOR DE CADA TABLA: Estándar COMPLETO del {ciclo_actual} del CNEB con **negrita** en la parte movilizada.
-- Tabla con 7 columnas (Celdas sintéticas y precisas):
-  | Actividad General por Semana | Sesiones Vinculadas | Estándar Completo (encima) | Desempeño Completo (con **negrita**) | 3 Criterios de Evaluación | Evidencia de Aprendizaje | Instrumento |
+VI. CUADRO DE PROPÓSITOS DE APRENDIZAJE Y EVALUACIÓN MATRIZADA (ORGANIZADO COMPETENCIA POR COMPETENCIA)
+Desarrolla 3 bloques independientes (uno por cada competencia de Educación Física: C1, C2, C3):
+- PARTE SUPERIOR DE CADA TABLA DE COMPETENCIA: Estándar COMPLETO del {ciclo_actual} del CNEB con **negrita** en la parte movilizada.
+- Tabla con 5 columnas por cada competencia:
+  | Sesión / Actividad | Desempeño CNEB Completo (con **negrita**) | 3 Criterios de Evaluación por Sesión | Evidencia de Aprendizaje | Instrumento de Evaluación |
 
 VII. PLANIFICACIÓN CRONOLÓGICA DETALLADA DE LAS SESIONES
 Desglosa secuencialmente las {total_sesiones_proyecto} sesiones. Tabla obligatoria de 3 COLUMNAS:
@@ -687,6 +687,22 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 8. TABLA VI: LISTA DE COTEJO DE EDUCACIÓN FÍSICA (Genera una tabla limpia con los criterios de evaluación y 8 a 10 estudiantes ficticios representativos para optimizar espacio y garantizar la completitud del documento).
 """
 
+def generar_prompt_ficha_ef():
+    return f"""
+Actúa como Especialista en Educación Física Primaria CNEB.
+Elabora una FICHA DE TRABAJO Y AUTOEVALUACIÓN DE EDUCACIÓN FÍSICA PARA EL ESTUDIANTE sobre {problema_contexto} para {grado_seccion}.
+
+ESTRUCTURA REQUERIDA:
+# **FICHA DE AUTOEVALUACIÓN Y SALUD EN EDUCACIÓN FÍSICA N.º {num_doc}**
+## **{problema_contexto.upper()}**
+
+- DATOS INFORMATIVOS (IE: {ie_nombre}, Estudiante: ___________________, Grado: {grado_seccion}, Fecha: {fecha_sugerida}).
+- PROPÓSITO DEL DÍA (Explicado para niños).
+- SECCIÓN 1: MIS REACCIONES CORPORALES (Dibujar o marcar ritmo cardiaco, sudoración y respiración tras el juego).
+- SECCIÓN 2: MI COMPROMISO DE HIGIENE Y SALUD (Marcar con check la rutina de aseo personal realizada).
+- SECCIÓN 3: FICHA DE AUTOEVALUACIÓN MOTRIZ Y CONVIVENCIA (Tabla con emoticones para autoevaluarse).
+"""
+
 # ==============================================================================
 # EJECUCIÓN CON SISTEMA DUAL ROBUSTO ANTI-404 Y COMPLETITUD
 # ==============================================================================
@@ -705,8 +721,10 @@ if st.button(f"✨ Generar {tipo_documento}"):
                 prompt_maestro = generar_prompt_unidad_ef_10_secciones()
             elif tipo_documento == "Proyecto de Aprendizaje":
                 prompt_maestro = generar_prompt_proyecto_ef()
-            else:
+            elif tipo_documento == "Sesión de Aprendizaje de Ed. Física":
                 prompt_maestro = generar_prompt_sesion_ef()
+            else:
+                prompt_maestro = generar_prompt_ficha_ef()
 
             sys_inst = """Eres un Especialista Curricular del MINEDU Perú dedicado exclusivamente al área de Educación Física. Generas documentos pedagógicos completos en Markdown alineados estrictamente al CNEB.
 REGLA ABSOLUTA DE COMPLETITUD: Queda STRICTAMENTE PROHIBIDO recortar, abreviar o dejar incompletos los documentos al final.
@@ -719,7 +737,7 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                     max_output_tokens=8192
                 )
                 
-                # LISTA DE MODELOS ESTABLES CON RESPALDO AUTOMÁTICO EN CASO DE 404 (USANDO RUTAS DE API ESTABLES)
+                # LISTA DE MODELOS ESTABLES CON RESPALDO AUTOMÁTICO EN CASO DE 404 (RUTAS OFICIALES Y ACTIVAS)
                 modelos_a_probar = [
                     model_choice,
                     "gemini-2.5-flash",
