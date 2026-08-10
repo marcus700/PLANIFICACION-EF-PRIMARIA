@@ -186,7 +186,7 @@ if 'fname_clean' not in st.session_state:
 if 'tipo_documento' not in st.session_state:
     st.session_state['tipo_documento'] = "Unidad de Aprendizaje"
 
-# SIDEBAR CON MODELOS OFICIALES Y ACTIVOS DE GOOGLE STUDIO
+# SIDEBAR CON MODELOS VIGENTES Y ESTABLES DE GOOGLE STUDIO
 st.sidebar.title("⚙️ Configuración EF")
 if st.sidebar.button("🔒 Cerrar Sesión"):
     st.session_state["password_correct"] = False
@@ -199,7 +199,7 @@ if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_API_KEY"]:
 else:
     api_key = st.sidebar.text_input("🔑 Google AI Studio API Key:", type="password")
 
-# MODELOS OFICIALES Y ACTIVOS
+# OPCIONES DE MODELOS OFICIALES, ACTIVOS Y ESTABLES
 model_choice = st.sidebar.selectbox(
     "Modelo de Gemini:", 
     ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-pro", "gemini-3.5-flash", "gemini-3.6-flash"]
@@ -719,12 +719,13 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                     max_output_tokens=8192
                 )
                 
-                # LISTA DE MODELOS ESTABLES CON RESPALDO AUTOMÁTICO EN CASO DE 404
+                # LISTA DE MODELOS ESTABLES CON RESPALDO AUTOMÁTICO EN CASO DE 404 (USANDO RUTAS DE API ESTABLES)
                 modelos_a_probar = [
                     model_choice,
+                    "gemini-2.5-flash",
                     "gemini-2.0-flash",
-                    "gemini-1.5-flash",
-                    "gemini-1.5-pro"
+                    "gemini-2.5-pro",
+                    "gemini-3.5-flash"
                 ]
                 
                 response = None
