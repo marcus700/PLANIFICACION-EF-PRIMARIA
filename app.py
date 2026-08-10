@@ -467,7 +467,7 @@ Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa, extensa, rigurosa y ali
 1. DEBES FINALIZAR EL DOCUMENTO OBLIGATORIAMENTE HASTA LA SECCIÓN X (RECURSOS Y FIRMAS DE DIRECTORA Y DOCENTE). QUEDA STRICTAMENTE PROHIBIDO DEJAR EL DOCUMENTO INCOMPLETO.
 2. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), ORGANIZA LA MATRIZ SEPARADA COMPETENCIA POR COMPETENCIA (C1, C2, C3 de Educación Física).
 3. PARA CADA COMPETENCIA, COLOCA EN LA PARTE SUPERIOR SU ESTÁNDAR COMPLETO DEL CNEB CON NEGRITA EN LO EVALUADO, Y DESARROLLA CADA UNA DE SUS SESIONES ASOCIADAS ({total_sesiones_unidad} sesiones en total, {duracion_semanas} semanas).
-4. REGLA OBLIGATORIA DE CRITERIOS: Para cada sesión individual de la matriz, debes formular OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles.
+4. REGLA OBLIGATORIA DE CRITERIOS: Para cada sesión individual de la matriz, debes formular OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles. Cada criterio debe estar redactado de forma fluida e integrada (Acción + Contenido + Condición) pero SIN ESCRIBIR NI MOSTRAR VISIBLEMENTE las palabras/etiquetas 'Acción:', 'Contenido:' ni 'Condición:' (debe ser una sola oración continua por criterio).
 5. MANTÉN EL TEXTO DENTRO DE LAS CELDAS DE FORMA SINTÉTICA Y CONCISA (1 A 2 LÍNEAS POR CELDA) PARA NUNCA EXCEDER EL LÍMITE DE MEMORIA Y LOGRAR DESARROLLAR LAS 10 SECCIONES ENTERAS.
 6. COMPLETA SIEMPRE LA SECCIÓN IX (SECUENCIA DE SESIONES) Y LA SECCIÓN X (RECURSOS Y ESPACIO PARA FIRMAS DE DIRECTORA Y DOCENTE).
 
@@ -521,15 +521,15 @@ Desarrolla 3 bloques independientes, UNO POR CADA COMPETENCIA DE EDUCACIÓN FÍS
 
 - **COMPETENCIA 1: Se desenvuelve de manera autónoma a través de su motricidad**
   > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo transcrito literalmente sin recortar, con **negrita** en la parte movilizada]
-  | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación por Sesión | Evidencia y Producto | Instrumento |
+  | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación por Sesión (Integrados sin etiquetas) | Evidencia y Producto | Instrumento |
 
 - **COMPETENCIA 2: Asume una vida saludable**
   > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo transcrito literalmente sin recortar, con **negrita** en la parte movilizada]
-  | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación por Sesión | Evidencia y Producto | Instrumento |
+  | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación por Sesión (Integrados sin etiquetas) | Evidencia y Producto | Instrumento |
 
 - **COMPETENCIA 3: Interactúa a través de sus habilidades sociomotrices**
   > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo transcrito literalmente sin recortar, con **negrita** en la parte movilizada]
-  | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación por Sesión | Evidencia y Producto | Instrumento |
+  | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación por Sesión (Integrados sin etiquetas) | Evidencia y Producto | Instrumento |
 
 - REGLA DEL DESEMPEÑO: Redactado de manera COMPLETA tal cual aparece en el CNEB, RESALTANDO EN NEGRITA tanto la parte del desempeño utilizada como las palabras/términos agregados para su precisión y contextualización.
 *NOTA: NO incluir la columna "Propósito" en la Matriz de Planificación.*
@@ -561,6 +561,7 @@ Actúa como un Especialista Pedagógico experto en Educación Física del Minist
 2. MANTÉN LAS RESPUESTAS Y TEXTOS DENTRO DE LAS CELDAS DE LAS TABLAS DE FORMA SINTÉTICA Y CONCISA (1 A 2 LÍNEAS POR CELDA) PARA GARANTIZAR QUE EL DOCUMENTO SE GENERE COMPLETO.
 3. EN LA SECCIÓN VII (CUADRO CRONOLÓGICO DE SESIONES), DESARROLLA LAS {total_sesiones_proyecto} SESIONES ({duracion_semanas} semanas, {sesiones_por_semana} sesión(es) por semana) UNA POR UNA EN LA TABLA DE 3 COLUMNAS. ESTÁ PROHIBIDO USAR PUNTOS SUSPENSIVOS (...) O OMITIR SESIONES.
 4. EN LA SECCIÓN VI (MATRIZ DE PROPÓSITOS), ORGANIZA LA MATRIZ COMPETENCIA POR COMPETENCIA (C1, C2, C3). Para cada competencia, coloca arriba su Estándar COMPLETO con negrita en lo utilizado, y en la tabla transcribe el Desempeño COMPLETO con **negrita** en lo movilizado y precisado, incluyendo OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN por cada sesión.
+5. REGLA OBLIGATORIA DE CRITERIOS: Cada criterio debe estar redactado de forma fluida e integrada (Acción + Contenido + Condición) pero SIN ESCRIBIR NI MOSTRAR VISIBLEMENTE las palabras/etiquetas 'Acción:', 'Contenido:' ni 'Condición:' (debe ser una sola oración continua por criterio).
 
 DATOS OFICIALES EXTRAÍDOS DE cneb_datos.py PARA ESTE PROYECTO ({grado_seccion} - {ciclo_actual}):
 {cneb_datos_text}
@@ -604,19 +605,19 @@ Desarrolla 3 bloques independientes, UNO POR CADA COMPETENCIA DE EDUCACIÓN FÍS
    > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo transcrito literalmente sin recortar, con **negrita** en la parte movilizada]
    
    Tabla de la Competencia 1 (con las sesiones asociadas a esta competencia):
-   | Sesión / Actividad | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación por Sesión | Evidencia de Aprendizaje | Instrumento de Evaluación |
+   | Sesión / Actividad | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación por Sesión (Integrados sin etiquetas) | Evidencia de Aprendizaje | Instrumento de Evaluación |
 
 2. **COMPETENCIA 2: Asume una vida saludable**
    > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo transcrito literalmente sin recortar, con **negrita** en la parte movilizada]
    
    Tabla de la Competencia 2 (con las sesiones asociadas a esta competencia):
-   | Sesión / Actividad | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación por Sesión | Evidencia de Aprendizaje | Instrumento de Evaluación |
+   | Sesión / Actividad | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación por Sesión (Integrados sin etiquetas) | Evidencia de Aprendizaje | Instrumento de Evaluación |
 
 3. **COMPETENCIA 3: Interactúa a través de sus habilidades sociomotrices**
    > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo transcrito literalmente sin recortar, con **negrita** en la parte movilizada]
    
    Tabla de la Competencia 3 (con las sesiones asociadas a esta competencia):
-   | Sesión / Actividad | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación por Sesión | Evidencia de Aprendizaje | Instrumento de Evaluación |
+   | Sesión / Actividad | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación por Sesión (Integrados sin etiquetas) | Evidencia de Aprendizaje | Instrumento de Evaluación |
 
 *REGLA DEL DESEMPEÑO EN CADA TABLA: Copia el desempeño oficial completo del CNEB para {grado_seccion}, RESALTANDO EN NEGRITA lo utilizado y la precisión/contexto agregado.*
 
@@ -666,7 +667,7 @@ REGLAS DE FORMATO Y ESTRUCTURA OBLIGATORIA DE LA SESIÓN (DESARROLLAR COMPLETA D
 Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 # **SESIÓN DE APRENDIZAJE DE EDUCACIÓN FÍSICA N.º {num_doc}**
 ## **"{problema_contexto.upper()}"**
-*(QUEDA STRICTAMENTE PROHIBIDO COLOCAR CUALQUIER OTRO DATO O FECHA DEBAJO DEL TÍTULO DE LA SESIÓN).*
+*(QUEDA STRICTAMENTE PROHIBIDO COLOCAR CUALQUIER OTRO DATO, FECHA O SUBTÍTULO DEBAJO DEL TÍTULO DE LA SESIÓN).*
 
 2. TABLA I: DATOS INFORMATIVOS
 | DATOS INFORMATIVOS | DETALLE |
@@ -679,8 +680,8 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 3. TABLA II: PROPÓSITOS DE APRENDIZAJE Y EVIDENCIAS
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo con **negrita** en la parte aplicada]
 
-| ÁREA | COMPETENCIA Y CAPACIDADES | DESEMPEÑO PRECISADO COMPLETO (con **negrita**) | EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN | PROPÓSITO DE LA CLASE | EVIDENCIA | INSTRUMENTO |
-- **Criterios de Evaluación:** Redacta OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles bajo la estructura ACCIÓN + CONTENIDO + CONDICIÓN.
+| ÁREA | COMPETENCIA Y CAPACIDADES | DESEMPEÑO PRECISADO COMPLETO (con **negrita**) | EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN (Integrados sin etiquetas) | PROPÓSITO DE LA CLASE | EVIDENCIA | INSTRUMENTO |
+- **Criterios de Evaluación:** Redacta OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles que integren de forma fluida e implícita los tres elementos pedagógicos (**Acción + Contenido + Condición**), pero QUIDA STRICTAMENTE PROHIBIDO escribir o visualizar las palabras/etiquetas 'Acción:', 'Contenido:' o 'Condición:' en el texto (debe ser una sola oración continua y natural por criterio).
 
 4. TABLA III: ENFOQUE TRANSVERSAL (ÚNICO Y ESPECÍFICO)
 | ENFOQUE TRANSVERSAL PRIORIZADO | VALOR(ES) | ACTITUDES OBSERVABLES |
@@ -713,7 +714,7 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
   2. **Metacognición motriz:** Redacta de 3 a 4 preguntas reflexivas explícitas (¿Qué aprendimos sobre nuestro cuerpo? ¿Cómo superamos retos?).
   3. **Rutina Obligatoria de Higiene Personal:** Describe en detalle la práctica autónoma de aseo personal, lavado de manos con jabón, secado con toalla y cambio de polo deportivo.
 
-8. TABLA VI: LISTA DE COTEJO DE EDUCACIÓN FÍSICA (Genera una tabla limpia con los criterios de evaluación y 8 a 10 estudiantes ficticios representativos para optimizar espacio y garantizar la completitud del documento).
+8. TABLA VI: LISTA DE COTEJO DE EDUCACIÓN FÍSICA (Genera una tabla limpia con los criterios de evaluación e incluye 8 a 10 estudiantes ficticios representativos para optimizar espacio y garantizar la completitud del documento).
 """
 
 # ==============================================================================
@@ -748,7 +749,7 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                     max_output_tokens=8192
                 )
                 
-                # LISTA DE MODELOS ESTABLES CON RESPALDO AUTOMÁTICO EN CASO DE 404 (USANDO RUTAS DE API ESTABLES)
+                # LISTA DE MODELOS ESTABLES CON RESPALDO AUTOMÁTICO EN CASO DE 404
                 modelos_a_probar = [
                     model_choice,
                     "gemini-2.5-flash",
