@@ -44,9 +44,12 @@ ESTRUCTURA OBLIGATORIA DE LA UNIDAD DE APRENDIZAJE DE EDUCACIÓN FÍSICA:
 - IE, Directora, Profesor de Ed. Física, Ciclo, Grado y Sección, Duración.
 
 3. III. SITUACIÓN SIGNIFICATIVA
-- Contextualizar la realidad motriz y de salud de los estudiantes relacionada con la problemática: {problema_contexto}.
-- Plantear 3 preguntas retadoras/desafiantes asociadas a la solución motriz.
-- Proponer la estrategia pedagógica para resolver el reto (circuitos, festivales lúdico-motores, juegos tradicionales, etc.).
+- **Enfoque Dual (Estrategia Híbrida):** Redacta la situación significativa integrando la vinculación implícita y explícita.
+- **Vinculación Implícita (Acción):** Describe el problema de contexto ({problema_contexto}) como una necesidad de mejora de capacidades motrices puras (coordinación, orientación, agilidad) que deben desarrollarse en el patio.
+- **Vinculación Explícita (Reflexión):** Indica cómo, en momentos específicos de la unidad (inicio o cierre de sesión, diálogos reflexivos), se vinculará explícitamente la práctica motriz con la utilidad preventiva o de respuesta ante dicho contexto (ej. "¡Hoy movemos el cuerpo no solo para jugar, sino para saber cómo reaccionar rápido si la lluvia intensa nos obliga a desplazarnos con seguridad!").
+- Incluye un dato cuantitativo o cualitativo sobre la problemática (ej. "se observa que solo el 30% logra orientarse adecuadamente en espacios dinámicos...").
+- Plantea 3 preguntas retadoras/desafiantes, de las cuales al menos una debe ser de carácter puramente motriz y otra de carácter reflexivo-contextual.
+- Propón la estrategia pedagógica (circuitos lúdico-motores, juegos de reglas, estaciones) para resolver el reto.
 
 4. IV. PRODUCTO DE LA UNIDAD
 - Describir de forma clara y extensa el desempeño práctico o producto tangible/demostrable: {producto_unidad}.
