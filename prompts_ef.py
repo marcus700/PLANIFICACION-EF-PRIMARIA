@@ -18,6 +18,7 @@ Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa, extensa, rigurosa y ali
 2. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), DESARROLLA CADA UNA DE LAS {total_sesiones} SESIONES ({duracion_semanas} semanas, {sesiones_por_semana} sesión(es) por semana). ESTÁ PROHIBIDO PONER PUNTOS SUSPENSIVOS (...) O OMITIR SESIONES.
 3. EN LA MATRIZ DE PLANIFICACIÓN: TRANSCRIBE EL ESTÁNDAR COMPLETO DEL CNEB EN LA PARTE SUPERIOR DE CADA SESIÓN CON NEGRITA EN LA PARTE EVALUADA, Y EL DESEMPEÑO COMPLETO EN LA COLUMNA CORRESPONDIENTE CON NEGRITA EN LO UTILIZADO Y PRECISADO.
 4. COMPLETA SIEMPRE LA SECCIÓN IX (SECUENCIA DE SESIONES CON SUS PROPÓSITOS Y REPRESENTACIONES GRÁFICAS) Y LA SECCIÓN X (RECURSOS Y ESPACIO PARA FIRMAS).
+1. JUSTIFICACIÓN DE LA UNIDAD (Enfoque Implícito/Técnico): Redacta un párrafo formal y técnico que justifique la unidad. Explica que el área de Educación Física responde a [Mencionar el problema institucional] no de forma teórica o conceptual, sino a través del "Acondicionamiento Técnico-Motriz Operativo". Detalla cómo el desarrollo de las capacidades físicas (condicionales y coordinativas) dota al estudiante de las herramientas biológicas, metabólicas y biomecánicas necesarias para mitigar o adaptarse a dicha problemática desde la salud y el movimiento
 
 DATOS OFICIALES EXTRAÍDOS DE cneb_datos.py PARA ESTA UNIDAD ({grado_seccion} - {ciclo_actual}):
 {cneb_datos_text}
