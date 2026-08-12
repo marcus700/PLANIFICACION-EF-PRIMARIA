@@ -67,12 +67,19 @@ ESTRUCTURA OBLIGATORIA DE LA UNIDAD DE APRENDIZAJE DE EDUCACIÓN FÍSICA:
   * Competencia 2: Asume una vida saludable.
   * Competencia 3: Interactúa a través de sus habilidades sociomotrices.
 
-8. VIII. MATRIZ DE PLANIFICACIÓN (Formato Tabla detallado por las {total_sesiones} sesiones)
-Desarrolla {total_sesiones} bloques de tablas independientes (uno por cada sesión):
-- En la parte superior de cada bloque de sesión, incluye la fila con el ESTÁNDAR COMPLETO del CNEB correspondiente a la competencia evaluada, redactado de manera íntegra (sin modificar ni alterar su texto original), RESALTANDO EN NEGRITA la parte específica que se trabaja/evalúa en esa actividad.
-- Columnas de la Matriz por cada sesión:
-  | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño | Criterios de Evaluación | Evidencia y Producto | Instrumento de Evaluación |
-- REGLA DEL DESEMPEÑO: Redactado de manera COMPLETA tal cual aparece en el CNEB, RESALTANDO EN NEGRITA tanto la parte del desempeño utilizada como las palabras/términos agregados para su precisión y contextualización.
+8. VIII. MATRIZ DE PLANIFICACIÓN (Formato Único Cronológico Equilibrado)
+Desarrollar OBLIGATORIAMENTE UNA ÚNICA tabla de matriz de planificación que integre cronológicamente TODAS las {total_sesiones} sesiones de la unidad. NO separes la matriz por competencias.
+
+- Estructura de la Tabla Única por sesión:
+| Sesión N.° y Título | Competencia / Capacidades | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación (Integrados sin etiquetas) | Evidencia y Producto | Instrumento |
+
+- Instrucciones de Distribución y Contenido:
+1.  **Distribución Equilibrada y Obligatoria:** Distribuye las {total_sesiones} sesiones de forma lógica y secuencial a lo largo de las {duracion_semanas} semanas. Debes asignar una (y solo una) competencia principal a cada sesión (C1, C2 o C3). Es OBLIGATORIO que, en el conjunto total de las {total_sesiones} sesiones de la unidad, se evidencie el trabajo de las 3 competencias del área (al menos una sesión para C1, una para C2 y una para C3).
+2.  En la fila superior de la matriz, transcribe el **ESTÁNDAR CNEB COMPLETO** correspondiente al ciclo ({ciclo_actual}).
+3.  En cada celda de la columna "Competencia", coloca **SOLO UNA** de las tres competencias oficiales del área (ej. "Se desenvuelve de manera autónoma a través de su motricidad") según corresponda al propósito específico de esa sesión.
+4.  En la columna "Desempeño", transcribe el desempeño oficial completo del CNEB para {grado_seccion}, RESALTANDO EN NEGRITA la parte específica del desempeño que se moviliza en esa sesión y los términos agregados para su precisión.
+5.  **REGLA OBLIGATORIA DE CRITERIOS:** Para cada sesión, formula EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles. Cada criterio debe estar redactado de forma fluida e integrada (Acción + Contenido + Condición) pero SIN ESCRIBIR NI MOSTRAR VISIBLEMENTE las palabras/etiquetas 'Acción:', 'Contenido:' ni 'Condición:' (debe ser una sola oración continua por criterio).
+6.  Mantén la síntesis en el redactado de todas las celdas para asegurar la completitud del documento.
 *NOTA: NO incluir la columna "Propósito" en la Matriz de Planificación.*
 
 9. IX. SECUENCIA DE SESIONES (Formato Tabla)
