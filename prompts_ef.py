@@ -214,25 +214,27 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 
 7. MOMENTOS DE LA CLASE DE EDUCACIÓN FÍSICA:
 
-- **INICIO (Aprox. 20 min):**
-  Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE. Debe considerar ESTRICTAMENTE el siguiente orden:
-  1. **Motivación ({tipo_motivacion}):** [Desarrollar ampliamente la motivación según el tipo elegido: {tipo_motivacion}].
-  2. **Saberes previos:** [Preguntas abiertas sobre el tema/movimientos].
-  3. **Problematización / Conflicto cognitivo:** [Reto motriz o pregunta desafiante].
-  4. **Propósito de la clase:** [Comunicar qué aprenderán hoy].
-  5. **Criterios de evaluación:** [Explicar cómo serán evaluados].
-  6. **Acuerdos de convivencia:** [2 a 3 normas de seguridad en el patio].
+- **INICIO (Aprox. 20 min) - Enfoque Explícito:**
+  Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE, conectando directamente la actividad con el contexto.
+  1. **Motivación ({tipo_motivacion}):** [Desarrolla la motivación vinculándola EXPLÍCITAMENTE con la problemática o contexto descrito en la unidad (ej. "¡Chicos, hoy iniciaremos el entrenamiento de superviviencia ante lluvias intensas simulando cruzar ríos!")].
+  2. **Saberes previos:** [Preguntas sobre qué saben del movimiento técnico que veremos y su utilidad en la vida diaria].
+  3. **Problematización / Conflicto cognitivo:** [Plantea el reto motriz explicando por qué es vital dominar esta técnica para prevenir riesgos en su entorno].
+  4. **Propósito de la clase:** [Comunica qué aprenderán hoy y para qué les servirá en su contexto real].
+  5. **Criterios de evaluación:** [Explica cómo evaluaremos su rigor técnico].
+  6. **Acuerdos de convivencia:** [2 a 3 normas de seguridad para el patio enfocadas en el cuidado propio y del grupo].
 
-- **DESARROLLO (Aprox. 60 min):**
-  Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE:
-  1. **Activación Corporal (Calentamiento dinámico):** Movilidad articular, trote lúdico y estiramientos.
-  2. **Secuencia de Actividades Motrices:** Progresión práctica bien explicada (3 actividades con hidratación).
-  3. **ACTIVIDAD OBLIGATORIA DE ALTO NIVEL COGNITIVO (Analizar, Evaluar y Crear):** Reto motriz/estratégico donde los alumnos deban analizar una situación de juego, evaluar variantes tácticas y crear su propia regla o estrategia en equipo.
+- **DESARROLLO (Aprox. 60 min) - Vínculo Implícito Puro (Técnico):**
+  Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE, centrado EXCLUSIVAMENTE en la biomecánica y el rigor técnico.
+  1. **Activación Corporal (Calentamiento técnico):** [Describe movimientos articulares y desplazamientos específicos enfocados en preparar la musculatura que se usará en la parte principal].
+  2. **Secuencia de Actividades Motrices (Rigor Técnico):** [Describe 3 actividades de alta exigencia biomecánica. Detalla la postura correcta, la ejecución técnica exacta (ej. "apoyo correcto de la planta del pie", "braceo alternado", "alineación corporal") y las correcciones pedagógicas precisas para lograr la maestría del movimiento. No menciones el contexto ambiental aquí, solo la técnica pura].
+  3. **Hidratación:** [Pausa breve para recuperar].
+  4. **ACTIVIDAD OBLIGATORIA DE ALTO NIVEL COGNITIVO (Evaluación Técnica):** [Reto donde los alumnos ejecutan la técnica y deben co-evaluar con un compañero el cumplimiento de los parámetros técnicos biomecánicos exactos (checklist de postura/ejecución)].
 
-- **CIERRE (Aprox. 10 min) - DEBES REDACTAR OBLIGATORIAMENTE Y EN SU TOTALIDAD LOS SIGUIENTES 3 PUNTOS (PROHIBIDO OMITIR CUALQUIER PUNTO DEL CIERRE):**
-  1. **Vuelta a la calma:** Ejercicios de respiración guiada y estiramientos suaves.
-  2. **Metacognición motriz:** Redacta de 3 a 4 preguntas reflexivas explícitas (¿Qué aprendimos sobre nuestro cuerpo? ¿Cómo superamos retos?).
-  3. **Rutina Obligatoria de Higiene Personal:** Describe en detalle la práctica autónoma de aseo personal, lavado de manos con jabón, secado con toalla y cambio de polo deportivo.
+- **CIERRE (Aprox. 10 min) - Síntesis Dual y Metacognición:**
+  Redactado OBLIGATORIAMENTE Y EN SU TOTALIDAD, uniendo ambos mundos.
+  1. **Vuelta a la calma:** [Ejercicios de respiración y relajación muscular].
+  2. **Metacognición de Síntesis Dual (OBLIGATORIO):** [Redacta explícitamente 3 preguntas que unan la técnica y el contexto: ¿Cómo te ayudó mantener una postura correcta (técnica) para desplazarte rápido y con seguridad en el juego (prevención)? ¿De qué te sirve controlar tu fuerza y equilibrio (dominio motriz) hoy en el patio para reaccionar ante un movimiento telúrico (crisis ambiental)? ¿Qué aprendiste hoy sobre tu cuerpo que te sirve para protegerte en la vida real?].
+  3. **Rutina Obligatoria de Higiene Personal:** [Describe en detalle la práctica autónoma de aseo personal, lavado de manos con jabón, secado con toalla y cambio de polo deportivo].
 
 8. TABLA VI: LISTA DE COTEJO DE EDUCACIÓN FÍSICA (Genera una tabla limpia con los criterios de evaluación y 8 a 10 estudiantes ficticios representativos para optimizar espacio y garantizar la completitud del documento).
 """
