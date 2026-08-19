@@ -18,7 +18,6 @@ import streamlit as st
 # ==============================================================================
 from cneb_datos import CNEB_PRIMARIA, obtener_ciclo_primaria
 
-# ESTA FUNCIÓN AHORA SE USARÁ INTERNAMENTE
 def normalizar_grado_cneb(grado_str: str) -> str:
     """Mapea la opción seleccionada al formato de llave exacta en cneb_datos.py"""
     if "1" in grado_str: return "1° de Primaria"
@@ -202,7 +201,7 @@ else:
 
 # OPCIONES DE MODELOS OFICIALES Y ESTABLES
 model_choice = st.sidebar.selectbox(
-    "Modelo de Gemini:", 
+    "Modelo de Gemini:",
     ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
 )
 
@@ -369,8 +368,6 @@ def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
 # ==============================================================================
 st.subheader(f"📝 Configuración de Datos para Educación Física: {tipo_documento}")
 
-# --- INICIO DE LA MODIFICACIÓN ---
-
 c1, c2, c3 = st.columns(3)
 with c1:
     dre_ugel = st.text_input("DRE / UGEL:", "Ica / Ica")
@@ -381,7 +378,6 @@ with c2:
 with c3:
     # Lógica para manejar selección por grado o ciclo
     if tipo_documento == "Unidad de Aprendizaje":
-        # Mapeo de ciclos a grados
         CICLO_MAP = {
             "III Ciclo (1° y 2° Grado)": ("III Ciclo", ["1° de Primaria", "2° de Primaria"]),
             "IV Ciclo (3° y 4° Grado)": ("IV Ciclo", ["3° de Primaria", "4° de Primaria"]),
@@ -394,7 +390,6 @@ with c3:
         )
         ciclo_actual, grados_del_ciclo = CICLO_MAP[ciclo_seleccionado_key]
         grado_seccion = f"{grados_del_ciclo[0]} y {grados_del_ciclo[1]}"
-        # Variable necesaria para la función del prompt
         grados_normalizados_cneb = grados_del_ciclo
         st.info(f"Unidad para el Ciclo: **{ciclo_actual}**")
 
@@ -402,12 +397,8 @@ with c3:
         grado_seccion = st.selectbox("Grado y Sección:", ["1er Grado A", "2do Grado A", "3er Grado A", "4to Grado A", "5to Grado A", "6to Grado A"], index=1)
         grado_normalizado_cneb = normalizar_grado_cneb(grado_seccion)
         ciclo_actual = obtener_ciclo_primaria(grado_normalizado_cneb)
-        # Para mantener la compatibilidad con la función de prompt de unidad
         grados_normalizados_cneb = [grado_normalizado_cneb]
         st.info(f"Ciclo CNEB Detectado: **{ciclo_actual}**")
-
-
-# --- FIN DE LA MODIFICACIÓN ---
 
 # VARIABLES ESPECÍFICAS PARA CADA HERRAMIENTA
 if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
@@ -475,11 +466,8 @@ else:  # Unidad o Proyecto EF
 # PROMPTS ESPECIALIZADOS QUE LEEN DE cneb_datos.py
 # ==============================================================================
 
-# --- INICIO DE LA MODIFICACIÓN ---
-
 def generar_prompt_unidad_ef_10_secciones():
     cneb_datos_text = ""
-    # Esta función ahora iterará sobre la lista de grados del ciclo
     for comp_nombre, comp_info in CNEB_PRIMARIA.items():
         est_txt = comp_info["estandares"].get(ciclo_actual, "")
         cneb_datos_text += f"\n\nCOMPETENCIA: {comp_nombre}\nESTÁNDAR OFICIAL ({ciclo_actual}):\n{est_txt}\n"
@@ -554,12 +542,10 @@ Genera una tabla completa para las {total_sesiones_unidad} sesiones detallando:
 10. X. RECURSOS
 - Recursos para el Docente, Recursos para el Estudiante, y espacio para firmas.
 """
-# --- FIN DE LA MODIFICACIÓN ---
 
 def generar_prompt_proyecto_ef():
-    cneb_datos_text = ""
-    # Para Proyecto, se mantiene la lógica original por grado
     grado_normalizado_cneb = normalizar_grado_cneb(grado_seccion)
+    cneb_datos_text = ""
     for comp_nombre, comp_info in CNEB_PRIMARIA.items():
         est_txt = comp_info["estandares"].get(ciclo_actual, "")
         des_list = comp_info["desempenos"].get(grado_normalizado_cneb, [])
@@ -652,7 +638,6 @@ IX. RECURSOS Y MATERIALES
 """
 
 def generar_prompt_sesion_ef():
-    # Para Sesión, se mantiene la lógica original por grado
     grado_normalizado_cneb = normalizar_grado_cneb(grado_seccion)
     comps_str = ", ".join(comps_seleccionadas) if comps_seleccionadas else "Seleccionar automáticamente según el tema del CNEB"
     cap_str = capacidades_custom.strip() if capacidades_custom.strip() else "Generar automáticamente según la(s) competencia(s) elegida(s)"
@@ -697,13 +682,13 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo con **negrita** en la parte aplicada]
 
 | ÁREA | COMPETENCIA Y CAPACIDADES | DESEMPEÑO PRECISADO COMPLETO (con **negrita**) | EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN (Integrados sin etiquetas) | PROPÓSITO DE LA CLASE | EVIDENCIA | INSTRUMENTO |
-- **Criterios de Evaluación:** Redacta OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles que integren de forma fluida e implícita los tres elementos pedagógicos (**Acción + Contenido + Condición**), pero QUIDA STRICTAMENTE PROHIBIDO escribir o visualizar las palabras/etiquetas 'Acción:', 'Contenido:' o 'Condición:' en el texto (debe ser una sola oración continua y natural por criterio).
+- **Criterios de Evaluación:** Redacta OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles que integren de forma fluida e implícita los tres elementos pedagógicos (**Acción + Contenido + Condición**), pero QUEDA STRICTAMENTE PROHIBIDO escribir o visualizar las palabras/etiquetas 'Acción:', 'Contenido:' o 'Condición:' en el texto (debe ser una sola oración continua y natural por criterio).
 
 4. TABLA III: ENFOQUE TRANSVERSAL (ÚNICO Y ESPECÍFICO)
 | ENFOQUE TRANSVERSAL PRIORIZADO | VALOR(ES) | ACTITUDES OBSERVABLES |
 
 5. TABLA IV: COMPETENCIAS TRANSVERSALES
-| COMPETENCIA TRANSVERSAL | CAPACidades | DESEMPEÑOS PRECISADOS |
+| COMPETENCIA TRANSVERSAL | CAPACIDADES | DESEMPEÑOS PRECISADOS |
 
 6. TABLA V: PREPARACIÓN DE LA CLASE
 | ¿Qué necesitamos hacer antes de la sesión de Ed. Física? | ¿Qué recursos o materiales del patio se utilizarán? |
@@ -745,7 +730,8 @@ if st.button(f"✨ Generar {tipo_documento}"):
         st.warning("⚠️ Completa el campo del Tema o Problemática de Educación Física.")
     else:
         try:
-            client = genai.GenerativeModel(model_name=model_choice, api_key=api_key)
+            # MÉTODO DE LLAMADA CORREGIDO Y COMPATIBLE
+            client = genai.Client(api_key=api_key)
             
             if tipo_documento == "Unidad de Aprendizaje":
                 prompt_maestro = generar_prompt_unidad_ef_10_secciones()
@@ -759,8 +745,12 @@ REGLA ABSOLUTA DE COMPLETITUD: Queda STRICTAMENTE PROHIBIDO recortar, abreviar o
 Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y DIRECTO dentro de las celdas de las tablas, garantizando que el documento se redacte ENTERO de principio a fin, concluyendo obligatoriamente en la última sección con el espacio para firmas correspondientes."""
 
             with st.spinner(f"⚽ Google Gemini está redactando tu {tipo_documento} para {grado_seccion}..."):
+                config = types.GenerateContentConfig(
+                    system_instruction=sys_inst,
+                    temperature=0.10,
+                    max_output_tokens=8192
+                )
                 
-                # LISTA DE MODELOS ESTABLES CON RESPALDO AUTOMÁTICO EN CASO DE 404
                 modelos_a_probar = [
                     model_choice,
                     "gemini-1.5-flash",
@@ -772,10 +762,11 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                 
                 for mod in modelos_a_probar:
                     try:
-                        client = genai.GenerativeModel(model_name=mod, api_key=api_key, system_instruction=sys_inst)
-                        convo = client.start_chat(history=[])
-                        convo.send_message(prompt_maestro)
-                        response = convo.last
+                        response = client.models.generate_content(
+                            model=f"models/{mod}", # Asegura el formato correcto del nombre del modelo
+                            contents=prompt_maestro,
+                            generation_config=config
+                        )
                         if response and response.text:
                             break
                     except Exception as err:
@@ -787,7 +778,13 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                 
                 st.session_state['resultado_md'] = response.text
                 st.session_state['tipo_doc_generado'] = tipo_documento
-                st.session_state['fname_clean'] = f"{tipo_documento.replace(' ', '_')}_EF_N{num_doc}_{ciclo_actual.replace(' ', '_')}.docx"
+                
+                # Nombre de archivo dinámico para ciclo o grado
+                if tipo_documento == "Unidad de Aprendizaje":
+                    clean_name_part = ciclo_actual.replace(' ', '_')
+                else:
+                    clean_name_part = grado_seccion.replace(' ', '_')
+                st.session_state['fname_clean'] = f"{tipo_documento.replace(' ', '_')}_EF_N{num_doc}_{clean_name_part}.docx"
                 
                 st.success(f"✅ ¡{tipo_documento} de Educación Física generado con éxito!")
 
