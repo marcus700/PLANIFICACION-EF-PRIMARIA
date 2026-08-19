@@ -496,7 +496,7 @@ Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa para el CICLO COMPLETO, 
 
 🚨 REGLAS CRÍTICAS DE COMPLETITUD Y ESTRUCTURA POR CICLO (OBLIGATORIO LLEGAR HASTA LA SECCIÓN X):
 1. FINALIZA EL DOCUMENTO OBLIGATORIAMENTE HASTA LA SECCIÓN X (RECURSOS Y FIRMAS).
-2. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), genera DOS PLANIFICACIONES COMPLETAS: una para {grado_1_ciclo_str} y otra para {grado_2_ciclo_str}. Dentro de cada una, agrupa las sesiones por competencia (C1, C2, C3), encabezando cada grupo con su estándar.
+2. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), genera DOS PLANIFICACIONES COMPLETAS: una para {grado_1_ciclo_str} y otra para {grado_2_ciclo_str}. Dentro de cada una, agrupa las sesiones por competencia (C1, C2, C3), encabezando cada grupo con su estándar resaltando con negrita lo evaluado.
 3. EN LA SECCIÓN IX (SECUENCIA DE SESIONES), genera DOS SECUENCIAS COMPLETAS: una tabla para {grado_1_ciclo_str} y otra para {grado_2_ciclo_str}.
 4. Usa los DESEMPEÑOS ESPECÍFICOS del grado correspondiente para cada matriz.
 
