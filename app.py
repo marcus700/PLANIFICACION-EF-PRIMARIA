@@ -201,7 +201,7 @@ else:
 
 # OPCIONES DE MODELOS OFICIALES Y ESTABLES
 model_choice = st.sidebar.selectbox(
-    "Modelo de Gemini:",
+    "Modelo de Gemini:", 
     ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
 )
 
@@ -376,28 +376,12 @@ with c2:
     director = st.text_input("Directora:", "Prof. Luisa Ruth Aronés Herrera")
     docente = st.text_input("Docente de Educación Física:", "Mario A. García Torres")
 with c3:
-    if tipo_documento == "Unidad de Aprendizaje":
-        CICLO_MAP = {
-            "III Ciclo (1° y 2° Grado)": ("III Ciclo", ["1° de Primaria", "2° de Primaria"]),
-            "IV Ciclo (3° y 4° Grado)": ("IV Ciclo", ["3° de Primaria", "4° de Primaria"]),
-            "V Ciclo (5° y 6° Grado)": ("V Ciclo", ["5° de Primaria", "6° de Primaria"]),
-        }
-        ciclo_seleccionado_key = st.selectbox(
-            "Selecciona el Ciclo para la Unidad:",
-            list(CICLO_MAP.keys()),
-            index=0
-        )
-        ciclo_actual, grados_del_ciclo = CICLO_MAP[ciclo_seleccionado_key]
-        grado_seccion = f"{grados_del_ciclo[0]} y {grados_del_ciclo[1]}"
-        grados_normalizados_cneb = grados_del_ciclo
-        st.info(f"Unidad para el Ciclo: **{ciclo_actual}**")
-
-    else:
-        grado_seccion = st.selectbox("Grado y Sección:", ["1er Grado A", "2do Grado A", "3er Grado A", "4to Grado A", "5to Grado A", "6to Grado A"], index=1)
-        grado_normalizado_cneb = normalizar_grado_cneb(grado_seccion)
-        ciclo_actual = obtener_ciclo_primaria(grado_normalizado_cneb)
-        grados_normalizados_cneb = [grado_normalizado_cneb]
-        st.info(f"Ciclo CNEB Detectado: **{ciclo_actual}**")
+    grado_seccion = st.selectbox("Grado y Sección:", ["1er Grado A", "2do Grado A", "3er Grado A", "4to Grado A", "5to Grado A", "6to Grado A"], index=1)
+    
+    # Detección del Ciclo leyendo desde cneb_datos.py
+    grado_normalizado_cneb = normalizar_grado_cneb(grado_seccion)
+    ciclo_actual = obtener_ciclo_primaria(grado_normalizado_cneb)
+    st.info(f"Ciclo CNEB Detectado: **{ciclo_actual}**")
 
 # VARIABLES ESPECÍFICAS PARA CADA HERRAMIENTA
 if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
@@ -440,13 +424,13 @@ if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
     producto_unidad = ""
     problema_contexto = titulo_sesion_input.strip() if titulo_sesion_input.strip() else "Desarrollo de nociones espaciales, coordinación motriz y convivencia en juegos de Educación Física."
 
-else:
+else:  # Unidad o Proyecto EF
     f1, f2, f3, f4, f5 = st.columns(5)
     with f1:
         num_doc = st.text_input("N.° de Unidad / Proyecto:", "04")
     with f2:
         fechas_duracion = st.text_input("Fechas / Periodo:", "Del 22 de junio al 17 de julio de 2026")
-        fecha_sugerida = fechas_duracion
+        fecha_sugerida = fechas_duracion  # Garantiza que ambas variables existan siempre
     with f3:
         duracion_semanas = st.slider("Número de Semanas:", min_value=2, max_value=8, value=4)
     with f4:
@@ -469,26 +453,25 @@ def generar_prompt_unidad_ef_10_secciones():
     cneb_datos_text = ""
     for comp_nombre, comp_info in CNEB_PRIMARIA.items():
         est_txt = comp_info["estandares"].get(ciclo_actual, "")
-        cneb_datos_text += f"\n\nCOMPETENCIA: {comp_nombre}\nESTÁNDAR OFICIAL ({ciclo_actual}):\n{est_txt}\n"
-        
-        cneb_datos_text += f"DESEMPEÑOS OFICIALES PARA EL CICLO ({' y '.join(grados_normalizados_cneb)}):\n"
-        for grado in grados_normalizados_cneb:
-            des_list = comp_info["desempenos"].get(grado, [])
-            cneb_datos_text += f"--- {grado} ---\n" + "\n".join(des_list) + "\n"
+        des_list = comp_info["desempenos"].get(grado_normalizado_cneb, [])
+        cneb_datos_text += f"\n\nCOMPETENCIA: {comp_nombre}\nESTÁNDAR OFICIAL ({ciclo_actual}):\n{est_txt}\nDESEMPEÑOS OFICIALES ({grado_normalizado_cneb}):\n" + "\n".join(des_list)
 
     total_sesiones_unidad = duracion_semanas * sesiones_por_semana
 
     return f"""
 Actúa como un especialista en currículo educativo peruano y docente experto en el área de Educación Física para Educación Básica Regular (CNEB). 
 
-Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa, rigurosa y alineada al Currículo Nacional (CNEB) para el **{ciclo_actual} completo ({grado_seccion})**. La planificación debe ser coherente y aplicable para ambos grados.
+Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa, extensa, rigurosa y alineada al Currículo Nacional (CNEB), siguiendo estrictamente las 10 secciones obligatorias sin cortar el documento al final.
 
-🚨 REGLAS CRÍTICAS DE ESTRUCTURA Y COMPLETITUD (OBLIGATORIO LLEGAR HASTA LA SECCIÓN X):
-1. DEBES FINALIZAR EL DOCUMENTO OBLIGATORIAMENTE HASTA LA SECCIÓN X (RECURSOS Y FIRMAS). QUEDA STRICTAMENTE PROHIBIDO DEJAR EL DOCUMENTO INCOMPLETO.
-2. La unidad está diseñada para un **CICLO COMPLETO**. En la Matriz de Planificación, los desempeños y criterios deben ser redactados para ser aplicables a la progresión de los grados dentro del ciclo ({grado_seccion}).
-3. COMPLETA SIEMPRE LA SECCIÓN IX (SECUENCIA DE SESIONES) Y LA SECCIÓN X (RECURSOS Y FIRMAS).
+🚨 REGLAS CRÍTICAS DE COMPLETITUD Y ESTRUCTURA ORGANIZADA POR COMPETENCIA (OBLIGATORIO LLEGAR HASTA LA SECCIÓN X):
+1. DEBES FINALIZAR EL DOCUMENTO OBLIGATORIAMENTE HASTA LA SECCIÓN X (RECURSOS Y FIRMAS DE DIRECTORA Y DOCENTE). QUEDA STRICTAMENTE PROHIBIDO DEJAR EL DOCUMENTO INCOMPLETO.
+2. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), ORGANIZA LA MATRIZ SEPARADA COMPETENCIA POR COMPETENCIA (C1, C2, C3 de Educación Física).
+3. PARA CADA COMPETENCIA, COLOCA EN LA PARTE SUPERIOR SU ESTÁNDAR COMPLETO DEL CNEB CON NEGRITA EN LO EVALUADO, Y DESARROLLA CADA UNA DE SUS SESIONES ASOCIADAS ({total_sesiones_unidad} sesiones en total, {duracion_semanas} semanas).
+4. REGLA OBLIGATORIA DE CRITERIOS: Para cada sesión individual de la matriz, debes formular OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles. Cada criterio debe estar redactado de forma fluida e integrada (Acción + Contenido + Condición) pero SIN ESCRIBIR NI MOSTRAR VISIBLEMENTE las palabras/etiquetas 'Acción:', 'Contenido:' ni 'Condición:' (debe ser una sola oración continua por criterio).
+5. MANTÉN EL TEXTO DENTRO DE LAS CELDAS DE FORMA SINTÉTICA Y CONCISA (1 A 2 LÍNEAS POR CELDA) PARA NUNCA EXCEDER EL LÍMITE DE MEMORIA Y LOGRAR DESARROLLAR LAS 10 SECCIONES ENTERAS.
+6. COMPLETA SIEMPRE LA SECCIÓN IX (SECUENCIA DE SESIONES) Y LA SECCIÓN X (RECURSOS Y ESPACIO PARA FIRMAS DE DIRECTORA Y DOCENTE).
 
-DATOS OFICIALES EXTRAÍDOS DE cneb_datos.py PARA ESTA UNIDAD POR CICLO ({ciclo_actual}):
+DATOS OFICIALES EXTRAÍDOS DE cneb_datos.py PARA ESTA UNIDAD ({grado_seccion} - {ciclo_actual}):
 {cneb_datos_text}
 
 DATOS PARA LA GENERACIÓN:
@@ -506,44 +489,62 @@ DATOS PARA LA GENERACIÓN:
 ESTRUCTURA OBLIGATORIA DE LA UNIDAD DE APRENDIZAJE DE EDUCACIÓN FÍSICA:
 
 1. TÍTULO DE LA UNIDAD
-- Motivador, entre comillas y relacionado al desarrollo de competencias motrices.
+- Debe ser motivador, entre comillas y redactado en función al desarrollo de competencias motrices, sociomotrices o de vida saludable.
 
 2. II. DATOS INFORMATIVOS
-- IE, Directora, Profesor, Ciclo y Grados ({grado_seccion}), Duración.
+- IE, Directora, Profesor de Ed. Física, Ciclo, Grado y Sección, Duración.
 
 3. III. SITUACIÓN SIGNIFICATIVA
-- Contextualizar la realidad motriz y de salud de los estudiantes del ciclo.
-- Incluir un dato cuantitativo/cualitativo del problema.
-- Plantear 3 preguntas retadoras.
-- Proponer la estrategia pedagógica a utilizar.
+- Contextualizar la realidad motriz y de salud de los estudiantes relacionada con la problemática: {problema_contexto}.
+- Incluir un dato cuantitativo/cualitativo del problema (ej. "solo el 35% logra orientarse adecuadamente...").
+- Plantear 3 preguntas retadoras/desafiantes asociadas a la solución motriz.
+- Proponer la estrategia pedagógica para resolver el reto (circuitos, festivales lúdico-motores, juegos tradicionales, etc.).
 
 4. IV. PRODUCTO DE LA UNIDAD
-- Describir el desempeño práctico o producto tangible esperado para el ciclo.
+- Describir un desempeño práctico o un producto tangible/demostrable claro: {producto_unidad}.
 
 5. V. ENFOQUES TRANSVERSALES
-- Seleccionar 2 enfoques, especificando en tabla: Enfoque, Valor(es) y Actitudes Observables.
+- Seleccionar 2 enfoques transversales del CNEB.
+- Especificar en tabla: Enfoque Transversal, Valor(es) y Acciones o Actitudes Observables adaptadas a Educación Física.
 
 6. VI. COMPETENCIAS TRANSVERSALES
-- Incluir en tabla "Gestiona su aprendizaje..." y "Se desenvuelve en entornos virtuales..." con sus Capacidades y Desempeños aplicados al área.
+- Incluir en tabla "Gestiona su aprendizaje de manera autónoma" y "Se desenvuelve en entornos virtuales generados por las TIC" con sus respectivas Capacidades y Desempeños aplicados al área.
 
 7. VII. ESTÁNDARES, COMPETENCIAS Y CAPACIDADES DEL ÁREA DE EDUCACIÓN FÍSICA
-- Transcribir las 3 competencias oficiales del área con sus capacidades y estándares completos del ciclo ({ciclo_actual}).
+- Transcribir las 3 competencias oficiales del área con sus capacidades y estándares completos del ciclo correspondiente ({ciclo_actual}):
+  * Competencia 1: Se desenvuelve de manera autónoma a través de su motricidad.
+  * Competencia 2: Asume una vida saludable.
+  * Competencia 3: Interactúa a través de sus habilidades sociomotrices.
 
-8. VIII. MATRIZ DE PLANIFICACIÓN (Formato Único Cronológico para el Ciclo)
-Desarrolla UNA ÚNICA tabla de matriz que integre cronológicamente las {total_sesiones_unidad} sesiones.
-- **Regla de Desempeños por Ciclo:** En la columna "Desempeño", debes precisar un desempeño que sea aplicable y represente la progresión para **ambos grados del ciclo** ({grado_seccion}), basándote en la lista completa de desempeños proporcionada.
-| Sesión N.° y Título | Competencia / Capacidades | Desempeño CNEB Precisado para el CICLO (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación | Evidencia y Producto | Instrumento |
+8. VIII. MATRIZ DE PLANIFICACIÓN (Formato Tabla organizado por Competencia)
+Desarrolla 3 bloques independientes, UNO POR CADA COMPETENCIA DE EDUCACIÓN FÍSICA:
+
+- **COMPETENCIA 1: Se desenvuelve de manera autónoma a través de su motricidad**
+  > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo transcrito literalmente sin recortar, con **negrita** en la parte movilizada]
+  | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación por Sesión (Integrados sin etiquetas) | Evidencia y Producto | Instrumento |
+
+- **COMPETENCIA 2: Asume una vida saludable**
+  > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo transcrito literalmente sin recortar, con **negrita** en la parte movilizada]
+  | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación por Sesión (Integrados sin etiquetas) | Evidencia y Producto | Instrumento |
+
+- **COMPETENCIA 3: Interactúa a través de sus habilidades sociomotrices**
+  > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo transcrito literalmente sin recortar, con **negrita** en la parte movilizada]
+  | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación por Sesión (Integrados sin etiquetas) | Evidencia y Producto | Instrumento |
+
+- REGLA DEL DESEMPEÑO: Redactado de manera COMPLETA tal cual aparece en el CNEB, RESALTANDO EN NEGRITA tanto la parte del desempeño utilizada como las palabras/términos agregados para su precisión y contextualización.
+*NOTA: NO incluir la columna "Propósito" en la Matriz de Planificación.*
 
 9. IX. SECUENCIA DE SESIONES (Formato Tabla)
-Genera una tabla completa para las {total_sesiones_unidad} sesiones detallando:
+Genera una tabla completa para las {total_sesiones_unidad} sesiones detallando (Propósito directo de 2 a 3 líneas):
 | N° | Título de la actividad | Propósito de la actividad | Representación gráfica |
 
 10. X. RECURSOS
-- Recursos para el Docente, Recursos para el Estudiante, y espacio para firmas.
+- Recursos para el Docente (Normativa CNEB, RM N° 501-2025, materiales).
+- Recursos para el Estudiante (Kit de aseo: jabón, toalla, polo de cambio, ropa deportiva, botellas de agua).
+- Fecha y espacio para firmas de la Directora y Docente de Educación Física.
 """
 
 def generar_prompt_proyecto_ef():
-    grado_normalizado_cneb = normalizar_grado_cneb(grado_seccion)
     cneb_datos_text = ""
     for comp_nombre, comp_info in CNEB_PRIMARIA.items():
         est_txt = comp_info["estandares"].get(ciclo_actual, "")
@@ -637,7 +638,6 @@ IX. RECURSOS Y MATERIALES
 """
 
 def generar_prompt_sesion_ef():
-    grado_normalizado_cneb = normalizar_grado_cneb(grado_seccion)
     comps_str = ", ".join(comps_seleccionadas) if comps_seleccionadas else "Seleccionar automáticamente según el tema del CNEB"
     cap_str = capacidades_custom.strip() if capacidades_custom.strip() else "Generar automáticamente según la(s) competencia(s) elegida(s)"
     est_str = estandar_custom.strip() if estandar_custom.strip() else "Transcribir el Estándar COMPLETO oficial del ciclo del CNEB con negrita en la parte movilizada"
@@ -681,7 +681,7 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo con **negrita** en la parte aplicada]
 
 | ÁREA | COMPETENCIA Y CAPACIDADES | DESEMPEÑO PRECISADO COMPLETO (con **negrita**) | EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN (Integrados sin etiquetas) | PROPÓSITO DE LA CLASE | EVIDENCIA | INSTRUMENTO |
-- **Criterios de Evaluación:** Redacta OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles que integren de forma fluida e implícita los tres elementos pedagógicos (**Acción + Contenido + Condición**), pero QUEDA STRICTAMENTE PROHIBIDO escribir o visualizar las palabras/etiquetas 'Acción:', 'Contenido:' o 'Condición:' en el texto (debe ser una sola oración continua y natural por criterio).
+- **Criterios de Evaluación:** Redacta OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles que integren de forma fluida e implícita los tres elementos pedagógicos (**Acción + Contenido + Condición**), pero QUIDA STRICTAMENTE PROHIBIDO escribir o visualizar las palabras/etiquetas 'Acción:', 'Contenido:' o 'Condición:' en el texto (debe ser una sola oración continua y natural por criterio).
 
 4. TABLA III: ENFOQUE TRANSVERSAL (ÚNICO Y ESPECÍFICO)
 | ENFOQUE TRANSVERSAL PRIORIZADO | VALOR(ES) | ACTITUDES OBSERVABLES |
@@ -743,17 +743,19 @@ REGLA ABSOLUTA DE COMPLETITUD: Queda STRICTAMENTE PROHIBIDO recortar, abreviar o
 Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y DIRECTO dentro de las celdas de las tablas, garantizando que el documento se redacte ENTERO de principio a fin, concluyendo obligatoriamente en la última sección con el espacio para firmas correspondientes."""
 
             with st.spinner(f"⚽ Google Gemini está redactando tu {tipo_documento} para {grado_seccion}..."):
-                # --- INICIO DE LA CORRECCIÓN ---
                 config = types.GenerateContentConfig(
                     system_instruction=sys_inst,
-                    temperature=0.10,
+                    temperature=0.10,          # Temperatura baja para máxima fidelidad y concisión técnica
                     max_output_tokens=8192
                 )
                 
+                # LISTA DE MODELOS ESTABLES CON RESPALDO AUTOMÁTICO EN CASO DE 404
                 modelos_a_probar = [
                     model_choice,
-                    "gemini-1.5-flash",
-                    "gemini-1.0-pro"
+                    "gemini-2.5-flash",
+                    "gemini-2.0-flash",
+                    "gemini-2.5-pro",
+                    "gemini-3.5-flash"
                 ]
                 
                 response = None
@@ -761,30 +763,23 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                 
                 for mod in modelos_a_probar:
                     try:
-                        # Se cambia el nombre del parámetro a 'config'
                         response = client.models.generate_content(
-                            model=f"models/{mod}",
+                            model=mod,
                             contents=prompt_maestro,
-                            config=config  # Este era el argumento con el nombre incorrecto
+                            config=config
                         )
                         if response and response.text:
                             break
                     except Exception as err:
                         ultimo_err = err
                         continue
-                # --- FIN DE LA CORRECCIÓN ---
                 
                 if not response or not response.text:
                     raise ultimo_err
                 
                 st.session_state['resultado_md'] = response.text
                 st.session_state['tipo_doc_generado'] = tipo_documento
-                
-                if tipo_documento == "Unidad de Aprendizaje":
-                    clean_name_part = ciclo_actual.replace(' ', '_')
-                else:
-                    clean_name_part = grado_seccion.replace(' ', '_')
-                st.session_state['fname_clean'] = f"{tipo_documento.replace(' ', '_')}_EF_N{num_doc}_{clean_name_part}.docx"
+                st.session_state['fname_clean'] = f"{tipo_documento.replace(' ', '_')}_EF_N{num_doc}_{grado_seccion.replace(' ', '_')}.docx"
                 
                 st.success(f"✅ ¡{tipo_documento} de Educación Física generado con éxito!")
 
@@ -792,8 +787,6 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
             err_str = str(e)
             if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
                 st.warning("⏳ Límite de velocidad alcanzado. Por favor, espera 60 segundos y vuelve a intentarlo.")
-            elif "503" in err_str or "UNAVAILABLE" in err_str:
-                st.warning("⏳ El modelo está experimentando alta demanda. Por favor, intenta de nuevo en unos momentos o selecciona otro modelo en la barra lateral.")
             else:
                 st.error(f"❌ Ocurrió un error con la API de Google AI Studio: {err_str}")
 
