@@ -492,14 +492,13 @@ def generar_prompt_unidad_ef_10_secciones():
     return f"""
 Actúa como un especialista en currículo educativo peruano y docente experto en el área de Educación Física para Educación Básica Regular (CNEB). 
 
-Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa para el CICLO COMPLETO, con una MATRIZ DE PLANIFICACIÓN DIFERENCIADA para cada grado y organizada por competencias.
+Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa para el CICLO COMPLETO, con una MATRIZ DE PLANIFICACIÓN y una SECUENCIA DE SESIONES diferenciada para cada grado.
 
 🚨 REGLAS CRÍTICAS DE COMPLETITUD Y ESTRUCTURA POR CICLO (OBLIGATORIO LLEGAR HASTA LA SECCIÓN X):
 1. FINALIZA EL DOCUMENTO OBLIGATORIAMENTE HASTA LA SECCIÓN X (RECURSOS Y FIRMAS).
-2. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), genera DOS PLANIFICACIONES COMPLETAS E INDEPENDIENTES: una para {grado_1_ciclo_str} y otra para {grado_2_ciclo_str}.
-3. Dentro de CADA planificación, las sesiones deben estar AGRUPADAS POR COMPETENCIA (Bloque para C1, bloque para C2, bloque para C3).
-4. Delante de cada bloque de sesiones, debes transcribir el ESTÁNDAR COMPLETO de esa competencia específica.
-5. Usa los DESEMPEÑOS ESPECÍFICOS del grado correspondiente para cada matriz.
+2. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), genera DOS PLANIFICACIONES COMPLETAS: una para {grado_1_ciclo_str} y otra para {grado_2_ciclo_str}. Dentro de cada una, agrupa las sesiones por competencia (C1, C2, C3), encabezando cada grupo con su estándar.
+3. EN LA SECCIÓN IX (SECUENCIA DE SESIONES), genera DOS SECUENCIAS COMPLETAS: una tabla para {grado_1_ciclo_str} y otra para {grado_2_ciclo_str}.
+4. Usa los DESEMPEÑOS ESPECÍFICOS del grado correspondiente para cada matriz.
 
 DATOS OFICIALES EXTRAÍDOS DE cneb_datos.py PARA ESTA UNIDAD ({ciclo_actual}):
 {cneb_datos_text}
@@ -518,6 +517,7 @@ DATOS PARA LA GENERACIÓN:
 
 ESTRUCTURA OBLIGATORIA DE LA UNIDAD DE APRENDIZAJE:
 
+(Desarrolla las Secciones I a VII de manera general para el ciclo)
 1. TÍTULO DE LA UNIDAD
 2. II. DATOS INFORMATIVOS
 3. III. SITUACIÓN SIGNIFICATIVA
@@ -527,7 +527,7 @@ ESTRUCTURA OBLIGATORIA DE LA UNIDAD DE APRENDIZAJE:
 7. VII. ESTÁNDARES, COMPETENCIAS Y CAPACIDADES DEL ÁREA DE EDUCACIÓN FÍSICA
 
 8. VIII. MATRIZ DE PLANIFICACIÓN POR CICLO (ORGANIZADA POR GRADO Y COMPETENCIA)
-A continuación, desarrolla las DOS planificaciones completas, una para cada grado.
+A continuación, desarrolla las DOS planificaciones completas.
 
 ---
 ### **MATRIZ DE PLANIFICACIÓN PARA {grado_1_ciclo_str.upper()}**
@@ -562,14 +562,19 @@ A continuación, desarrolla las DOS planificaciones completas, una para cada gra
 | Sesiones de C3 | Desempeño (de {grado_2_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
 ---
 
-**INSTRUCCIONES CLAVE PARA AMBAS MATRICES:**
-- **Distribución:** El número total de sesiones en los 3 bloques de competencias debe sumar {total_sesiones_unidad}. Distribúyelas de forma lógica.
-- **Desempeño:** Transcribe el desempeño oficial completo del CNEB del grado correspondiente, con **negrita** en lo movilizado.
-- **Criterios:** Formula EXACTAMENTE 3 criterios por sesión, integrados y sin etiquetas.
+9. IX. SECUENCIA DE SESIONES (Diferenciada por Grado)
+Genera DOS TABLAS DE SECUENCIA DE SESIONES completas e independientes, una para cada grado del ciclo.
 
-9. IX. SECUENCIA DE SESIONES (Formato Tabla)
-Genera una única tabla para las {total_sesiones_unidad} sesiones.
+---
+### **SECUENCIA DE SESIONES PARA {grado_1_ciclo_str.upper()}**
+(Tabla completa con las {total_sesiones_unidad} sesiones para el primer grado del ciclo)
 | N° | Título de la actividad | Propósito de la actividad | Representación gráfica |
+
+---
+### **SECUENCIA DE SESIONES PARA {grado_2_ciclo_str.upper()}**
+(Tabla completa con las {total_sesiones_unidad} sesiones, adaptando los títulos y propósitos para el segundo grado del ciclo para reflejar mayor complejidad)
+| N° | Título de la actividad (adaptado) | Propósito de la actividad (adaptado) | Representación gráfica |
+---
 
 10. X. RECURSOS
 - Recursos para el Docente, Recursos para el Estudiante.
