@@ -376,12 +376,40 @@ with c2:
     director = st.text_input("Directora:", "Prof. Luisa Ruth Aronés Herrera")
     docente = st.text_input("Docente de Educación Física:", "Mario A. García Torres")
 with c3:
-    grado_seccion = st.selectbox("Grado y Sección:", ["1er Grado A", "2do Grado A", "3er Grado A", "4to Grado A", "5to Grado A", "6to Grado A"], index=1)
-    
-    # Detección del Ciclo leyendo desde cneb_datos.py
-    grado_normalizado_cneb = normalizar_grado_cneb(grado_seccion)
-    ciclo_actual = obtener_ciclo_primaria(grado_normalizado_cneb)
-    st.info(f"Ciclo CNEB Detectado: **{ciclo_actual}**")
+    # --- INICIO DE LA MODIFICACIÓN ---
+    if tipo_documento == "Unidad de Aprendizaje":
+        ciclo_seleccionado_str = st.selectbox(
+            "Ciclo CNEB:", 
+            ["III Ciclo (1° y 2° Grado)", "IV Ciclo (3° y 4° Grado)", "V Ciclo (5° y 6° Grado)"], 
+            index=0
+        )
+        ciclo_actual = ciclo_seleccionado_str.split(" (")[0]
+
+        if "III" in ciclo_actual:
+            grado_1_ciclo_str = "1er Grado"
+            grado_2_ciclo_str = "2do Grado"
+            grado_1_cneb = "1° de Primaria"
+            grado_2_cneb = "2° de Primaria"
+        elif "IV" in ciclo_actual:
+            grado_1_ciclo_str = "3er Grado"
+            grado_2_ciclo_str = "4to Grado"
+            grado_1_cneb = "3° de Primaria"
+            grado_2_cneb = "4° de Primaria"
+        else: # V Ciclo
+            grado_1_ciclo_str = "5to Grado"
+            grado_2_ciclo_str = "6to Grado"
+            grado_1_cneb = "5° de Primaria"
+            grado_2_cneb = "6° de Primaria"
+        
+        grado_seccion = f"{grado_1_ciclo_str} y {grado_2_ciclo_str}"
+        st.info(f"Ciclo Seleccionado: **{ciclo_actual}**")
+        grado_normalizado_cneb = None # No se usa para la unidad por ciclo
+    else:
+        grado_seccion = st.selectbox("Grado y Sección:", ["1er Grado A", "2do Grado A", "3er Grado A", "4to Grado A", "5to Grado A", "6to Grado A"], index=1)
+        grado_normalizado_cneb = normalizar_grado_cneb(grado_seccion)
+        ciclo_actual = obtener_ciclo_primaria(grado_normalizado_cneb)
+        st.info(f"Ciclo CNEB Detectado: **{ciclo_actual}**")
+    # --- FIN DE LA MODIFICACIÓN ---
 
 # VARIABLES ESPECÍFICAS PARA CADA HERRAMIENTA
 if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
@@ -430,7 +458,7 @@ else:  # Unidad o Proyecto EF
         num_doc = st.text_input("N.° de Unidad / Proyecto:", "04")
     with f2:
         fechas_duracion = st.text_input("Fechas / Periodo:", "Del 22 de junio al 17 de julio de 2026")
-        fecha_sugerida = fechas_duracion  # Garantiza que ambas variables existan siempre
+        fecha_sugerida = fechas_duracion
     with f3:
         duracion_semanas = st.slider("Número de Semanas:", min_value=2, max_value=8, value=4)
     with f4:
@@ -449,34 +477,38 @@ else:  # Unidad o Proyecto EF
 # PROMPTS ESPECIALIZADOS QUE LEEN DE cneb_datos.py
 # ==============================================================================
 
+# --- INICIO DE LA MODIFICACIÓN ---
 def generar_prompt_unidad_ef_10_secciones():
     cneb_datos_text = ""
     for comp_nombre, comp_info in CNEB_PRIMARIA.items():
         est_txt = comp_info["estandares"].get(ciclo_actual, "")
-        des_list = comp_info["desempenos"].get(grado_normalizado_cneb, [])
-        cneb_datos_text += f"\n\nCOMPETENCIA: {comp_nombre}\nESTÁNDAR OFICIAL ({ciclo_actual}):\n{est_txt}\nDESEMPEÑOS OFICIALES ({grado_normalizado_cneb}):\n" + "\n".join(des_list)
+        des_list_g1 = comp_info["desempenos"].get(grado_1_cneb, [])
+        des_list_g2 = comp_info["desempenos"].get(grado_2_cneb, [])
+        
+        cneb_datos_text += f"\n\nCOMPETENCIA: {comp_nombre}\nESTÁNDAR OFICIAL ({ciclo_actual}):\n{est_txt}"
+        cneb_datos_text += f"\nDESEMPEÑOS OFICIALES ({grado_1_ciclo_str}):\n" + "\n".join(des_list_g1)
+        cneb_datos_text += f"\nDESEMPEÑOS OFICIALES ({grado_2_ciclo_str}):\n" + "\n".join(des_list_g2)
 
     total_sesiones_unidad = duracion_semanas * sesiones_por_semana
 
     return f"""
 Actúa como un especialista en currículo educativo peruano y docente experto en el área de Educación Física para Educación Básica Regular (CNEB). 
 
-Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa, extensa, rigurosa y alineada al Currículo Nacional (CNEB), siguiendo estrictamente las 10 secciones obligatorias sin cortar el documento al final.
+Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa, extensa y rigurosa para el CICLO COMPLETO, siguiendo estrictamente las 10 secciones obligatorias y generando una MATRIZ DE PLANIFICACIÓN DIFERENCIADA PARA CADA GRADO.
 
-🚨 REGLAS CRÍTICAS DE COMPLETITUD Y ESTRUCTURA ORGANIZADA POR COMPETENCIA (OBLIGATORIO LLEGAR HASTA LA SECCIÓN X):
-1. DEBES FINALIZAR EL DOCUMENTO OBLIGATORIAMENTE HASTA LA SECCIÓN X (RECURSOS Y FIRMAS DE DIRECTORA Y DOCENTE). QUEDA STRICTAMENTE PROHIBIDO DEJAR EL DOCUMENTO INCOMPLETO.
-2. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), ORGANIZA LA MATRIZ SEPARADA COMPETENCIA POR COMPETENCIA (C1, C2, C3 de Educación Física).
-3. PARA CADA COMPETENCIA, COLOCA EN LA PARTE SUPERIOR SU ESTÁNDAR COMPLETO DEL CNEB CON NEGRITA EN LO EVALUADO, Y DESARROLLA CADA UNA DE SUS SESIONES ASOCIADAS ({total_sesiones_unidad} sesiones en total, {duracion_semanas} semanas).
-4. REGLA OBLIGATORIA DE CRITERIOS: Para cada sesión individual de la matriz, debes formular OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles. Cada criterio debe estar redactado de forma fluida e integrada (Acción + Contenido + Condición) pero SIN ESCRIBIR NI MOSTRAR VISIBLEMENTE las palabras/etiquetas 'Acción:', 'Contenido:' ni 'Condición:' (debe ser una sola oración continua por criterio).
-5. MANTÉN EL TEXTO DENTRO DE LAS CELDAS DE FORMA SINTÉTICA Y CONCISA (1 A 2 LÍNEAS POR CELDA) PARA NUNCA EXCEDER EL LÍMITE DE MEMORIA Y LOGRAR DESARROLLAR LAS 10 SECCIONES ENTERAS.
-6. COMPLETA SIEMPRE LA SECCIÓN IX (SECUENCIA DE SESIONES) Y LA SECCIÓN X (RECURSOS Y ESPACIO PARA FIRMAS DE DIRECTORA Y DOCENTE).
+🚨 REGLAS CRÍTICAS DE COMPLETITUD Y ESTRUCTURA POR CICLO (OBLIGATORIO LLEGAR HASTA LA SECCIÓN X):
+1. DEBES FINALIZAR EL DOCUMENTO OBLIGATORIAMENTE HASTA LA SECCIÓN X (RECURSOS Y FIRMAS). QUEDA STRICTAMENTE PROHIBIDO DEJAR EL DOCUMENTO INCOMPLETO.
+2. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), DEBES GENERAR DOS MATRICES COMPLETAS E INDEPENDIENTES: una para {grado_1_ciclo_str} y otra para {grado_2_ciclo_str}.
+3. CADA UNA DE LAS DOS MATRICES DEBE DESARROLLAR LA TOTALIDAD DE LAS {total_sesiones_unidad} SESIONES. ESTÁ PROHIBIDO OMITIR SESIONES.
+4. PARA CADA MATRIZ, UTILIZA LOS DESEMPEÑOS ESPECÍFICOS DEL GRADO CORRESPONDIENTE.
+5. COMPLETA SIEMPRE LA SECCIÓN IX (SECUENCIA DE SESIONES) Y LA SECCIÓN X (RECURSOS Y FIRMAS).
 
-DATOS OFICIALES EXTRAÍDOS DE cneb_datos.py PARA ESTA UNIDAD ({grado_seccion} - {ciclo_actual}):
+DATOS OFICIALES EXTRAÍDOS DE cneb_datos.py PARA ESTA UNIDAD ({ciclo_actual}):
 {cneb_datos_text}
 
 DATOS PARA LA GENERACIÓN:
 - N° de Unidad: Unidad N° {num_doc}
-- Ciclo / Grados: {ciclo_actual} - {grado_seccion}
+- Ciclo / Grados: {ciclo_actual} - ({grado_1_ciclo_str} y {grado_2_ciclo_str})
 - Nombre de la IE: {ie_nombre}
 - Nombre del Docente: {docente}
 - Nombre del Director(a): {director}
@@ -489,60 +521,60 @@ DATOS PARA LA GENERACIÓN:
 ESTRUCTURA OBLIGATORIA DE LA UNIDAD DE APRENDIZAJE DE EDUCACIÓN FÍSICA:
 
 1. TÍTULO DE LA UNIDAD
-- Debe ser motivador, entre comillas y redactado en función al desarrollo de competencias motrices, sociomotrices o de vida saludable.
+- Debe ser motivador y aplicable a ambos grados del ciclo.
 
 2. II. DATOS INFORMATIVOS
-- IE, Directora, Profesor de Ed. Física, Ciclo, Grado y Sección, Duración.
+- IE, Directora, Profesor, Ciclo, Grados ({grado_1_ciclo_str} y {grado_2_ciclo_str}), Duración.
 
 3. III. SITUACIÓN SIGNIFICATIVA
-- Contextualizar la realidad motriz y de salud de los estudiantes relacionada con la problemática: {problema_contexto}.
-- Incluir un dato cuantitativo/cualitativo del problema (ej. "solo el 35% logra orientarse adecuadamente...").
-- Plantear 3 preguntas retadoras/desafiantes asociadas a la solución motriz.
-- Proponer la estrategia pedagógica para resolver el reto (circuitos, festivales lúdico-motores, juegos tradicionales, etc.).
+- Redacta una situación común y relevante para las edades de ambos grados del ciclo.
 
 4. IV. PRODUCTO DE LA UNIDAD
-- Describir un desempeño práctico o un producto tangible/demostrable claro: {producto_unidad}.
+- Describe un producto final que puede ser logrado por ambos grados, quizás con niveles de complejidad distintos.
 
 5. V. ENFOQUES TRANSVERSALES
 - Seleccionar 2 enfoques transversales del CNEB.
-- Especificar en tabla: Enfoque Transversal, Valor(es) y Acciones o Actitudes Observables adaptadas a Educación Física.
 
 6. VI. COMPETENCIAS TRANSVERSALES
-- Incluir en tabla "Gestiona su aprendizaje de manera autónoma" y "Se desenvuelve en entornos virtuales generados por las TIC" con sus respectivas Capacidades y Desempeños aplicados al área.
+- Describir desempeños aplicables a ambos grados del ciclo.
 
 7. VII. ESTÁNDARES, COMPETENCIAS Y CAPACIDADES DEL ÁREA DE EDUCACIÓN FÍSICA
-- Transcribir las 3 competencias oficiales del área con sus capacidades y estándares completos del ciclo correspondiente ({ciclo_actual}):
-  * Competencia 1: Se desenvuelve de manera autónoma a través de su motricidad.
-  * Competencia 2: Asume una vida saludable.
-  * Competencia 3: Interactúa a través de sus habilidades sociomotrices.
+- Transcribir las 3 competencias oficiales del área con sus capacidades y el estándar completo del {ciclo_actual}.
 
-8. VIII. MATRIZ DE PLANIFICACIÓN (Formato Tabla organizado por Competencia)
-Desarrolla 3 bloques independientes, UNO POR CADA COMPETENCIA DE EDUCACIÓN FÍSICA:
+8. VIII. MATRIZ DE PLANIFICACIÓN POR CICLO (Un cuadro para cada grado)
+Tu tarea es generar DOS MATRICES DE PLANIFICACIÓN COMPLETAS, CRONOLÓGICAS E INDEPENDIENTES, una para cada grado del ciclo.
 
-- **COMPETENCIA 1: Se desenvuelve de manera autónoma a través de su motricidad**
-  > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo transcrito literalmente sin recortar, con **negrita** en la parte movilizada]
-  | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación por Sesión (Integrados sin etiquetas) | Evidencia y Producto | Instrumento |
+---
+### **MATRIZ DE PLANIFICACIÓN PARA {grado_1_ciclo_str.upper()}**
+(A continuación, desarrolla la tabla de planificación completa con las {total_sesiones_unidad} sesiones, utilizando los desempeños correspondientes a {grado_1_cneb})
 
-- **COMPETENCIA 2: Asume una vida saludable**
-  > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo transcrito literalmente sin recortar, con **negrita** en la parte movilizada]
-  | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación por Sesión (Integrados sin etiquetas) | Evidencia y Producto | Instrumento |
+> **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo con **negrita** en la parte movilizada]
+        
+| Sesión N.° y Título | Competencia / Capacidad | Desempeño CNEB Completo (de {grado_1_cneb}) | EXACTAMENTE 3 Criterios de Evaluación | Evidencia y Producto | Instrumento |
 
-- **COMPETENCIA 3: Interactúa a través de sus habilidades sociomotrices**
-  > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo transcrito literalmente sin recortar, con **negrita** en la parte movilizada]
-  | Sesión N.° y Título de la sesión | Competencia / Capacidad | Desempeño CNEB Completo (con **negrita**) | EXACTAMENTE 3 Criterios de Evaluación por Sesión (Integrados sin etiquetas) | Evidencia y Producto | Instrumento |
+---
+### **MATRIZ DE PLANIFICACIÓN PARA {grado_2_ciclo_str.upper()}**
+(Ahora, desarrolla OTRA tabla de planificación completa, con las mismas {total_sesiones_unidad} sesiones, pero adaptando el título y utilizando los desempeños correspondientes a {grado_2_cneb})
 
-- REGLA DEL DESEMPEÑO: Redactado de manera COMPLETA tal cual aparece en el CNEB, RESALTANDO EN NEGRITA tanto la parte del desempeño utilizada como las palabras/términos agregados para su precisión y contextualización.
-*NOTA: NO incluir la columna "Propósito" en la Matriz de Planificación.*
+> **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo con **negrita** en la parte movilizada]
+        
+| Sesión N.° y Título (adaptado) | Competencia / Capacidad | Desempeño CNEB Completo (de {grado_2_cneb}) | EXACTAMENTE 3 Criterios de Evaluación | Evidencia y Producto | Instrumento |
+
+---
+**INSTRUCCIONES CLAVE PARA AMBAS MATRICES:**
+- **Distribución Equilibrada:** Dentro de cada matriz, distribuye las {total_sesiones_unidad} sesiones de forma lógica. Es OBLIGATORIO que en el conjunto total de sesiones se evidencie el trabajo de las 3 competencias del área.
+- **Regla del Desempeño:** En cada matriz, transcribe el desempeño oficial completo del CNEB correspondiente al grado de esa tabla, RESALTANDO EN NEGRITA la parte específica que se moviliza y los términos agregados para su precisión.
+- **Regla de Criterios:** Para cada sesión, formula EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN integrados y sin etiquetas.
 
 9. IX. SECUENCIA DE SESIONES (Formato Tabla)
-Genera una tabla completa para las {total_sesiones_unidad} sesiones detallando (Propósito directo de 2 a 3 líneas):
+Genera una tabla completa para las {total_sesiones_unidad} sesiones detallando:
 | N° | Título de la actividad | Propósito de la actividad | Representación gráfica |
 
 10. X. RECURSOS
-- Recursos para el Docente (Normativa CNEB, RM N° 501-2025, materiales).
-- Recursos para el Estudiante (Kit de aseo: jabón, toalla, polo de cambio, ropa deportiva, botellas de agua).
+- Recursos para el Docente, Recursos para el Estudiante.
 - Fecha y espacio para firmas de la Directora y Docente de Educación Física.
 """
+# --- FIN DE LA MODIFICACIÓN ---
 
 def generar_prompt_proyecto_ef():
     cneb_datos_text = ""
@@ -745,11 +777,10 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
             with st.spinner(f"⚽ Google Gemini está redactando tu {tipo_documento} para {grado_seccion}..."):
                 config = types.GenerateContentConfig(
                     system_instruction=sys_inst,
-                    temperature=0.10,          # Temperatura baja para máxima fidelidad y concisión técnica
+                    temperature=0.10,
                     max_output_tokens=8192
                 )
                 
-                # LISTA DE MODELOS ESTABLES CON RESPALDO AUTOMÁTICO EN CASO DE 404
                 modelos_a_probar = [
                     model_choice,
                     "gemini-2.5-flash",
@@ -779,7 +810,7 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                 
                 st.session_state['resultado_md'] = response.text
                 st.session_state['tipo_doc_generado'] = tipo_documento
-                st.session_state['fname_clean'] = f"{tipo_documento.replace(' ', '_')}_EF_N{num_doc}_{grado_seccion.replace(' ', '_')}.docx"
+                st.session_state['fname_clean'] = f"{tipo_documento.replace(' ', '_')}_EF_{ciclo_actual.replace(' ', '_')}.docx"
                 
                 st.success(f"✅ ¡{tipo_documento} de Educación Física generado con éxito!")
 
