@@ -824,4 +824,4 @@ if st.session_state['resultado_md'] is not None:
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             use_container_width=True
         )
-        st.info("💡 **Nota:** El documento Word incluye la insignia editable y las tablas en tonos pasteles.")```
+        st.info("💡 **Nota:** El documento Word incluye la insignia editable y las tablas en tonos pasteles.")
