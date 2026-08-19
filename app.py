@@ -376,7 +376,6 @@ with c2:
     director = st.text_input("Directora:", "Prof. Luisa Ruth Aronés Herrera")
     docente = st.text_input("Docente de Educación Física:", "Mario A. García Torres")
 with c3:
-    # Lógica para manejar selección por grado o ciclo
     if tipo_documento == "Unidad de Aprendizaje":
         CICLO_MAP = {
             "III Ciclo (1° y 2° Grado)": ("III Ciclo", ["1° de Primaria", "2° de Primaria"]),
@@ -393,7 +392,7 @@ with c3:
         grados_normalizados_cneb = grados_del_ciclo
         st.info(f"Unidad para el Ciclo: **{ciclo_actual}**")
 
-    else: # Para Sesión y Proyecto, se mantiene la selección por grado
+    else:
         grado_seccion = st.selectbox("Grado y Sección:", ["1er Grado A", "2do Grado A", "3er Grado A", "4to Grado A", "5to Grado A", "6to Grado A"], index=1)
         grado_normalizado_cneb = normalizar_grado_cneb(grado_seccion)
         ciclo_actual = obtener_ciclo_primaria(grado_normalizado_cneb)
@@ -441,7 +440,7 @@ if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
     producto_unidad = ""
     problema_contexto = titulo_sesion_input.strip() if titulo_sesion_input.strip() else "Desarrollo de nociones espaciales, coordinación motriz y convivencia en juegos de Educación Física."
 
-else:  # Unidad o Proyecto EF
+else:
     f1, f2, f3, f4, f5 = st.columns(5)
     with f1:
         num_doc = st.text_input("N.° de Unidad / Proyecto:", "04")
@@ -730,7 +729,6 @@ if st.button(f"✨ Generar {tipo_documento}"):
         st.warning("⚠️ Completa el campo del Tema o Problemática de Educación Física.")
     else:
         try:
-            # MÉTODO DE LLAMADA CORREGIDO Y COMPATIBLE
             client = genai.Client(api_key=api_key)
             
             if tipo_documento == "Unidad de Aprendizaje":
@@ -745,6 +743,7 @@ REGLA ABSOLUTA DE COMPLETITUD: Queda STRICTAMENTE PROHIBIDO recortar, abreviar o
 Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y DIRECTO dentro de las celdas de las tablas, garantizando que el documento se redacte ENTERO de principio a fin, concluyendo obligatoriamente en la última sección con el espacio para firmas correspondientes."""
 
             with st.spinner(f"⚽ Google Gemini está redactando tu {tipo_documento} para {grado_seccion}..."):
+                # --- INICIO DE LA CORRECCIÓN ---
                 config = types.GenerateContentConfig(
                     system_instruction=sys_inst,
                     temperature=0.10,
@@ -762,16 +761,18 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                 
                 for mod in modelos_a_probar:
                     try:
+                        # Se cambia el nombre del parámetro a 'config'
                         response = client.models.generate_content(
-                            model=f"models/{mod}", # Asegura el formato correcto del nombre del modelo
+                            model=f"models/{mod}",
                             contents=prompt_maestro,
-                            generation_config=config
+                            config=config  # Este era el argumento con el nombre incorrecto
                         )
                         if response and response.text:
                             break
                     except Exception as err:
                         ultimo_err = err
                         continue
+                # --- FIN DE LA CORRECCIÓN ---
                 
                 if not response or not response.text:
                     raise ultimo_err
@@ -779,7 +780,6 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                 st.session_state['resultado_md'] = response.text
                 st.session_state['tipo_doc_generado'] = tipo_documento
                 
-                # Nombre de archivo dinámico para ciclo o grado
                 if tipo_documento == "Unidad de Aprendizaje":
                     clean_name_part = ciclo_actual.replace(' ', '_')
                 else:
@@ -824,4 +824,4 @@ if st.session_state['resultado_md'] is not None:
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             use_container_width=True
         )
-        st.info("💡 **Nota:** El documento Word incluye la insignia editable y las tablas en tonos pasteles.")
+        st.info("💡 **Nota:** El documento Word incluye la insignia editable y las tablas en tonos pasteles.")```
