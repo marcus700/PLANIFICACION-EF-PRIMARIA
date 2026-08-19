@@ -525,6 +525,10 @@ ESTRUCTURA OBLIGATORIA DE LA UNIDAD DE APRENDIZAJE:
 5. V. ENFOQUES TRANSVERSALES
 6. VI. COMPETENCIAS TRANSVERSALES
 7. VII. ESTÁNDARES, COMPETENCIAS Y CAPACIDADES DEL ÁREA DE EDUCACIÓN FÍSICA
+- Transcribir las 3 competencias oficiales del área con sus capacidades y estándares completos del ciclo correspondiente ({ciclo_actual}):
+  * Competencia 1: Se desenvuelve de manera autónoma a través de su motricidad.
+  * Competencia 2: Asume una vida saludable.
+  * Competencia 3: Interactúa a través de sus habilidades sociomotrices.
 
 8. VIII. MATRIZ DE PLANIFICACIÓN POR CICLO (ORGANIZADA POR GRADO Y COMPETENCIA)
 A continuación, desarrolla las DOS planificaciones completas.
