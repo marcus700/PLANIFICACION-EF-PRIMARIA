@@ -376,7 +376,6 @@ with c2:
     director = st.text_input("Directora:", "Prof. Luisa Ruth Aronés Herrera")
     docente = st.text_input("Docente de Educación Física:", "Mario A. García Torres")
 with c3:
-    # --- INICIO DE LA MODIFICACIÓN ---
     if tipo_documento == "Unidad de Aprendizaje":
         ciclo_seleccionado_str = st.selectbox(
             "Ciclo CNEB:", 
@@ -403,13 +402,12 @@ with c3:
         
         grado_seccion = f"{grado_1_ciclo_str} y {grado_2_ciclo_str}"
         st.info(f"Ciclo Seleccionado: **{ciclo_actual}**")
-        grado_normalizado_cneb = None # No se usa para la unidad por ciclo
+        grado_normalizado_cneb = None
     else:
         grado_seccion = st.selectbox("Grado y Sección:", ["1er Grado A", "2do Grado A", "3er Grado A", "4to Grado A", "5to Grado A", "6to Grado A"], index=1)
         grado_normalizado_cneb = normalizar_grado_cneb(grado_seccion)
         ciclo_actual = obtener_ciclo_primaria(grado_normalizado_cneb)
         st.info(f"Ciclo CNEB Detectado: **{ciclo_actual}**")
-    # --- FIN DE LA MODIFICACIÓN ---
 
 # VARIABLES ESPECÍFICAS PARA CADA HERRAMIENTA
 if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
@@ -494,14 +492,14 @@ def generar_prompt_unidad_ef_10_secciones():
     return f"""
 Actúa como un especialista en currículo educativo peruano y docente experto en el área de Educación Física para Educación Básica Regular (CNEB). 
 
-Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa, extensa y rigurosa para el CICLO COMPLETO, siguiendo estrictamente las 10 secciones obligatorias y generando una MATRIZ DE PLANIFICACIÓN DIFERENCIADA PARA CADA GRADO.
+Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa para el CICLO COMPLETO, con una MATRIZ DE PLANIFICACIÓN DIFERENCIADA para cada grado y organizada por competencias.
 
 🚨 REGLAS CRÍTICAS DE COMPLETITUD Y ESTRUCTURA POR CICLO (OBLIGATORIO LLEGAR HASTA LA SECCIÓN X):
-1. DEBES FINALIZAR EL DOCUMENTO OBLIGATORIAMENTE HASTA LA SECCIÓN X (RECURSOS Y FIRMAS). QUEDA STRICTAMENTE PROHIBIDO DEJAR EL DOCUMENTO INCOMPLETO.
-2. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), DEBES GENERAR DOS MATRICES COMPLETAS E INDEPENDIENTES: una para {grado_1_ciclo_str} y otra para {grado_2_ciclo_str}.
-3. CADA UNA DE LAS DOS MATRICES DEBE DESARROLLAR LA TOTALIDAD DE LAS {total_sesiones_unidad} SESIONES. ESTÁ PROHIBIDO OMITIR SESIONES.
-4. PARA CADA MATRIZ, UTILIZA LOS DESEMPEÑOS ESPECÍFICOS DEL GRADO CORRESPONDIENTE.
-5. COMPLETA SIEMPRE LA SECCIÓN IX (SECUENCIA DE SESIONES) Y LA SECCIÓN X (RECURSOS Y FIRMAS).
+1. FINALIZA EL DOCUMENTO OBLIGATORIAMENTE HASTA LA SECCIÓN X (RECURSOS Y FIRMAS).
+2. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), genera DOS PLANIFICACIONES COMPLETAS E INDEPENDIENTES: una para {grado_1_ciclo_str} y otra para {grado_2_ciclo_str}.
+3. Dentro de CADA planificación, las sesiones deben estar AGRUPADAS POR COMPETENCIA (Bloque para C1, bloque para C2, bloque para C3).
+4. Delante de cada bloque de sesiones, debes transcribir el ESTÁNDAR COMPLETO de esa competencia específica.
+5. Usa los DESEMPEÑOS ESPECÍFICOS del grado correspondiente para cada matriz.
 
 DATOS OFICIALES EXTRAÍDOS DE cneb_datos.py PARA ESTA UNIDAD ({ciclo_actual}):
 {cneb_datos_text}
@@ -512,67 +510,70 @@ DATOS PARA LA GENERACIÓN:
 - Nombre de la IE: {ie_nombre}
 - Nombre del Docente: {docente}
 - Nombre del Director(a): {director}
-- Duración / Fechas: {duracion_semanas} semanas ({total_sesiones_unidad} sesiones en total, {sesiones_por_semana} por semana) - ({fechas_duracion})
+- Duración / Fechas: {duracion_semanas} semanas ({total_sesiones_unidad} sesiones en total) - ({fechas_duracion})
 - Tema central / Problemática a abordar: {problema_contexto}
 - Producto de la Unidad: {producto_unidad}
 
 ---
 
-ESTRUCTURA OBLIGATORIA DE LA UNIDAD DE APRENDIZAJE DE EDUCACIÓN FÍSICA:
+ESTRUCTURA OBLIGATORIA DE LA UNIDAD DE APRENDIZAJE:
 
 1. TÍTULO DE LA UNIDAD
-- Debe ser motivador y aplicable a ambos grados del ciclo.
-
 2. II. DATOS INFORMATIVOS
-- IE, Directora, Profesor, Ciclo, Grados ({grado_1_ciclo_str} y {grado_2_ciclo_str}), Duración.
-
 3. III. SITUACIÓN SIGNIFICATIVA
-- Redacta una situación común y relevante para las edades de ambos grados del ciclo.
-
 4. IV. PRODUCTO DE LA UNIDAD
-- Describe un producto final que puede ser logrado por ambos grados, quizás con niveles de complejidad distintos.
-
 5. V. ENFOQUES TRANSVERSALES
-- Seleccionar 2 enfoques transversales del CNEB.
-
 6. VI. COMPETENCIAS TRANSVERSALES
-- Describir desempeños aplicables a ambos grados del ciclo.
-
 7. VII. ESTÁNDARES, COMPETENCIAS Y CAPACIDADES DEL ÁREA DE EDUCACIÓN FÍSICA
-- Transcribir las 3 competencias oficiales del área con sus capacidades y el estándar completo del {ciclo_actual}.
 
-8. VIII. MATRIZ DE PLANIFICACIÓN POR CICLO (Un cuadro para cada grado)
-Tu tarea es generar DOS MATRICES DE PLANIFICACIÓN COMPLETAS, CRONOLÓGICAS E INDEPENDIENTES, una para cada grado del ciclo.
+8. VIII. MATRIZ DE PLANIFICACIÓN POR CICLO (ORGANIZADA POR GRADO Y COMPETENCIA)
+A continuación, desarrolla las DOS planificaciones completas, una para cada grado.
 
 ---
 ### **MATRIZ DE PLANIFICACIÓN PARA {grado_1_ciclo_str.upper()}**
-(A continuación, desarrolla la tabla de planificación completa con las {total_sesiones_unidad} sesiones, utilizando los desempeños correspondientes a {grado_1_cneb})
+(Usa los desempeños de {grado_1_cneb})
 
-> **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo con **negrita** en la parte movilizada]
-        
-| Sesión N.° y Título | Competencia / Capacidad | Desempeño CNEB Completo (de {grado_1_cneb}) | EXACTAMENTE 3 Criterios de Evaluación | Evidencia y Producto | Instrumento |
+**COMPETENCIA 1: Se desenvuelve de manera autónoma a través de su motricidad**
+> **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Transcribe aquí el estándar COMPLETO de la Competencia 1]
+| Sesiones de C1 | Desempeño (de {grado_1_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
+
+**COMPETENCIA 2: Asume una vida saludable**
+> **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Transcribe aquí el estándar COMPLETO de la Competencia 2]
+| Sesiones de C2 | Desempeño (de {grado_1_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
+
+**COMPETENCIA 3: Interactúa a través de sus habilidades sociomotrices**
+> **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Transcribe aquí el estándar COMPLETO de la Competencia 3]
+| Sesiones de C3 | Desempeño (de {grado_1_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
 
 ---
 ### **MATRIZ DE PLANIFICACIÓN PARA {grado_2_ciclo_str.upper()}**
-(Ahora, desarrolla OTRA tabla de planificación completa, con las mismas {total_sesiones_unidad} sesiones, pero adaptando el título y utilizando los desempeños correspondientes a {grado_2_cneb})
+(Usa los desempeños de {grado_2_cneb})
 
-> **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo con **negrita** en la parte movilizada]
-        
-| Sesión N.° y Título (adaptado) | Competencia / Capacidad | Desempeño CNEB Completo (de {grado_2_cneb}) | EXACTAMENTE 3 Criterios de Evaluación | Evidencia y Producto | Instrumento |
+**COMPETENCIA 1: Se desenvuelve de manera autónoma a través de su motricidad**
+> **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Transcribe aquí el estándar COMPLETO de la Competencia 1]
+| Sesiones de C1 | Desempeño (de {grado_2_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
 
+**COMPETENCIA 2: Asume una vida saludable**
+> **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Transcribe aquí el estándar COMPLETO de la Competencia 2]
+| Sesiones de C2 | Desempeño (de {grado_2_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
+
+**COMPETENCIA 3: Interactúa a través de sus habilidades sociomotrices**
+> **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Transcribe aquí el estándar COMPLETO de la Competencia 3]
+| Sesiones de C3 | Desempeño (de {grado_2_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
 ---
+
 **INSTRUCCIONES CLAVE PARA AMBAS MATRICES:**
-- **Distribución Equilibrada:** Dentro de cada matriz, distribuye las {total_sesiones_unidad} sesiones de forma lógica. Es OBLIGATORIO que en el conjunto total de sesiones se evidencie el trabajo de las 3 competencias del área.
-- **Regla del Desempeño:** En cada matriz, transcribe el desempeño oficial completo del CNEB correspondiente al grado de esa tabla, RESALTANDO EN NEGRITA la parte específica que se moviliza y los términos agregados para su precisión.
-- **Regla de Criterios:** Para cada sesión, formula EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN integrados y sin etiquetas.
+- **Distribución:** El número total de sesiones en los 3 bloques de competencias debe sumar {total_sesiones_unidad}. Distribúyelas de forma lógica.
+- **Desempeño:** Transcribe el desempeño oficial completo del CNEB del grado correspondiente, con **negrita** en lo movilizado.
+- **Criterios:** Formula EXACTAMENTE 3 criterios por sesión, integrados y sin etiquetas.
 
 9. IX. SECUENCIA DE SESIONES (Formato Tabla)
-Genera una tabla completa para las {total_sesiones_unidad} sesiones detallando:
+Genera una única tabla para las {total_sesiones_unidad} sesiones.
 | N° | Título de la actividad | Propósito de la actividad | Representación gráfica |
 
 10. X. RECURSOS
 - Recursos para el Docente, Recursos para el Estudiante.
-- Fecha y espacio para firmas de la Directora y Docente de Educación Física.
+- Fecha y espacio para firmas.
 """
 # --- FIN DE LA MODIFICACIÓN ---
 
@@ -627,7 +628,7 @@ Redacta una situación basada en un contexto real de la escuela en 4 bloques sin
 IV. CUADRO DE ENFOQUES TRANSVERSALES
 Elabora una tabla con 1 o 2 enfoques transversales más pertinentes (Enfoque, Valores, Actitudes observables).
 
-V. CUADRO DE NEGOCIACIÓN Y PLANIFICACIÓN CON LOS ESTUDIANTES
+V. CUADRO DE NEGOCIACIÓN Y PLANIFICACIÓN CON LOS ESTUDIantes
 Tabla sintética de 4 columnas (¿Qué queremos hacer?, ¿Cómo lo haremos?, ¿Qué necesitamos?, ¿Cómo nos daremos cuenta de que lo logramos?) con respuestas realistas de asamblea.
 
 VI. CUADRO DE PROPÓSITOS DE APRENDIZAJE Y EVALUACIÓN MATRIZADA (ORGANIZADO COMPETENCIA POR COMPETENCIA)
