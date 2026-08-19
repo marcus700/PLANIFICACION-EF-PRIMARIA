@@ -203,7 +203,7 @@ else:
 # OPCIONES DE MODELOS OFICIALES Y ESTABLES
 model_choice = st.sidebar.selectbox(
     "Modelo de Gemini:", 
-    ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro"]
+    ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
 )
 
 # ==============================================================================
