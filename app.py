@@ -539,15 +539,15 @@ A continuación, desarrolla las DOS planificaciones completas.
 
 **COMPETENCIA 1: Se desenvuelve de manera autónoma a través de su motricidad**
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Transcribe aquí el estándar COMPLETO de la Competencia 1]
-| Sesiones de C1 | Desempeño (de {grado_1_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
+| Sesiones de C1 | Competencia / Capacidad | Desempeño precisado completo (con **negrita**) (de {grado_1_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
 
 **COMPETENCIA 2: Asume una vida saludable**
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Transcribe aquí el estándar COMPLETO de la Competencia 2]
-| Sesiones de C2 | Desempeño (de {grado_1_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
+| Sesiones de C2 | Competencia / Capacidad | Desempeño precisado completo (con **negrita**) (de {grado_1_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
 
 **COMPETENCIA 3: Interactúa a través de sus habilidades sociomotrices**
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Transcribe aquí el estándar COMPLETO de la Competencia 3]
-| Sesiones de C3 | Desempeño (de {grado_1_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
+| Sesiones de C3 | Competencia / Capacidad | Desempeño precisado completo (con **negrita**) (de {grado_1_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
 
 ---
 ### **MATRIZ DE PLANIFICACIÓN PARA {grado_2_ciclo_str.upper()}**
@@ -555,15 +555,15 @@ A continuación, desarrolla las DOS planificaciones completas.
 
 **COMPETENCIA 1: Se desenvuelve de manera autónoma a través de su motricidad**
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Transcribe aquí el estándar COMPLETO de la Competencia 1]
-| Sesiones de C1 | Desempeño (de {grado_2_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
+| Sesiones de C1 | Competencia / Capacidad | Desempeño precisado completo (con **negrita**) (de {grado_2_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
 
 **COMPETENCIA 2: Asume una vida saludable**
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Transcribe aquí el estándar COMPLETO de la Competencia 2]
-| Sesiones de C2 | Desempeño (de {grado_2_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
+| Sesiones de C2 | Competencia / Capacidad | Desempeño precisado completo (con **negrita**) (de {grado_2_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
 
 **COMPETENCIA 3: Interactúa a través de sus habilidades sociomotrices**
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Transcribe aquí el estándar COMPLETO de la Competencia 3]
-| Sesiones de C3 | Desempeño (de {grado_2_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
+| Sesiones de C3 | Competencia / Capacidad | Desempeño precisado completo (con **negrita**) (de {grado_2_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
 ---
 
 9. IX. SECUENCIA DE SESIONES (Diferenciada por Grado)
