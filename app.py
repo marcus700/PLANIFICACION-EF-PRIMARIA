@@ -1,4 +1,4 @@
-import io
+ import io
 import re
 import time
 from PIL import Image
@@ -17,6 +17,22 @@ import streamlit as st
 # IMPORTACIÓN DESDE TU BASE DE DATOS EXTERNA (cneb_datos.py)
 # ==============================================================================
 from cneb_datos import CNEB_PRIMARIA, obtener_ciclo_primaria
+
+# DICCIONARIO DE CAPACIDADES OFICIALES DEL CNEB - EDUCACIÓN FÍSICA
+CAPACIDADES_CNEB = {
+    "Se desenvuelve de manera autónoma a través de su motricidad": [
+        "Comprende su cuerpo.",
+        "Se expresa corporalmente."
+    ],
+    "Asume una vida saludable": [
+        "Comprende las relaciones entre la actividad física, alimentación, postura e higiene personal y del ambiente, y la salud.",
+        "Incorpora prácticas que mejoran su calidad de vida."
+    ],
+    "Interactúa a través de sus habilidades sociomotrices": [
+        "Se relaciona utilizando sus habilidades sociomotrices.",
+        "Crea y aplica estrategias y tácticas de juego."
+    ]
+}
 
 def normalizar_grado_cneb(grado_str: str) -> str:
     """Mapea la opción seleccionada al formato de llave exacta en cneb_datos.py"""
@@ -199,7 +215,7 @@ if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_API_KEY"]:
 else:
     api_key = st.sidebar.text_input("🔑 Google AI Studio API Key:", type="password")
 
-# OPCIONES DE MODELOS OFICIALES Y ESTABLES
+# OPCIONES DE MODELOS OFICIALES Y ESTABLES (ORIGINALES SIN CAMBIOS)
 model_choice = st.sidebar.selectbox(
     "Modelo de Gemini:", 
     ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
@@ -419,21 +435,32 @@ if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
     with f3:
         duracion_sesion = st.selectbox("Duración de la Clase:", ["45 minutos", "90 minutos", "135 minutos"], index=1)
     
-    st.markdown("##### 📌 Configuración Pedagógica de la Sesión (Opcional: Dejar en blanco para generación automática del CNEB)")
+    st.markdown("##### 📌 Configuración Pedagógica de la Sesión")
     titulo_sesion_input = st.text_input("Título de la Actividad / Sesión de Clase (Opcional):", value="", placeholder="Ej. Leemos señales para desplazarnos y reconocer direcciones en el patio")
     
     col_s1, col_s2 = st.columns(2)
     with col_s1:
+        # LISTA DESPLEGABLE DE COMPETENCIAS
         comps_seleccionadas = st.multiselect(
-            "Competencia(s) a Trabajar (1, 2 o 3):",
-            [
-                "Se desenvuelve de manera autónoma a través de su motricidad",
-                "Asume una vida saludable",
-                "Interactúa a través de sus habilidades sociomotrices"
-            ],
+            "Competencia(s) a Trabajar:",
+            list(CAPACIDADES_CNEB.keys()),
             default=["Se desenvuelve de manera autónoma a través de su motricidad"]
         )
-        capacidades_custom = st.text_input("Capacidades Específicas (Opcional - Blanco para automático):", value="", placeholder="Ej. Comprende su cuerpo. / Se expresa corporalmente.")
+        
+        # OBTENCIÓN DINÁMICA DE CAPACIDADES SEGÚN LAS COMPETENCIAS ELEGIDAS
+        capacidades_disponibles = []
+        for comp in comps_seleccionadas:
+            for cap in CAPACIDADES_CNEB.get(comp, []):
+                capacidades_disponibles.append(f"{comp}: {cap}")
+        
+        # LISTA DESPLEGABLE DINÁMICA DE CAPACIDADES
+        capacidades_seleccionadas = st.multiselect(
+            "Capacidad(es) a Utilizar (Se actualizan según la competencia):",
+            options=capacidades_disponibles,
+            default=capacidades_disponibles,
+            help="Selecciona las capacidades que se trabajarán en esta sesión."
+        )
+
         estandar_custom = st.text_area("Estándar de la Competencia (Opcional - Blanco para automático):", value="", height=70, placeholder="Texto del estándar...")
     with col_s2:
         tipo_motivacion = st.selectbox(
@@ -443,6 +470,22 @@ if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
         )
         criterios_custom = st.text_area("Criterios de Evaluación (Opcional - Blanco para automático):", value="", height=70, placeholder="Ej. 1. Ejecuta desplazamientos orientados en el patio. 2. Identifica nociones de derecha e izquierda.")
         evidencia_custom = st.text_input("Evidencia de Aprendizaje (Opcional - Blanco para automático):", value="", placeholder="Ej. Ejecución de desplazamientos coordinados hacia señales leídas.")
+
+    # CUADRO DE MATERIALES A UTILIZAR EN LA SESIÓN
+    st.markdown("##### 🎒 Cuadro de Recursos y Materiales a Utilizar en la Sesión:")
+    col_mat1, col_mat2 = st.columns(2)
+    with col_mat1:
+        materiales_patio = st.text_area(
+            "⚽ Materiales Deportivos y del Patio:",
+            value="Conos, aros, balones, silbato, tiza para delimitar el patio, colchonetas.",
+            height=70
+        )
+    with col_mat2:
+        materiales_estudiante = st.text_area(
+            "🧴 Recursos de Higiene y del Estudiante:",
+            value="Botella de agua personal, toalla de mano, jabón, polo de cambio deportivo.",
+            height=70
+        )
 
     fechas_duracion = fecha_sugerida
     duracion_semanas = 1
@@ -470,12 +513,14 @@ else:  # Unidad o Proyecto EF
         height=120,
         value="Dificultades de coordinación motriz, orientación espacial en el patio al desplazarse en grupo, poco conocimiento de juegos tradicionales peruanos y falta de hábitos de higiene personal (lavado de manos, cambio de polo) al finalizar la actividad física."
     )
+    capacidades_seleccionadas = []
+    materiales_patio = ""
+    materiales_estudiante = ""
 
 # ==============================================================================
 # PROMPTS ESPECIALIZADOS QUE LEEN DE cneb_datos.py
 # ==============================================================================
 
-# --- INICIO DE LA MODIFICACIÓN ---
 def generar_prompt_unidad_ef_10_secciones():
     cneb_datos_text = ""
     for comp_nombre, comp_info in CNEB_PRIMARIA.items():
@@ -584,7 +629,6 @@ Genera DOS TABLAS DE SECUENCIA DE SESIONES completas e independientes, una para 
 - Recursos para el Docente, Recursos para el Estudiante.
 - Fecha y espacio para firmas.
 """
-# --- FIN DE LA MODIFICACIÓN ---
 
 def generar_prompt_proyecto_ef():
     cneb_datos_text = ""
@@ -681,10 +725,18 @@ IX. RECURSOS Y MATERIALES
 
 def generar_prompt_sesion_ef():
     comps_str = ", ".join(comps_seleccionadas) if comps_seleccionadas else "Seleccionar automáticamente según el tema del CNEB"
-    cap_str = capacidades_custom.strip() if capacidades_custom.strip() else "Generar automáticamente según la(s) competencia(s) elegida(s)"
+    
+    if capacidades_seleccionadas:
+        cap_str = "\n".join([f"- {c}" for c in capacidades_seleccionadas])
+    else:
+        cap_str = "Generar automáticamente según la(s) competencia(s) elegida(s)"
+
     est_str = estandar_custom.strip() if estandar_custom.strip() else "Transcribir el Estándar COMPLETO oficial del ciclo del CNEB con negrita en la parte movilizada"
     crit_str = criterios_custom.strip() if criterios_custom.strip() else "Formular automáticamente mínimo 3 criterios claros con la estructura Acción + Contenido + Condición"
     evid_str = evidencia_custom.strip() if evidencia_custom.strip() else "Generar automáticamente la evidencia motriz o demostración práctica adecuada"
+    
+    mat_patio_str = materiales_patio.strip() if materiales_patio.strip() else "Conos, aros, balones, silbato, colchonetas."
+    mat_est_str = materiales_estudiante.strip() if materiales_estudiante.strip() else "Botella de agua personal, toalla pequeña, jabón, polo de cambio."
 
     return f"""
 Actúa como Docente Experto en Educación Física para Primaria bajo el enfoque oficial del CNEB del MINEDU Perú.
@@ -696,10 +748,13 @@ DATOS INGRESADOS PARA LA SESIÓN:
 - IE: {ie_nombre} | Docente: {docente} | Fecha: {fecha_sugerida} | Duración: {duracion_sesion}
 - Tipo de Motivación elegida: {tipo_motivacion}
 - Competencia(s) solicitada(s): {comps_str}
-- Capacidades solicitadas: {cap_str}
+- Capacidades solicitadas:
+{cap_str}
 - Estándar solicitado: {est_str}
 - Criterios solicitados: {crit_str}
 - Evidencia solicitada: {evid_str}
+- Materiales Deportivos y del Patio: {mat_patio_str}
+- Recursos de Higiene y del Estudiante: {mat_est_str}
 
 ---
 
@@ -723,6 +778,8 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo con **negrita** en la parte aplicada]
 
 | ÁREA | COMPETENCIA Y CAPACIDADES | DESEMPEÑO PRECISADO COMPLETO (con **negrita**) | EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN (Integrados sin etiquetas) | PROPÓSITO DE LA CLASE | EVIDENCIA | INSTRUMENTO |
+- **Capacidades a incluir:** Incluye textualmente las capacidades indicadas:
+{cap_str}
 - **Criterios de Evaluación:** Redacta OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles que integren de forma fluida e implícita los tres elementos pedagógicos (**Acción + Contenido + Condición**), pero QUIDA STRICTAMENTE PROHIBIDO escribir o visualizar las palabras/etiquetas 'Acción:', 'Contenido:' o 'Condición:' en el texto (debe ser una sola oración continua y natural por criterio).
 
 4. III: ENFOQUE TRANSVERSAL (ÚNICO Y ESPECÍFICO)
@@ -731,8 +788,12 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 5. IV: COMPETENCIAS TRANSVERSALES
 | COMPETENCIA TRANSVERSAL | CAPACIDADES | DESEMPEÑOS PRECISADOS |
 
-6. V: PREPARACIÓN DE LA CLASE
-| ¿Qué necesitamos hacer antes de la sesión de Ed. Física? | ¿Qué recursos o materiales del patio se utilizarán? |
+6. V: PREPARACIÓN DE LA CLASE Y MATERIALES A UTILIZAR
+Elabora un cuadro detallado considerando los siguientes materiales indicados:
+| ¿Qué necesitamos hacer antes de la sesión de Ed. Física? | ¿Qué recursos y materiales se utilizarán? |
+- En la columna de materiales, incluye de forma organizada:
+  * **Materiales deportivos y del patio:** {mat_patio_str}
+  * **Materiales de higiene y del estudiante:** {mat_est_str}
 
 7. MOMENTOS DE LA CLASE DE EDUCACIÓN FÍSICA:
 
@@ -799,10 +860,13 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                 
                 modelos_a_probar = [
                     model_choice,
+                    "gemini-3.6-flash",
+                    "gemini-3.5-flash",
+                    "gemini-2.5-pro",
                     "gemini-2.5-flash",
                     "gemini-2.0-flash",
-                    "gemini-2.5-pro",
-                    "gemini-3.5-flash"
+                    "gemini-1.5-flash",
+                    "gemini-1.5-pro"
                 ]
                 
                 response = None
