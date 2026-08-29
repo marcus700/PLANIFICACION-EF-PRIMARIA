@@ -711,7 +711,7 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 ## **"{problema_contexto.upper()}"**
 *(QUEDA STRICTAMENTE PROHIBIDO COLOCAR CUALQUIER OTRO DATO, FECHA O SUBTÍTULO DEBAJO DEL TÍTULO DE LA SESIÓN).*
 
-2. TABLA I: DATOS INFORMATIVOS
+2. I: DATOS INFORMATIVOS
 | DATOS INFORMATIVOS | DETALLE |
 | Institución Educativa | {ie_nombre} |
 | Docente de Educación Física | {docente} |
@@ -719,16 +719,16 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 | Fecha | {fecha_sugerida} |
 | Duración | {duracion_sesion} |
 
-3. TABLA II: PROPÓSITOS DE APRENDIZAJE Y EVIDENCIAS
+3. II: PROPÓSITOS DE APRENDIZAJE Y EVIDENCIAS
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo con **negrita** en la parte aplicada]
 
 | ÁREA | COMPETENCIA Y CAPACIDADES | DESEMPEÑO PRECISADO COMPLETO (con **negrita**) | EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN (Integrados sin etiquetas) | PROPÓSITO DE LA CLASE | EVIDENCIA | INSTRUMENTO |
 - **Criterios de Evaluación:** Redacta OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles que integren de forma fluida e implícita los tres elementos pedagógicos (**Acción + Contenido + Condición**), pero QUIDA STRICTAMENTE PROHIBIDO escribir o visualizar las palabras/etiquetas 'Acción:', 'Contenido:' o 'Condición:' en el texto (debe ser una sola oración continua y natural por criterio).
 
-4. TABLA III: ENFOQUE TRANSVERSAL (ÚNICO Y ESPECÍFICO)
+4. III: ENFOQUE TRANSVERSAL (ÚNICO Y ESPECÍFICO)
 | ENFOQUE TRANSVERSAL PRIORIZADO | VALOR(ES) | ACTITUDES OBSERVABLES |
 
-5. TABLA IV: COMPETENCIAS TRANSVERSALES
+5. IV: COMPETENCIAS TRANSVERSALES
 | COMPETENCIA TRANSVERSAL | CAPACIDADES | DESEMPEÑOS PRECISADOS |
 
 6. TABLA V: PREPARACIÓN DE LA CLASE
@@ -747,16 +747,17 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 
 - **DESARROLLO (Aprox. 60 min):**
   Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE:
-  1. **Activación Corporal (Calentamiento dinámico):** Movilidad articular, trote lúdico y estiramientos.
-  2. **Secuencia de Actividades Motrices:** Progresión práctica (3 actividades con hidratación).
-  3. **ACTIVIDAD OBLIGATORIA DE ALTO NIVEL COGNITIVO (Analizar, Evaluar y Crear):** Reto motriz/estratégico donde los alumnos deban analizar una situación de juego, evaluar variantes tácticas y crear su propia regla o estrategia en equipo.
+  1. **Activación Fisiológica (Calentamiento dinámico):** Movilidad articular, trote lúdico y estiramientos.
+  2. **Actividad básica:**Exploración de habilidades motrices básicas.
+  3. **Actividad Avanzada:**Combinación de movimientos y mayor complejidad.
+  4. **Actividad de Aplicación (Transferencia y Consolidación):** Juego modificado, cooperativo o de competencia real para aplicar lo aprendido.
 
 - **CIERRE (Aprox. 10 min) - DEBES REDACTAR OBLIGATORIAMENTE Y EN SU TOTALIDAD LOS SIGUIENTES 3 PUNTOS (PROHIBIDO OMITIR EL CIERRE):**
-  1. **Vuelta a la calma:** Ejercicios de respiración guiada y estiramientos suaves.
+  1. **Actividad de Recuperación:** Ejercicios de respiración guiada y estiramientos suaves.
   2. **Metacognición motriz:** Redacta de 3 a 4 preguntas reflexivas explícitas (¿Qué aprendimos sobre nuestro cuerpo? ¿Cómo superamos retos?).
   3. **Rutina Obligatoria de Higiene Personal:** Describe en detalle la práctica autónoma de aseo personal, lavado de manos con jabón, secado con toalla y cambio de polo deportivo.
 
-8. TABLA VI: LISTA DE COTEJO DE EDUCACIÓN FÍSICA (Genera una tabla limpia con los criterios de evaluación e incluye 8 a 10 estudiantes ficticios representativos para optimizar espacio y garantizar la completitud del documento).
+8. VI: LISTA DE COTEJO DE EDUCACIÓN FÍSICA (Genera una tabla limpia con los criterios de evaluación e incluye 8 a 10 estudiantes ficticios representativos para optimizar espacio y garantizar la completitud del documento).
 """
 
 # ==============================================================================
