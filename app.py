@@ -737,7 +737,7 @@ def generar_prompt_sesion_ef():
 
     return f"""
 Actúa como Docente Experto en Educación Física para Primaria bajo el enfoque oficial del CNEB del MINEDU Perú.
-Elabora una SESIÓN DE CLASE PRÁCTICA DE EDUCACIÓN FÍSICA completa, pedagógicamente profunda y exhaustivamente detallada para {grado_seccion} ({ciclo_actual}).
+Elabora una SESIÓN DE CLASE PRÁCTICA DE EDUCACIÓN FÍSICA completa para {grado_seccion} ({ciclo_actual}).
 
 DATOS INGRESADOS PARA LA SESIÓN:
 - N.° de Sesión: {num_doc}
@@ -792,9 +792,9 @@ Elabora un cuadro detallado considerando los siguientes materiales indicados:
   * **Materiales deportivos y del patio:** {mat_patio_str}
   * **Materiales de higiene y del estudiante:** {mat_est_str}
 
-7. MOMENTOS DE LA CLASE DE EDUCACIÓN FÍSICA (DESARROLLO EXHAUSTIVO Y PROFUNDO):
+7. MOMENTOS DE LA CLASE DE EDUCACIÓN FÍSICA:
 
-- **INICIO (Aprox. 15 min):**
+- **INICIO (Aprox. ... min):**
   Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE. Debe considerar ESTRICTAMENTE el siguiente orden:
   1. **Motivación ({tipo_motivacion}):** [Desarrollar la motivación según el tipo elegido: {tipo_motivacion}].
   2. **Saberes previos:** [Preguntas abiertas sobre el tema/movimientos].
