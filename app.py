@@ -731,7 +731,7 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 5. IV: COMPETENCIAS TRANSVERSALES
 | COMPETENCIA TRANSVERSAL | CAPACIDADES | DESEMPEÑOS PRECISADOS |
 
-6. TABLA V: PREPARACIÓN DE LA CLASE
+6. V: PREPARACIÓN DE LA CLASE
 | ¿Qué necesitamos hacer antes de la sesión de Ed. Física? | ¿Qué recursos o materiales del patio se utilizarán? |
 
 7. MOMENTOS DE LA CLASE DE EDUCACIÓN FÍSICA:
@@ -748,9 +748,9 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 - **DESARROLLO (Aprox. 60 min):**
   Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE:
   1. **Activación Fisiológica (Calentamiento dinámico):** Movilidad articular, trote lúdico y estiramientos.
-  2. **Actividad básica:**Exploración de habilidades motrices básicas.
-  3. **Actividad Avanzada:**Combinación de movimientos y mayor complejidad.
-  4. **Actividad de Aplicación (Transferencia y Consolidación):** Juego modificado, cooperativo o de competencia real para aplicar lo aprendido.
+  2. **Actividad básica:**Exploración de habilidades motrices básicas (debe ser un circuito de 3 estaciones para explorar el movimiento).
+  3. **Actividad Avanzada:**Combinación de movimientos y mayor complejidad (debe plantear un reto de complejidad aumentando la distancia o cambiando el material en esas estaciones).
+  4. **Actividad de Aplicación (Transferencia y Consolidación):** Juego modificado, cooperativo o de competencia real para aplicar lo aprendido (debe ser un juego cooperativo con puntaje donde tengan que tomar decisiones en equipo).
 
 - **CIERRE (Aprox. 10 min) - DEBES REDACTAR OBLIGATORIAMENTE Y EN SU TOTALIDAD LOS SIGUIENTES 3 PUNTOS (PROHIBIDO OMITIR EL CIERRE):**
   1. **Actividad de Recuperación:** Ejercicios de respiración guiada y estiramientos suaves.
