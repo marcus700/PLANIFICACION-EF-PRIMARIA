@@ -736,7 +736,7 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 
 7. MOMENTOS DE LA CLASE DE EDUCACIÓN FÍSICA:
 
-- **INICIO (Aprox. 20 min):**
+- **INICIO (Aprox. ... min):**
   Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE. Debe considerar ESTRICTAMENTE el siguiente orden:
   1. **Motivación ({tipo_motivacion}):** [Desarrollar la motivación según el tipo elegido: {tipo_motivacion}].
   2. **Saberes previos:** [Preguntas abiertas sobre el tema/movimientos].
@@ -745,7 +745,7 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
   5. **Criterios de evaluación:** [Explicar cómo serán evaluados].
   6. **Acuerdos de convivencia:** [2 a 3 normas de seguridad en el patio].
 
-- **DESARROLLO (Aprox. 60 min):**
+- **DESARROLLO (Aprox. ... min):**
   Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE:
   1. **Activación Fisiológica (Calentamiento dinámico):** Movilidad articular, trote lúdico y estiramientos.
   2. **Actividad Básica (Planteamos exactamente 2 actividades secuenciales).
@@ -757,7 +757,7 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
   4. **Actividad de Aplicación (Transferencia y Consolidación - Planteamos SOLO 1 juego principal).
   - Diseñamos un único juego modificado o cooperativo con un sistema de puntaje claro, donde los estudiantes consoliden lo aprendido y tomen decisiones tácticas en equipo para resolver el problema del juego.
 
-- **CIERRE (Aprox. 10 min) - DEBES REDACTAR OBLIGATORIAMENTE Y EN SU TOTALIDAD LOS SIGUIENTES 3 PUNTOS (PROHIBIDO OMITIR EL CIERRE):**
+- **CIERRE (Aprox. ... min) - DEBES REDACTAR OBLIGATORIAMENTE Y EN SU TOTALIDAD LOS SIGUIENTES 3 PUNTOS (PROHIBIDO OMITIR EL CIERRE):**
   1. **Actividad de Recuperación:** Ejercicios de respiración guiada y estiramientos suaves.
   2. **Metacognición motriz:** Redacta de 3 a 4 preguntas reflexivas explícitas (¿Qué aprendimos sobre nuestro cuerpo? ¿Cómo superamos retos?).
   3. **Rutina Obligatoria de Higiene Personal:** Describe en detalle la práctica autónoma de aseo personal, lavado de manos con jabón, secado con toalla y cambio de polo deportivo.
