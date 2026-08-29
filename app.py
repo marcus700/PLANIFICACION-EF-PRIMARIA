@@ -748,9 +748,14 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 - **DESARROLLO (Aprox. 60 min):**
   Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE:
   1. **Activación Fisiológica (Calentamiento dinámico):** Movilidad articular, trote lúdico y estiramientos.
-  2. **Actividad básica (Planteamos exactamente 2 actividades):**Exploración de habilidades motrices básicas (debe ser un circuito de 3 estaciones para explorar el movimiento).
-  3. **Actividad Avanzada (Planteamos exactamente 2 actividades de progresión):**Combinación de movimientos y mayor complejidad (debe plantear un reto de complejidad aumentando la distancia o cambiando el material en esas estaciones).
-  4. **Actividad de Aplicación (Transferencia y Consolidación):** Juego modificado, cooperativo o de competencia real para aplicar lo aprendido (debe ser un juego cooperativo con puntaje donde tengan que tomar decisiones en equipo).
+  2. **Actividad Básica (Planteamos exactamente 2 actividades secuenciales).
+  *Actividad A (Familiarización):* Realizamos una dinámica individual o en pequeños grupos para explorar el gesto técnico, corporal o el uso del material de manera libre o guiada.
+  *Actividad B (Interacción socio-motriz):* Pasamos a una práctica colectiva o en parejas cooperativas, introduciendo reglas iniciales sencillas para asociar el movimiento.
+  3. **Actividad Avanzada (Planteamos exactamente 2 actividades de progresión pedagógica).
+  *Actividad A (Complejización motriz):* Incrementamos la dificultad combinando la habilidad básica anterior con un segundo movimiento o desplazamiento más exigente.
+  *Actividad B (Variabilidad y reto):* Proponemos un desafío modificando el entorno (cambiando distancias, variando el tamaño del material, añadiendo un límite de tiempo o un rol de oposición suave).
+  4. **Actividad de Aplicación (Transferencia y Consolidación - Planteamos SOLO 1 juego principal).
+  - Diseñamos un único juego modificado o cooperativo con un sistema de puntaje claro, donde los estudiantes consoliden lo aprendido y tomen decisiones tácticas en equipo para resolver el problema del juego.
 
 - **CIERRE (Aprox. 10 min) - DEBES REDACTAR OBLIGATORIAMENTE Y EN SU TOTALIDAD LOS SIGUIENTES 3 PUNTOS (PROHIBIDO OMITIR EL CIERRE):**
   1. **Actividad de Recuperación:** Ejercicios de respiración guiada y estiramientos suaves.
