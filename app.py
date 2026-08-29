@@ -215,7 +215,7 @@ if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_API_KEY"]:
 else:
     api_key = st.sidebar.text_input("🔑 Google AI Studio API Key:", type="password")
 
-# OPCIONES DE MODELOS OFICIALES Y ESTABLES (ORIGINALES SIN CAMBIOS)
+# OPCIONES DE MODELOS OFICIALES Y ESTABLES
 model_choice = st.sidebar.selectbox(
     "Modelo de Gemini:", 
     ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
@@ -440,20 +440,17 @@ if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
     
     col_s1, col_s2 = st.columns(2)
     with col_s1:
-        # LISTA DESPLEGABLE DE COMPETENCIAS
         comps_seleccionadas = st.multiselect(
             "Competencia(s) a Trabajar:",
             list(CAPACIDADES_CNEB.keys()),
             default=["Se desenvuelve de manera autónoma a través de su motricidad"]
         )
         
-        # OBTENCIÓN DINÁMICA DE CAPACIDADES SEGÚN LAS COMPETENCIAS ELEGIDAS
         capacidades_disponibles = []
         for comp in comps_seleccionadas:
             for cap in CAPACIDADES_CNEB.get(comp, []):
                 capacidades_disponibles.append(f"{comp}: {cap}")
         
-        # LISTA DESPLEGABLE DINÁMICA DE CAPACIDADES
         capacidades_seleccionadas = st.multiselect(
             "Capacidad(es) a Utilizar (Se actualizan según la competencia):",
             options=capacidades_disponibles,
@@ -740,7 +737,7 @@ def generar_prompt_sesion_ef():
 
     return f"""
 Actúa como Docente Experto en Educación Física para Primaria bajo el enfoque oficial del CNEB del MINEDU Perú.
-Elabora una SESIÓN DE CLASE PRÁCTICA DE EDUCACIÓN FÍSICA completa para {grado_seccion} ({ciclo_actual}).
+Elabora una SESIÓN DE CLASE PRÁCTICA DE EDUCACIÓN FÍSICA completa, pedagógicamente profunda y exhaustivamente detallada para {grado_seccion} ({ciclo_actual}).
 
 DATOS INGRESADOS PARA LA SESIÓN:
 - N.° de Sesión: {num_doc}
@@ -795,9 +792,9 @@ Elabora un cuadro detallado considerando los siguientes materiales indicados:
   * **Materiales deportivos y del patio:** {mat_patio_str}
   * **Materiales de higiene y del estudiante:** {mat_est_str}
 
-7. MOMENTOS DE LA CLASE DE EDUCACIÓN FÍSICA:
+7. MOMENTOS DE LA CLASE DE EDUCACIÓN FÍSICA (DESARROLLO EXHAUSTIVO Y PROFUNDO):
 
-- **INICIO (Aprox. ... min):**
+- **INICIO (Aprox. 15 min):**
   Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE. Debe considerar ESTRICTAMENTE el siguiente orden:
   1. **Motivación ({tipo_motivacion}):** [Desarrollar la motivación según el tipo elegido: {tipo_motivacion}].
   2. **Saberes previos:** [Preguntas abiertas sobre el tema/movimientos].
@@ -806,21 +803,31 @@ Elabora un cuadro detallado considerando los siguientes materiales indicados:
   5. **Criterios de evaluación:** [Explicar cómo serán evaluados].
   6. **Acuerdos de convivencia:** [2 a 3 normas de seguridad en el patio].
 
-- **DESARROLLO (Aprox. ... min):**
-  Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE:
-  1. **Activación Fisiológica (Calentamiento dinámico):** Movilidad articular, trote lúdico y estiramientos.
-  2. **Actividad Básica (Planteamos exactamente 2 actividades secuenciales).
-  *Actividad A (Familiarización):* Realizamos una dinámica individual o en pequeños grupos para explorar el gesto técnico, corporal o el uso del material de manera libre o guiada.
-  *Actividad B (Interacción socio-motriz):* Pasamos a una práctica colectiva o en parejas cooperativas, introduciendo reglas iniciales sencillas para asociar el movimiento.
-  3. **Actividad Avanzada (Planteamos exactamente 2 actividades de progresión pedagógica).
-  *Actividad A (Complejización motriz):* Incrementamos la dificultad combinando la habilidad básica anterior con un segundo movimiento o desplazamiento más exigente.
-  *Actividad B (Variabilidad y reto):* Proponemos un desafío modificando el entorno (cambiando distancias, variando el tamaño del material, añadiendo un límite de tiempo o un rol de oposición suave).
-  4. **Actividad de Aplicación (Transferencia y Consolidación - Planteamos SOLO 1 juego principal).
-  - Diseñamos un único juego modificado o cooperativo con un sistema de puntaje claro, donde los estudiantes consoliden lo aprendido y tomen decisiones tácticas en equipo para resolver el problema del juego.
+- **DESARROLLO (Aprox. 60 min) - ALTO DETALLE DIDÁCTICO, RIGOR MOTOR Y METODOLÓGICO:**
+  Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE. Para CADA una de las siguientes actividades debes describir obligatoriamente:
+  *Nombre de la actividad entre comillas*, *Organización y materiales en el patio*, *Descripción paso a paso y consigna pedagógica docente*, *Reglas claras / Sistema de juego* y *Variante de progresión o reto*.
 
-- **CIERRE (Aprox. ... min) - DEBES REDACTAR OBLIGATORIAMENTE Y EN SU TOTALIDAD LOS SIGUIENTES 3 PUNTOS (PROHIBIDO OMITIR EL CIERRE):**
-  1. **Actividad de Recuperación:** Ejercicios de respiración guiada y estiramientos suaves.
-  2. **Metacognición motriz:** Redacta de 3 a 4 preguntas reflexivas explícitas (¿Qué aprendimos sobre nuestro cuerpo? ¿Cómo superamos retos?).
+  1. **Activación Fisiológica (Calentamiento dinámico y preventivo):**
+     - *Movilidad Articular y Trote Lúdico:* [Describir una dinámica lúdica de desplazamiento por todo el patio con cambios de ritmo y movilidad articular progresiva cefalocaudal].
+     - *Estiramientos activos y coordinación:* [Describir ejercicios dinámicos de activación muscular y toma de pulso inicial].
+
+  2. **Actividad Básica (Familiarización y Exploración Motriz - 2 Actividades detalladas):**
+     - *Actividad A (Exploración individual / en parejas):* [Nombre del juego]. Detalla la organización en el patio, el uso del material, la consigna técnica paso a paso (postura, apoyos, orientación) y cómo el docente orienta la exploración.
+     - *Actividad B (Interacción socio-motriz en pequeños grupos):* [Nombre del juego]. Detalla la formación de grupos, delimitación del espacio con conos/tiza, reglas iniciales de cooperación o pases, y el objetivo lúdico a cumplir.
+
+  3. **Actividad Avanzada (Progresión Pedagógica y Complejización - 2 Actividades detalladas):**
+     - *Actividad A (Complejización motriz y encadenamiento):* [Nombre del juego]. Detalla cómo se combinan 2 o más patrones motores (ej. desplazarse con cambio de dirección + salvar obstáculos + precisión en lanzamiento), exigiendo mayor coordinación, ritmo y fluidez.
+     - *Actividad B (Variabilidad, reto y oposición suave):* [Nombre del juego]. Detalla la modificación de condiciones (reducción de tiempo, límite de toques, roles de defensores/atacantes) para forzar la toma rápida de decisiones motrices.
+
+  4. **Actividad de Aplicación (Transferencia y Consolidación en Juego Modificado - 1 Juego Principal):**
+     - *Nombre del Juego de Aplicación:* [Nombre del gran juego modificado/cooperativo].
+     - *Organización y espacio del patio:* [Distribución de zonas, arcos/metas, delimitaciones y distribución de los equipos].
+     - *Reglas completas y sistema de puntuación:* [Explicar detalladamente cómo se anota punto, qué acciones están prohibidas por seguridad, cómo rotan los roles y cómo se fomenta la estrategia grupal].
+     - *Pausa breve de hidratación consciente:* [Indicación para rehidratarse con agua antes del cierre].
+
+- **CIERRE (Aprox. 15 min) - OBLIGATORIO Y COMPLETO:**
+  1. **Actividad de Recuperación (Vuelta a la calma):** Ejercicios de respiración guiada (inhalación/exhalación profunda) y estiramientos suaves con música o silencio.
+  2. **Metacognición motriz:** Redacta de 3 a 4 preguntas reflexivas explícitas (¿Qué aprendimos sobre nuestro cuerpo? ¿Qué dificultades tuvimos y cómo las superamos? ¿Para qué nos sirve lo practicado hoy en nuestra vida diaria?).
   3. **Rutina Obligatoria de Higiene Personal:** Describe en detalle la práctica autónoma de aseo personal, lavado de manos con jabón, secado con toalla y cambio de polo deportivo.
 
 8. VI: LISTA DE COTEJO DE EDUCACIÓN FÍSICA (Genera una tabla limpia con los criterios de evaluación e incluye 8 a 10 estudiantes ficticios representativos para optimizar espacio y garantizar la completitud del documento).
