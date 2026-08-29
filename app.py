@@ -803,7 +803,7 @@ Elabora un cuadro detallado considerando los siguientes materiales indicados:
   5. **Criterios de evaluación:** [Explicar cómo serán evaluados].
   6. **Acuerdos de convivencia:** [2 a 3 normas de seguridad en el patio].
 
-- **DESARROLLO (Aprox. 60 min) - ALTO DETALLE DIDÁCTICO, RIGOR MOTOR Y METODOLÓGICO:**
+- **DESARROLLO (Aprox. ... min) - ALTO DETALLE DIDÁCTICO, RIGOR MOTOR Y METODOLÓGICO:**
   Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE. Para CADA una de las siguientes actividades debes describir obligatoriamente:
   *Nombre de la actividad entre comillas*, *Organización y materiales en el patio*, *Descripción paso a paso y consigna pedagógica docente*, *Reglas claras / Sistema de juego* y *Variante de progresión o reto*.
 
@@ -825,7 +825,7 @@ Elabora un cuadro detallado considerando los siguientes materiales indicados:
      - *Reglas completas y sistema de puntuación:* [Explicar detalladamente cómo se anota punto, qué acciones están prohibidas por seguridad, cómo rotan los roles y cómo se fomenta la estrategia grupal].
      - *Pausa breve de hidratación consciente:* [Indicación para rehidratarse con agua antes del cierre].
 
-- **CIERRE (Aprox. 15 min) - OBLIGATORIO Y COMPLETO:**
+- **CIERRE (Aprox. ... min) - OBLIGATORIO Y COMPLETO:**
   1. **Actividad de Recuperación (Vuelta a la calma):** Ejercicios de respiración guiada (inhalación/exhalación profunda) y estiramientos suaves con música o silencio.
   2. **Metacognición motriz:** Redacta de 3 a 4 preguntas reflexivas explícitas (¿Qué aprendimos sobre nuestro cuerpo? ¿Qué dificultades tuvimos y cómo las superamos? ¿Para qué nos sirve lo practicado hoy en nuestra vida diaria?).
   3. **Rutina Obligatoria de Higiene Personal:** Describe en detalle la práctica autónoma de aseo personal, lavado de manos con jabón, secado con toalla y cambio de polo deportivo.
