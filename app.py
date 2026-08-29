@@ -855,6 +855,7 @@ if st.button(f"✨ Generar {tipo_documento}"):
                 prompt_maestro = generar_prompt_sesion_ef()
 
             sys_inst = """Eres un Especialista Curricular del MINEDU Perú dedicado exclusivamente al área de Educación Física. Generas documentos pedagógicos completos en Markdown alineados estrictamente al CNEB.
+REGLA ABSOLUTA DE FORMATO DE VIÑETAS: Para viñetas utiliza únicamente el guion ("- ") seguido del texto en negrita con doble asterisco ("**Título:** detalle"). Queda terminantemente PROHIBIDO usar asteriscos duplicados como "* *" o dejar asteriscos flotantes.
 REGLA ABSOLUTA DE COMPLETITUD: Queda STRICTAMENTE PROHIBIDO recortar, abreviar o dejar incompletos los documentos al final.
 Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y DIRECTO dentro de las celdas de las tablas, garantizando que el documento se redacte ENTERO de principio a fin, concluyendo obligatoriamente en la última sección con el espacio para firmas correspondientes."""
 
