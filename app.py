@@ -748,8 +748,8 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 - **DESARROLLO (Aprox. 60 min):**
   Redactado en PRIMERA PERSONA DEL PLURAL Y TIEMPO PRESENTE:
   1. **Activación Fisiológica (Calentamiento dinámico):** Movilidad articular, trote lúdico y estiramientos.
-  2. **Actividad básica:**Exploración de habilidades motrices básicas (debe ser un circuito de 3 estaciones para explorar el movimiento).
-  3. **Actividad Avanzada:**Combinación de movimientos y mayor complejidad (debe plantear un reto de complejidad aumentando la distancia o cambiando el material en esas estaciones).
+  2. **Actividad básica (Planteamos exactamente 2 actividades):**Exploración de habilidades motrices básicas (debe ser un circuito de 3 estaciones para explorar el movimiento).
+  3. **Actividad Avanzada (Planteamos exactamente 2 actividades de progresión):**Combinación de movimientos y mayor complejidad (debe plantear un reto de complejidad aumentando la distancia o cambiando el material en esas estaciones).
   4. **Actividad de Aplicación (Transferencia y Consolidación):** Juego modificado, cooperativo o de competencia real para aplicar lo aprendido (debe ser un juego cooperativo con puntaje donde tengan que tomar decisiones en equipo).
 
 - **CIERRE (Aprox. 10 min) - DEBES REDACTAR OBLIGATORIAMENTE Y EN SU TOTALIDAD LOS SIGUIENTES 3 PUNTOS (PROHIBIDO OMITIR EL CIERRE):**
