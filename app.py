@@ -541,6 +541,7 @@ Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa para el CICLO COMPLETO, 
 2. EN LA SECCIÓN VIII (MATRIZ DE PLANIFICACIÓN), genera DOS PLANIFICACIONES COMPLETAS: una para {grado_1_ciclo_str} y otra para {grado_2_ciclo_str}. Dentro de cada una, agrupa las sesiones por competencia (C1, C2, C3), encabezando cada grupo con su estándar resaltando con negrita lo evaluado.
 3. EN LA SECCIÓN IX (SECUENCIA DE SESIONES), genera DOS SECUENCIAS COMPLETAS: una tabla para {grado_1_ciclo_str} y otra para {grado_2_ciclo_str}.
 4. Usa los DESEMPEÑOS ESPECÍFICOS del grado correspondiente para cada matriz.
+5. REGLA OBLIGATORIA DE CRITERIOS: Para cada sesión individual de la matriz, debes formular OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles. Cada criterio debe estar redactado de forma fluida e integrada (Acción + Contenido + Condición) pero SIN ESCRIBIR NI MOSTRAR VISIBLEMENTE las palabras/etiquetas 'Acción:', 'Contenido:' ni 'Condición:' (debe ser una sola oración continua por criterio).
 
 DATOS OFICIALES EXTRAÍDOS DE cneb_datos.py PARA ESTA UNIDAD ({ciclo_actual}):
 {cneb_datos_text}
@@ -563,9 +564,16 @@ ESTRUCTURA OBLIGATORIA DE LA UNIDAD DE APRENDIZAJE:
 1. TÍTULO DE LA UNIDAD
 2. II. DATOS INFORMATIVOS
 3. III. SITUACIÓN SIGNIFICATIVA
+- Contextualizar la realidad motriz y de salud de los estudiantes relacionada con la problemática: {problema_contexto}.
+- Plantear 3 preguntas retadoras/desafiantes asociadas a la solución motriz.
+- Proponer la estrategia pedagógica para resolver el reto (circuitos, festivales lúdico-motores, juegos tradicionales, etc.).
 4. IV. PRODUCTO DE LA UNIDAD
+- Describir un desempeño práctico o un producto tangible/demostrable claro: {producto_unidad}.
 5. V. ENFOQUES TRANSVERSALES
+- Seleccionar 2 enfoques transversales del CNEB.
+- Especificar en tabla: Enfoque Transversal, Valor(es) y Acciones o Actitudes Observables adaptadas a Educación Física.
 6. VI. COMPETENCIAS TRANSVERSALES
+- Incluir en tabla "Gestiona su aprendizaje de manera autónoma" y "Se desenvuelve en entornos virtuales generados por las TIC" con sus respectivas Capacidades y Desempeños aplicados al área.
 7. VII. ESTÁNDARES, COMPETENCIAS Y CAPACIDADES DEL ÁREA DE EDUCACIÓN FÍSICA
 - Transcribir las 3 competencias oficiales del área con sus capacidades y estándares completos del ciclo correspondiente ({ciclo_actual}):
   * Competencia 1: Se desenvuelve de manera autónoma a través de su motricidad.
@@ -581,15 +589,15 @@ A continuación, desarrolla las DOS planificaciones completas.
 
 **COMPETENCIA 1: Se desenvuelve de manera autónoma a través de su motricidad**
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Transcribe aquí el estándar COMPLETO de la Competencia 1]
-| Sesiones de C1 | Competencia / Capacidad | Desempeño precisado completo (con **negrita**) (de {grado_1_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
+| Sesiones de C1 | Competencia / Capacidad | Desempeño precisado completo (con **negrita**) (de {grado_1_cneb}) | 3 Criterios de Evaluación por Sesión | Evidencia | Instrumento |
 
 **COMPETENCIA 2: Asume una vida saludable**
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Transcribe aquí el estándar COMPLETO de la Competencia 2]
-| Sesiones de C2 | Competencia / Capacidad | Desempeño precisado completo (con **negrita**) (de {grado_1_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
+| Sesiones de C2 | Competencia / Capacidad | Desempeño precisado completo (con **negrita**) (de {grado_1_cneb}) | 3 Criterios de Evaluación por Sesión | Evidencia | Instrumento |
 
 **COMPETENCIA 3: Interactúa a través de sus habilidades sociomotrices**
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Transcribe aquí el estándar COMPLETO de la Competencia 3]
-| Sesiones de C3 | Competencia / Capacidad | Desempeño precisado completo (con **negrita**) (de {grado_1_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
+| Sesiones de C3 | Competencia / Capacidad | Desempeño precisado completo (con **negrita**) (de {grado_1_cneb}) | 3 Criterios de Evaluación por Sesión | Evidencia | Instrumento |
 
 ---
 ### **MATRIZ DE PLANIFICACIÓN PARA {grado_2_ciclo_str.upper()}**
@@ -597,15 +605,15 @@ A continuación, desarrolla las DOS planificaciones completas.
 
 **COMPETENCIA 1: Se desenvuelve de manera autónoma a través de su motricidad**
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Transcribe aquí el estándar COMPLETO de la Competencia 1]
-| Sesiones de C1 | Competencia / Capacidad | Desempeño precisado completo (con **negrita**) (de {grado_2_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
+| Sesiones de C1 | Competencia / Capacidad | Desempeño precisado completo (con **negrita**) (de {grado_2_cneb}) | 3 Criterios de Evaluación por Sesión | Evidencia | Instrumento |
 
 **COMPETENCIA 2: Asume una vida saludable**
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Transcribe aquí el estándar COMPLETO de la Competencia 2]
-| Sesiones de C2 | Competencia / Capacidad | Desempeño precisado completo (con **negrita**) (de {grado_2_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
+| Sesiones de C2 | Competencia / Capacidad | Desempeño precisado completo (con **negrita**) (de {grado_2_cneb}) | 3 Criterios de Evaluación por Sesión | Evidencia | Instrumento |
 
 **COMPETENCIA 3: Interactúa a través de sus habilidades sociomotrices**
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Transcribe aquí el estándar COMPLETO de la Competencia 3]
-| Sesiones de C3 | Competencia / Capacidad | Desempeño precisado completo (con **negrita**) (de {grado_2_cneb}) | 3 Criterios de Evaluación | Evidencia | Instrumento |
+| Sesiones de C3 | Competencia / Capacidad | Desempeño precisado completo (con **negrita**) (de {grado_2_cneb}) | 3 Criterios de Evaluación por Sesión | Evidencia | Instrumento |
 ---
 
 9. IX. SECUENCIA DE SESIONES (Diferenciada por Grado)
