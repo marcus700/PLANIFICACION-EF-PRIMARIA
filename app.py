@@ -571,9 +571,9 @@ ESTRUCTURA OBLIGATORIA DE LA UNIDAD DE APRENDIZAJE:
 - Describir un desempeño práctico o un producto tangible/demostrable claro: {producto_unidad}.
 5. V. ENFOQUES TRANSVERSALES
 - Seleccionar 2 enfoques transversales del CNEB.
-- Especificar en tabla: Enfoque Transversal, Valor(es) y Acciones o Actitudes Observables adaptadas a Educación Física.
+- Especificar en tabla 3 columnas Enfoque Transversal, Valor(es) y Acciones o Actitudes Observables adaptadas a Educación Física.
 6. VI. COMPETENCIAS TRANSVERSALES
-- Incluir en tabla "Gestiona su aprendizaje de manera autónoma" y "Se desenvuelve en entornos virtuales generados por las TIC" con sus respectivas Capacidades y Desempeños aplicados al área.
+- Incluir en tabla 3 columnas "Gestiona su aprendizaje de manera autónoma" y "Se desenvuelve en entornos virtuales generados por las TIC" con sus respectivas Capacidades y Desempeños aplicados al área.
 7. VII. ESTÁNDARES, COMPETENCIAS Y CAPACIDADES DEL ÁREA DE EDUCACIÓN FÍSICA
 - Transcribir las 3 competencias oficiales del área con sus capacidades y estándares completos del ciclo correspondiente ({ciclo_actual}):
   * Competencia 1: Se desenvuelve de manera autónoma a través de su motricidad.
