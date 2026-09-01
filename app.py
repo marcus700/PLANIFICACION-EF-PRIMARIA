@@ -162,8 +162,11 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown('<div class="main-header">⚽ PlanificaEF - Plataforma de Educación Física</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-header">Sistema de Planificación Curricular Especializado en Educación Física Primaria (CNEB - MINEDU)</div>', unsafe_allow_html=True)
+
 # ==============================================================================
-# CONTROL DE ACCESO COHERENTE CON ESPACIOS REGLAMENTARIOS
+# CONTROL DE ACCESO
 # ==============================================================================
 def check_password():
     if "password_correct" not in st.session_state:
@@ -189,9 +192,7 @@ def check_password():
 if not check_password():
     st.stop()
 
-# ==============================================================================
-# MEMORIA PERSISTENTE DE LA PLATAFORMA (ALINEACIÓN IZQUIERDA ABSOLUTA)
-# ==============================================================================
+# MEMORIA PERSISTENTE
 if 'resultado_md' not in st.session_state:
     st.session_state['resultado_md'] = None
 if 'tipo_doc_generado' not in st.session_state:
@@ -200,8 +201,6 @@ if 'fname_clean' not in st.session_state:
     st.session_state['fname_clean'] = None
 if 'tipo_documento' not in st.session_state:
     st.session_state['tipo_documento'] = "Unidad de Aprendizaje"
-if 'imagen_sesion_bytes' not in st.session_state:
-    st.session_state['imagen_sesion_bytes'] = None
 
 # SIDEBAR CON MODELOS ESTABLES DE GOOGLE STUDIO
 st.sidebar.title("⚙️ Configuración EF")
@@ -231,9 +230,7 @@ col_b1, col_b2, col_b3 = st.columns(3)
 
 with col_b1:
     if st.button("📘 Unidad de Aprendizaje", key="btn_unidad", use_container_width=True):
-       st.session_state['tipo_documento'] = "Unidad de Aprendizaje"
-    if 'imagen_sesion_bytes' not in st.session_state:
-       st.session_state['imagen_sesion_bytes'] = None
+        st.session_state['tipo_documento'] = "Unidad de Aprendizaje"
         st.rerun()
 
 with col_b2:
@@ -908,67 +905,9 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                 if not response or not response.text:
                     raise ultimo_err
                 
-                # Guardamos el texto de la sesión en el estado de Streamlit
                 st.session_state['resultado_md'] = response.text
                 st.session_state['tipo_doc_generado'] = tipo_documento
                 st.session_state['fname_clean'] = f"{tipo_documento.replace(' ', '_')}_EF_{ciclo_actual.replace(' ', '_')}.docx"
-                 if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
-                    with st.spinner("🎨 Nano Banana está diseñando la ilustración del desarrollo de la clase..."):
-                        prompt_visual_ia = (
-                            f"Children aged {grado_seccion} in primary school gym class doing the physical activity: '{problema_contexto}'. "
-                            "Bright sunny day on a school concrete sports court with orange cones. "
-                            "Clean and friendly children digital illustration style, colorful cartoon vector, "
-                            "clear view of the movement technique, no text, no letters, safe educational environment."
-                        )
-                        resultado_imagen = client.models.generate_images(
-                            model='imagen-3.0-generate-002',
-                            prompt=prompt_visual_ia,
-                            config=types.GenerateImagesConfig(
-                                number_of_images=1,
-                                output_mime_type="image/png",
-                                aspect_ratio="4:3",
-                                person_generation="ALLOW_ADULT"
-                            )
-                        )
-                        for img_obj in resultado_imagen.generated_images:
-                            st.session_state['imagen_sesion_bytes'] = img_obj.image.image_bytes
-                            break
-                else:
-                    if 'imagen_sesion_bytes' in st.session_state:
-                        del st.session_state['imagen_sesion_bytes']
-                
-                # ─── NUEVO BLOQUE: GENERACIÓN DE IMAGEN COMPLEMENTARIA PARA LA SESIÓN ───
-                if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
-                    with st.spinner("🎨 Nano Banana está diseñando la ilustración del desarrollo de la clase..."):
-                        # Construimos un prompt ultra-descriptivo y objetivo basado en tus requerimientos MINEDU
-                        prompt_visual_ia = (
-                            f"Children aged {grado_seccion} in primary school gym class doing the physical activity: '{problema_contexto}'. "
-                            "Bright sunny day on a school concrete sports court with orange cones. "
-                            "Clean and friendly children digital illustration style, colorful cartoon vector, "
-                            "clear view of the movement technique, no text, no letters, safe educational environment."
-                        )
-                        
-                        # Llamada oficial al generador de imágenes mediante la SDK de Google GenAI
-                        resultado_imagen = client.models.generate_images(
-                            model='imagen-3.0-generate-002', # Asegúrate de que tu cuenta tenga acceso a este modelo o el asignado
-                            prompt=prompt_visual_ia,
-                            config=types.GenerateImagesConfig(
-                                number_of_images=1,
-                                output_mime_type="image/png",
-                                aspect_ratio="4:3",
-                                person_generation="ALLOW_ADULT"
-                            )
-                        )
-                        
-                        # Extraemos los bytes de la imagen generada y los almacenamos en caché
-                        for img_obj in resultado_imagen.generated_images:
-                            st.session_state['imagen_sesion_bytes'] = img_obj.image.image_bytes
-                            break
-                else:
-                    # Si cambia a unidad o proyecto, limpiamos la imagen previa
-                    if 'imagen_sesion_bytes' in st.session_state:
-                        del st.session_state['imagen_sesion_bytes']
-                # ───────────────────────────────────────────────────────────────────────
                 
                 st.success(f"✅ ¡{tipo_documento} de Educación Física generado con éxito!")
 
@@ -977,8 +916,7 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
             if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
                 st.warning("⏳ Límite de velocidad alcanzado. Por favor, espera 60 segundos y vuelve a intentarlo.")
             else:
-                st.error(f"❌ Ocurrió un error en el proceso automatizado: {err_str}")
-Usa el código con precaución.
+                st.error(f"❌ Ocurrió un error con la API de Google AI Studio: {err_str}")
 
 # ==============================================================================
 # DESPLIEGUE DE RESULTADOS Y DESCARGA EN WORD
@@ -989,17 +927,6 @@ if st.session_state['resultado_md'] is not None:
     tab_preview, tab_download = st.tabs(["📄 Vista Previa (Permanente)", "📥 Descargar en Word (.docx)"])
     
     with tab_preview:
-     if 'imagen_sesion_bytes' in st.session_state and st.session_state['imagen_sesion_bytes']:
-            st.markdown("#### 🖼️ Distribución de la Actividad en el Patio (Diseño Sugerido)")
-            st.image(
-                st.session_state['imagen_sesion_bytes'], 
-                caption=f"Ilustración didáctica generada para: {problema_contexto}",
-                use_container_width=True
-            )
-            st.markdown("---")
-       
-        # ─────────────────────────────────────────────────────────────────
-        
         st.markdown(st.session_state['resultado_md'])
         
     with tab_download:
