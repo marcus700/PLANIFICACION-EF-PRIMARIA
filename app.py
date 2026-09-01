@@ -1,6 +1,7 @@
 import io
 import re
 import time
+import base64
 from PIL import Image
 import docx
 from docx.enum.section import WD_ORIENT
@@ -261,46 +262,44 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# MOTOR OFICIAL DE IMAGEN NANO BANANA (GEMINI 2.5 FLASH IMAGE)
+# MOTOR OFICIAL DE GENERACIÓN VISUAL CON NANO BANANA (GOOGLE DEVELOPER API)
 # ==============================================================================
 def generar_imagen_actividad_nano_banana(client, prompt_actividad):
-    """Genera imagen usando el modelo oficial Nano Banana (gemini-2.5-flash-image)"""
+    """Genera imagen usando el motor oficial Nano Banana compatible con API Key de Google AI Studio"""
     prompt_completo = (
-        f"A clear, colorful educational illustration for a primary school Physical Education class: "
-        f"{prompt_actividad}. School sports court, cones, sports balls, agility drills, bright daylight, 2D vector style."
+        f"A clear 2D pedagogical educational illustration for a primary school Physical Education exercise: "
+        f"{prompt_actividad}. Outdoors school sports court with cones, balls, agility hoops, bright daylight, vibrant cartoon style."
     )
     
-    # 1. Intento con Nano Banana (gemini-2.5-flash-image / gemini-3.1-flash-image)
-    modelos_nano = ["gemini-2.5-flash-image", "gemini-3.1-flash-image"]
+    # Modelos Nano Banana soportados en Gemini Developer API
+    modelos_nano = [
+        "gemini-2.5-flash-image",
+        "gemini-2.5-flash-image-preview",
+        "gemini-3.1-flash-image",
+        "gemini-3.1-flash-lite-image"
+    ]
+    
+    ultimo_error = None
     for mod in modelos_nano:
         try:
             res = client.models.generate_content(
                 model=mod,
                 contents=prompt_completo
             )
-            if res and res.parts:
-                for part in res.parts:
-                    if part.inline_data is not None:
-                        return part.as_image(), None
-        except Exception:
+            if res and hasattr(res, 'candidates') and res.candidates:
+                candidate = res.candidates[0]
+                if hasattr(candidate, 'content') and hasattr(candidate.content, 'parts'):
+                    for part in candidate.content.parts:
+                        if getattr(part, 'inline_data', None) is not None and part.inline_data.data:
+                            raw_data = part.inline_data.data
+                            if isinstance(raw_data, str):
+                                raw_data = base64.b64decode(raw_data)
+                            return Image.open(io.BytesIO(raw_data)), None
+        except Exception as e:
+            ultimo_error = str(e)
             continue
 
-    # 2. Fallback con motor Imagen 3
-    try:
-        res_img = client.models.generate_images(
-            model="imagen-3.0-generate-002",
-            prompt=prompt_completo,
-            config=types.GenerateImagesConfig(
-                number_of_images=1,
-                aspect_ratio="4:3"
-            )
-        )
-        if res_img and res_img.generated_images:
-            return Image.open(io.BytesIO(res_img.generated_images[0].image.image_bytes)), None
-    except Exception as e:
-        return None, str(e)
-
-    return None, "No se pudo generar la imagen con el modelo Nano Banana."
+    return None, ultimo_error
 
 # ==============================================================================
 # CONVERTIDOR DE MARKDOWN A WORD CON TABLAS EN TONOS PASTELES
@@ -513,7 +512,7 @@ if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
         evidencia_custom = st.text_input("Evidencia de Aprendizaje (Opcional - Blanco para automático):", value="", placeholder="Ej. Ejecución de desplazamientos coordinados hacia señales leídas.")
 
     # CUADRO DE MATERIALES A UTILIZAR EN LA SESIÓN
-    st.markdown("##### 🎒 Cuadro de Recursos y Materiales a Utilizar en la Sesión:")
+    st.markdown("##### 🎒 Cuadro de Recursos y Materiales a Utilitar en la Sesión:")
     col_mat1, col_mat2 = st.columns(2)
     with col_mat1:
         materiales_patio = st.text_area(
@@ -1005,7 +1004,7 @@ if st.session_state['resultado_md'] is not None:
                     lista_imgs = []
                     progreso = st.progress(0, text="Iniciando generación con Nano Banana...")
                     for idx, (fase, desc) in enumerate(actividades):
-                        progreso.progress((idx + 1) / len(actividades), text=f"Generando imagen para: {fase}...")
+                        progreso.progress((idx + 1) / len(actividades), text=f"Generando ilustración para: {fase}...")
                         img_res, err = generar_imagen_actividad_nano_banana(client_img, desc)
                         if img_res:
                             lista_imgs.append({"fase": fase, "desc": desc, "imagen": img_res})
