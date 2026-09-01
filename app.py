@@ -542,6 +542,7 @@ Tu tarea es elaborar una UNIDAD DE APRENDIZAJE completa para el CICLO COMPLETO, 
 3. EN LA SECCIÓN IX (SECUENCIA DE SESIONES), genera DOS SECUENCIAS COMPLETAS: una tabla para {grado_1_ciclo_str} y otra para {grado_2_ciclo_str}.
 4. Usa los DESEMPEÑOS ESPECÍFICOS del grado correspondiente para cada matriz.
 5. REGLA OBLIGATORIA DE CRITERIOS: Para cada sesión individual de la matriz, debes formular OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles. Cada criterio debe estar redactado de forma fluida e integrada (Acción + Contenido + Condición) pero SIN ESCRIBIR NI MOSTRAR VISIBLEMENTE las palabras/etiquetas 'Acción:', 'Contenido:' ni 'Condición:' (debe ser una sola oración continua por criterio).
+6. Usa la fórmula para la formulacion de titulos de las  sesiones : "¡Verbo en plural + acción directa + reto físico!", Sin metáforas, sin fantasía, El lenguaje debe ser sencillo, claro y de fácil lectura (evita tecnicismos abstractos como "patrones de locomoción" o "segmentos corporales" en el título). 
 
 DATOS OFICIALES EXTRAÍDOS DE cneb_datos.py PARA ESTA UNIDAD ({ciclo_actual}):
 {cneb_datos_text}
