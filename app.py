@@ -230,9 +230,9 @@ col_b1, col_b2, col_b3 = st.columns(3)
 
 with col_b1:
     if st.button("📘 Unidad de Aprendizaje", key="btn_unidad", use_container_width=True):
-        st.session_state['tipo_documento'] = "Unidad de Aprendizaje"
-        if 'imagen_sesion_bytes' not in st.session_state:
-    st.session_state['imagen_sesion_bytes'] = None
+       st.session_state['tipo_documento'] = "Unidad de Aprendizaje"
+    if 'imagen_sesion_bytes' not in st.session_state:
+       st.session_state['imagen_sesion_bytes'] = None
         st.rerun()
 
 with col_b2:
