@@ -182,11 +182,11 @@ def check_password():
         pwd_input = st.text_input("Contraseña de acceso:", type="password", key="pwd_input")
         if st.button("Ingresar 🚀"):
             target_pwd = st.secrets.get("APP_PASSWORD", "docente2026ef")
-            if pwd_input == target_pwd:
-                st.session_state["password_correct"] = True
-                st.rerun()
-            else:
-                st.error("❌ Contraseña incorrecta.")
+        if _input == target_pwd:
+            st.session_state["password_correct"] = True
+            st.rerun()
+        else:
+            st.error("❌ Contraseña incorrecta.")
     return False
 
 if not check_password():
@@ -201,6 +201,8 @@ if 'fname_clean' not in st.session_state:
     st.session_state['fname_clean'] = None
 if 'tipo_documento' not in st.session_state:
     st.session_state['tipo_documento'] = "Unidad de Aprendizaje"
+if 'imagen_sesion_bytes' not in st.session_state:
+    st.session_state['imagen_sesion_bytes'] = None
 
 # SIDEBAR CON MODELOS ESTABLES DE GOOGLE STUDIO
 st.sidebar.title("⚙️ Configuración EF")
