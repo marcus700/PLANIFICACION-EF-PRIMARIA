@@ -162,11 +162,8 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="main-header">⚽ PlanificaEF - Plataforma de Educación Física</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-header">Sistema de Planificación Curricular Especializado en Educación Física Primaria (CNEB - MINEDU)</div>', unsafe_allow_html=True)
-
 # ==============================================================================
-# CONTROL DE ACCESO
+# CONTROL DE ACCESO COHERENTE CON ESPACIOS REGLAMENTARIOS
 # ==============================================================================
 def check_password():
     if "password_correct" not in st.session_state:
@@ -193,7 +190,7 @@ if not check_password():
     st.stop()
 
 # ==============================================================================
-# MEMORIA PERSISTENTE (Alineado completamente al borde izquierdo)
+# MEMORIA PERSISTENTE DE LA PLATAFORMA (ALINEACIÓN IZQUIERDA ABSOLUTA)
 # ==============================================================================
 if 'resultado_md' not in st.session_state:
     st.session_state['resultado_md'] = None
@@ -205,7 +202,6 @@ if 'tipo_documento' not in st.session_state:
     st.session_state['tipo_documento'] = "Unidad de Aprendizaje"
 if 'imagen_sesion_bytes' not in st.session_state:
     st.session_state['imagen_sesion_bytes'] = None
-
 
 # SIDEBAR CON MODELOS ESTABLES DE GOOGLE STUDIO
 st.sidebar.title("⚙️ Configuración EF")
