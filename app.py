@@ -204,6 +204,8 @@ if 'tipo_documento' not in st.session_state:
     st.session_state['tipo_documento'] = "Unidad de Aprendizaje"
 if 'imagenes_desarrollo' not in st.session_state:
     st.session_state['imagenes_desarrollo'] = []
+if 'img_error_msg' not in st.session_state:
+    st.session_state['img_error_msg'] = None
 
 # SIDEBAR CON MODELOS ESTABLES DE GOOGLE STUDIO
 st.sidebar.title("⚙️ Configuración EF")
@@ -386,88 +388,71 @@ def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
     return buffer
 
 # ==============================================================================
-# MOTOR ROBUSTO DE GENERACIÓN DE IMÁGENES CON NANO BANANA (GEMINI / IMAGEN)
+# MOTOR DE GENERACIÓN DE IMÁGENES NANO BANANA (GEMINI 2.5 / IMAGEN 3)
 # ==============================================================================
-def decodificar_imagen_bytes(raw_data):
-    """Convierte bytes o base64 a imagen PIL de forma segura"""
-    try:
-        if isinstance(raw_data, bytes):
-            return Image.open(io.BytesIO(raw_data))
-        elif isinstance(raw_data, str):
-            img_bytes = base64.b64decode(raw_data)
-            return Image.open(io.BytesIO(img_bytes))
-    except Exception:
-        pass
-    return None
-
 def generar_imagen_nano_banana(client, prompt_actividad):
-    """Genera imagen con motor Nano Banana (gemini-2.5-flash-image / imagen-3.0)"""
-    prompt_completo = (
-        f"A clear, colorful 2D pedagogical educational illustration for primary school Physical Education class: "
-        f"{prompt_actividad}. School children doing sports activities on an outdoor sports court with cones, balls, "
-        f"and sports equipment. Bright daylight, active motion, friendly and safe school environment."
+    """Genera imagen con motor Nano Banana (gemini-2.5-flash-image) y fallback a Imagen"""
+    prompt_pedagogico = (
+        f"Educational 2D vector style diagram for Physical Education training: {prompt_actividad}. "
+        f"Outdoor sports court with training cones, sports balls, agility hoops, goals, directional movement arrows. "
+        f"Clean lines, bright daylight, clear sports exercise scheme, graphic educational illustration."
     )
-
-    # 1. Intento con Nano Banana nativo (gemini-2.5-flash-image y gemini-3.1-flash-image)
-    modelos_nano_banana = ["gemini-2.5-flash-image", "gemini-3.1-flash-image", "gemini-2.0-flash-exp-image-generation"]
-    for m in modelos_nano_banana:
-        try:
-            res = client.models.generate_content(
-                model=m,
-                contents=[prompt_completo],
-                config=types.GenerateContentConfig(
-                    response_modalities=["IMAGE", "TEXT"]
-                )
+    
+    # 1. Nano Banana (gemini-2.5-flash-image)
+    try:
+        res = client.models.generate_content(
+            model="gemini-2.5-flash-image",
+            contents=prompt_pedagogico,
+            config=types.GenerateContentConfig(
+                response_modalities=["IMAGE", "TEXT"]
             )
-            if res and res.candidates:
-                for part in res.candidates[0].content.parts:
-                    if getattr(part, 'inline_data', None) is not None:
-                        img = decodificar_imagen_bytes(part.inline_data.data)
-                        if img:
-                            return img
-        except Exception:
-            continue
+        )
+        if res and res.candidates:
+            for part in res.candidates[0].content.parts:
+                if getattr(part, 'inline_data', None) is not None and part.inline_data.data:
+                    raw_data = part.inline_data.data
+                    if isinstance(raw_data, str):
+                        raw_data = base64.b64decode(raw_data)
+                    return Image.open(io.BytesIO(raw_data)), None
+    except Exception as e1:
+        err_msg1 = str(e1)
 
-    # 2. Intento con motor Imagen dedicado
-    modelos_imagen = ["imagen-3.0-generate-002", "imagen-4.0-generate-001", "imagen-3.0-fast-generate-001"]
-    for m in modelos_imagen:
-        try:
-            res_img = client.models.generate_images(
-                model=m,
-                prompt=prompt_completo,
-                config=types.GenerateImagesConfig(
-                    number_of_images=1,
-                    output_mime_type="image/jpeg",
-                    aspect_ratio="4:3"
-                )
+    # 2. Fallback con Imagen 3
+    try:
+        res_img = client.models.generate_images(
+            model="imagen-3.0-generate-002",
+            prompt=prompt_pedagogico,
+            config=types.GenerateImagesConfig(
+                number_of_images=1,
+                aspect_ratio="4:3"
             )
-            if res_img and res_img.generated_images:
-                img = decodificar_imagen_bytes(res_img.generated_images[0].image.image_bytes)
-                if img:
-                    return img
-        except Exception:
-            continue
+        )
+        if res_img and res_img.generated_images:
+            raw_data = res_img.generated_images[0].image.image_bytes
+            return Image.open(io.BytesIO(raw_data)), None
+    except Exception as e2:
+        err_msg2 = str(e2)
 
-    return None
+    return None, f"Error API: {locals().get('err_msg1', '')} | {locals().get('err_msg2', '')}"
 
-def extraer_actividades_desarrollo(md_text, tema_sesion):
-    """Extrae las 4 fases didácticas del desarrollo de la sesión"""
+def extraer_actividades_desarrollo(tema_sesion):
+    """Define las 4 fases didácticas del desarrollo de la sesión"""
     return [
         {
             "fase": "1. Activación Fisiológica (Calentamiento)",
-            "desc": f"Niños de primaria en círculo y desplazándose por el patio realizando movilidad articular y calentamiento dinámico para {tema_sesion}."
+            "desc": f"Ejercicios dinámicos de movilidad articular, estiramientos y trote lúdico en círculo alrededor de conos para {tema_sesion}."
         },
         {
-            "fase": "2. Actividad Básica (Exploración Motriz)",
-            "desc": f"Estudiantes en parejas y grupos pequeños explorando habilidades motrices y ejercicios básicos con aros y conos sobre {tema_sesion}."
+            "fase": "2. Actividad Básica (Exploración)",
+            "desc": f"Práctica de habilidades motrices y coordinación en parejas utilizando aros y pelotas en la cancha escolar sobre {tema_sesion}."
         },
         {
-            "fase": "3. Actividad Avanzada (Reto y Progresión)",
-            "desc": f"Estudiantes en circuito motriz superando obstáculos y realizando combinaciones de movimientos con balones y conos para {tema_sesion}."
+            "fase": "3. Actividad Avanzada (Progresión y Reto)",
+            "desc": f"Circuito de agilidad con conos en zigzag, obstáculos y retos motrices en equipo para {tema_sesion}."
         },
         {
-            "fase": "4. Actividad de Aplicación (Gran Juego Final)",
-            "desc": f"Gran juego colectivo y cooperativo en el patio escolar aplicando lo aprendido en la clase de Educación Física sobre {tema_sesion}."
+            "fase": "4. Actividad de Aplicación (Juego Final)",
+            "desc": f"Juego cooperativo por equipos en la cancha deportiva con delimitación de zonas y reglas de estrategia para {tema_sesion}."
         }
     ]
 
@@ -948,6 +933,7 @@ if st.button(f"✨ Generar {tipo_documento}"):
         try:
             client = genai.Client(api_key=api_key)
             st.session_state['imagenes_desarrollo'] = []
+            st.session_state['img_error_msg'] = None
             
             if tipo_documento == "Unidad de Aprendizaje":
                 prompt_maestro = generar_prompt_unidad_ef_10_secciones()
@@ -1004,23 +990,28 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
 
             # GENERACIÓN VISUAL AUTOMÁTICA CON NANO BANANA SI ES SESIÓN DE APRENDIZAJE
             if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
-                with st.spinner("🎨 Nano Banana está generando las 4 ilustraciones de las actividades del Desarrollo..."):
-                    actividades_prompts = extraer_actividades_desarrollo(st.session_state['resultado_md'], problema_contexto)
+                with st.spinner("🎨 Nano Banana está generando las ilustraciones del Desarrollo..."):
+                    actividades_prompts = extraer_actividades_desarrollo(problema_contexto)
                     lista_imgs = []
+                    ultimo_error_img = None
                     for act in actividades_prompts:
-                        img_gen = generar_imagen_nano_banana(client, act["desc"])
+                        img_gen, err = generar_imagen_nano_banana(client, act["desc"])
                         if img_gen:
                             lista_imgs.append({
                                 "fase": act["fase"],
                                 "desc": act["desc"],
                                 "imagen": img_gen
                             })
+                        elif err:
+                            ultimo_error_img = err
+                    
                     st.session_state['imagenes_desarrollo'] = lista_imgs
+                    st.session_state['img_error_msg'] = ultimo_error_img
                 
                 if lista_imgs:
                     st.success(f"✅ ¡{tipo_documento} de Educación Física y {len(lista_imgs)} ilustraciones generadas con éxito!")
                 else:
-                    st.success(f"✅ ¡{tipo_documento} generado! (Puedes pulsar el botón 'Generar Ilustraciones' en la pestaña de imágenes).")
+                    st.success(f"✅ ¡{tipo_documento} generado! Ve a la pestaña '🖼️ Imágenes del Desarrollo' para visualizarlas o crearlas.")
             else:
                 st.success(f"✅ ¡{tipo_documento} de Educación Física generado con éxito!")
 
@@ -1060,26 +1051,34 @@ if st.session_state['resultado_md'] is not None:
             
             c_btn1, c_btn2 = st.columns([2, 1])
             with c_btn1:
-                st.info("💡 Ilustraciones visuales de los momentos de la clase: Calentamiento, Actividad Básica, Avanzada y Aplicación.")
+                st.info("💡 Generación visual de los 4 momentos del desarrollo: Calentamiento, Actividad Básica, Avanzada y Aplicación.")
             with c_btn2:
-                if st.button("🎨 Regenerar / Crear Imágenes Ahora", key="btn_manual_gen_img", use_container_width=True):
+                if st.button("🎨 Generar / Regenerar Ilustraciones", key="btn_manual_gen_img", use_container_width=True):
                     if not api_key:
                         st.error("⚠️ Ingresa tu API Key en la barra lateral.")
                     else:
-                        with st.spinner("🎨 Nano Banana está procesando las imágenes..."):
+                        with st.spinner("🎨 Nano Banana procesando imágenes pedagógicas..."):
                             client_img = genai.Client(api_key=api_key)
-                            actividades_prompts = extraer_actividades_desarrollo(st.session_state['resultado_md'], problema_contexto)
+                            actividades_prompts = extraer_actividades_desarrollo(problema_contexto)
                             lista_imgs = []
+                            ultimo_error_img = None
                             for act in actividades_prompts:
-                                img_gen = generar_imagen_nano_banana(client_img, act["desc"])
+                                img_gen, err = generar_imagen_nano_banana(client_img, act["desc"])
                                 if img_gen:
                                     lista_imgs.append({
                                         "fase": act["fase"],
                                         "desc": act["desc"],
                                         "imagen": img_gen
                                     })
+                                elif err:
+                                    ultimo_error_img = err
+                            
                             st.session_state['imagenes_desarrollo'] = lista_imgs
+                            st.session_state['img_error_msg'] = ultimo_error_img
                             st.rerun()
+
+            if st.session_state.get('img_error_msg') and not st.session_state['imagenes_desarrollo']:
+                st.error(f"⚠️ Detalle de la API de Google: {st.session_state['img_error_msg']}")
 
             if st.session_state['imagenes_desarrollo']:
                 cols_img = st.columns(2)
@@ -1100,7 +1099,7 @@ if st.session_state['resultado_md'] is not None:
                         )
                         st.markdown("---")
             else:
-                st.warning("⚠️ Haz clic en el botón '🎨 Regenerar / Crear Imágenes Ahora' para generar las ilustraciones de esta sesión.")
+                st.warning("⚠️ Haz clic en el botón superior **'🎨 Generar / Regenerar Ilustraciones'** para procesar las imágenes con Nano Banana.")
 
     with tab_download:
         es_horizontal_doc = st.session_state['tipo_doc_generado'] in ["Unidad de Aprendizaje", "Proyecto de Aprendizaje"]
