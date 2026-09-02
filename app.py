@@ -1,7 +1,6 @@
 import io
 import re
 import time
-import base64
 from PIL import Image
 import docx
 from docx.enum.section import WD_ORIENT
@@ -202,8 +201,6 @@ if 'fname_clean' not in st.session_state:
     st.session_state['fname_clean'] = None
 if 'tipo_documento' not in st.session_state:
     st.session_state['tipo_documento'] = "Unidad de Aprendizaje"
-if 'imagenes_desarrollo' not in st.session_state:
-    st.session_state['imagenes_desarrollo'] = []
 
 # SIDEBAR CON MODELOS ESTABLES DE GOOGLE STUDIO
 st.sidebar.title("⚙️ Configuración EF")
@@ -234,19 +231,16 @@ col_b1, col_b2, col_b3 = st.columns(3)
 with col_b1:
     if st.button("📘 Unidad de Aprendizaje", key="btn_unidad", use_container_width=True):
         st.session_state['tipo_documento'] = "Unidad de Aprendizaje"
-        st.session_state['imagenes_desarrollo'] = []
         st.rerun()
 
 with col_b2:
     if st.button("🚀 Proyecto de Aprendizaje", key="btn_proyecto", use_container_width=True):
         st.session_state['tipo_documento'] = "Proyecto de Aprendizaje"
-        st.session_state['imagenes_desarrollo'] = []
         st.rerun()
 
 with col_b3:
     if st.button("🏃 Sesión de Aprendizaje de Ed. Física", key="btn_sesion", use_container_width=True):
         st.session_state['tipo_documento'] = "Sesión de Aprendizaje de Ed. Física"
-        st.session_state['imagenes_desarrollo'] = []
         st.rerun()
 
 tipo_documento = st.session_state['tipo_documento']
@@ -384,92 +378,6 @@ def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
     doc.save(buffer)
     buffer.seek(0)
     return buffer
-
-# ==============================================================================
-# MOTOR ROBUSTO DE GENERACIÓN DE IMÁGENES CON NANO BANANA (GEMINI / IMAGEN)
-# ==============================================================================
-def decodificar_imagen_bytes(raw_data):
-    """Convierte bytes o base64 a imagen PIL de forma segura"""
-    try:
-        if isinstance(raw_data, bytes):
-            return Image.open(io.BytesIO(raw_data))
-        elif isinstance(raw_data, str):
-            img_bytes = base64.b64decode(raw_data)
-            return Image.open(io.BytesIO(img_bytes))
-    except Exception:
-        pass
-    return None
-
-def generar_imagen_nano_banana(client, prompt_actividad):
-    """Genera imagen con motor Nano Banana (gemini-2.5-flash-image / imagen-3.0)"""
-    prompt_completo = (
-        f"A clear, colorful 2D pedagogical educational illustration for primary school Physical Education class: "
-        f"{prompt_actividad}. School children doing sports activities on an outdoor sports court with cones, balls, "
-        f"and sports equipment. Bright daylight, active motion, friendly and safe school environment."
-    )
-
-    # 1. Intento con Nano Banana nativo (gemini-2.5-flash-image y gemini-3.1-flash-image)
-    modelos_nano_banana = ["gemini-2.5-flash-image", "gemini-3.1-flash-image", "gemini-2.0-flash-exp-image-generation"]
-    for m in modelos_nano_banana:
-        try:
-            res = client.models.generate_content(
-                model=m,
-                contents=[prompt_completo],
-                config=types.GenerateContentConfig(
-                    response_modalities=["IMAGE", "TEXT"]
-                )
-            )
-            if res and res.candidates:
-                for part in res.candidates[0].content.parts:
-                    if getattr(part, 'inline_data', None) is not None:
-                        img = decodificar_imagen_bytes(part.inline_data.data)
-                        if img:
-                            return img
-        except Exception:
-            continue
-
-    # 2. Intento con motor Imagen dedicado
-    modelos_imagen = ["imagen-3.0-generate-002", "imagen-4.0-generate-001", "imagen-3.0-fast-generate-001"]
-    for m in modelos_imagen:
-        try:
-            res_img = client.models.generate_images(
-                model=m,
-                prompt=prompt_completo,
-                config=types.GenerateImagesConfig(
-                    number_of_images=1,
-                    output_mime_type="image/jpeg",
-                    aspect_ratio="4:3"
-                )
-            )
-            if res_img and res_img.generated_images:
-                img = decodificar_imagen_bytes(res_img.generated_images[0].image.image_bytes)
-                if img:
-                    return img
-        except Exception:
-            continue
-
-    return None
-
-def extraer_actividades_desarrollo(md_text, tema_sesion):
-    """Extrae las 4 fases didácticas del desarrollo de la sesión"""
-    return [
-        {
-            "fase": "1. Activación Fisiológica (Calentamiento)",
-            "desc": f"Niños de primaria en círculo y desplazándose por el patio realizando movilidad articular y calentamiento dinámico para {tema_sesion}."
-        },
-        {
-            "fase": "2. Actividad Básica (Exploración Motriz)",
-            "desc": f"Estudiantes en parejas y grupos pequeños explorando habilidades motrices y ejercicios básicos con aros y conos sobre {tema_sesion}."
-        },
-        {
-            "fase": "3. Actividad Avanzada (Reto y Progresión)",
-            "desc": f"Estudiantes en circuito motriz superando obstáculos y realizando combinaciones de movimientos con balones y conos para {tema_sesion}."
-        },
-        {
-            "fase": "4. Actividad de Aplicación (Gran Juego Final)",
-            "desc": f"Gran juego colectivo y cooperativo en el patio escolar aplicando lo aprendido en la clase de Educación Física sobre {tema_sesion}."
-        }
-    ]
 
 # ==============================================================================
 # FORMULARIO DE DATOS
@@ -779,7 +687,7 @@ Redacta una situación basada en un contexto real de la escuela en 4 bloques sin
 IV. CUADRO DE ENFOQUES TRANSVERSALES
 Elabora una tabla con 1 o 2 enfoques transversales más pertinentes (Enfoque, Valores, Actitudes observables).
 
-V. CUADRO DE NEGOCIACIÓN Y PLANIFICACIÓN CON LOS ESTUDIANTES
+V. CUADRO DE NEGOCIACIÓN Y PLANIFICACIÓN CON LOS ESTUDIantes
 Tabla sintética de 4 columnas (¿Qué queremos hacer?, ¿Cómo lo haremos?, ¿Qué necesitamos?, ¿Cómo nos daremos cuenta de que lo logramos?) con respuestas realistas de asamblea.
 
 VI. CUADRO DE PROPÓSITOS DE APRENDIZAJE Y EVALUACIÓN MATRIZADA (ORGANIZADO COMPETENCIA POR COMPETENCIA)
@@ -878,7 +786,7 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 | ÁREA | COMPETENCIA Y CAPACIDADES | DESEMPEÑO PRECISADO COMPLETO (con **negrita**) | EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN (Integrados sin etiquetas) | PROPÓSITO DE LA CLASE | EVIDENCIA | INSTRUMENTO |
 - **Capacidades a incluir:** Incluye textualmente las capacidades indicadas:
 {cap_str}
-- **Criterios de Evaluación:** Redacta OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles que integren de forma fluida e implícita los tres elementos pedagógicos (**Acción + Contenido + Condición**), pero QUEDA STRICTAMENTE PROHIBIDO escribir o visualizar las palabras/etiquetas 'Acción:', 'Contenido:' o 'Condición:' en el texto (debe ser una sola oración continua y natural por criterio).
+- **Criterios de Evaluación:** Redacta OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles que integren de forma fluida e implícita los tres elementos pedagógicos (**Acción + Contenido + Condición**), pero QUIDA STRICTAMENTE PROHIBIDO escribir o visualizar las palabras/etiquetas 'Acción:', 'Contenido:' o 'Condición:' en el texto (debe ser una sola oración continua y natural por criterio).
 
 4. III: ENFOQUE TRANSVERSAL (ÚNICO Y ESPECÍFICO)
 | ENFOQUE TRANSVERSAL PRIORIZADO | VALOR(ES) | ACTITUDES OBSERVABLES |
@@ -947,7 +855,6 @@ if st.button(f"✨ Generar {tipo_documento}"):
     else:
         try:
             client = genai.Client(api_key=api_key)
-            st.session_state['imagenes_desarrollo'] = []
             
             if tipo_documento == "Unidad de Aprendizaje":
                 prompt_maestro = generar_prompt_unidad_ef_10_secciones()
@@ -1001,27 +908,7 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                 st.session_state['resultado_md'] = response.text
                 st.session_state['tipo_doc_generado'] = tipo_documento
                 st.session_state['fname_clean'] = f"{tipo_documento.replace(' ', '_')}_EF_{ciclo_actual.replace(' ', '_')}.docx"
-
-            # GENERACIÓN VISUAL AUTOMÁTICA CON NANO BANANA SI ES SESIÓN DE APRENDIZAJE
-            if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
-                with st.spinner("🎨 Nano Banana está generando las 4 ilustraciones de las actividades del Desarrollo..."):
-                    actividades_prompts = extraer_actividades_desarrollo(st.session_state['resultado_md'], problema_contexto)
-                    lista_imgs = []
-                    for act in actividades_prompts:
-                        img_gen = generar_imagen_nano_banana(client, act["desc"])
-                        if img_gen:
-                            lista_imgs.append({
-                                "fase": act["fase"],
-                                "desc": act["desc"],
-                                "imagen": img_gen
-                            })
-                    st.session_state['imagenes_desarrollo'] = lista_imgs
                 
-                if lista_imgs:
-                    st.success(f"✅ ¡{tipo_documento} de Educación Física y {len(lista_imgs)} ilustraciones generadas con éxito!")
-                else:
-                    st.success(f"✅ ¡{tipo_documento} generado! (Puedes pulsar el botón 'Generar Ilustraciones' en la pestaña de imágenes).")
-            else:
                 st.success(f"✅ ¡{tipo_documento} de Educación Física generado con éxito!")
 
         except Exception as e:
@@ -1032,76 +919,16 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                 st.error(f"❌ Ocurrió un error con la API de Google AI Studio: {err_str}")
 
 # ==============================================================================
-# DESPLIEGUE DE RESULTADOS, IMÁGENES Y DESCARGA EN WORD
+# DESPLIEGUE DE RESULTADOS Y DESCARGA EN WORD
 # ==============================================================================
 if st.session_state['resultado_md'] is not None:
     st.markdown("---")
     
-    es_sesion = st.session_state['tipo_doc_generado'] == "Sesión de Aprendizaje de Ed. Física"
+    tab_preview, tab_download = st.tabs(["📄 Vista Previa (Permanente)", "📥 Descargar en Word (.docx)"])
     
-    if es_sesion:
-        tab_preview, tab_img, tab_download = st.tabs([
-            "📄 Vista Previa (Permanente)",
-            "🖼️ Imágenes del Desarrollo (Nano Banana)",
-            "📥 Descargar en Word (.docx)"
-        ])
-    else:
-        tab_preview, tab_download = st.tabs([
-            "📄 Vista Previa (Permanente)",
-            "📥 Descargar en Word (.docx)"
-        ])
-
     with tab_preview:
         st.markdown(st.session_state['resultado_md'])
         
-    if es_sesion:
-        with tab_img:
-            st.markdown("### 🏃‍♂️ Ilustraciones Pedagógicas del Desarrollo (Nano Banana AI)")
-            
-            c_btn1, c_btn2 = st.columns([2, 1])
-            with c_btn1:
-                st.info("💡 Ilustraciones visuales de los momentos de la clase: Calentamiento, Actividad Básica, Avanzada y Aplicación.")
-            with c_btn2:
-                if st.button("🎨 Regenerar / Crear Imágenes Ahora", key="btn_manual_gen_img", use_container_width=True):
-                    if not api_key:
-                        st.error("⚠️ Ingresa tu API Key en la barra lateral.")
-                    else:
-                        with st.spinner("🎨 Nano Banana está procesando las imágenes..."):
-                            client_img = genai.Client(api_key=api_key)
-                            actividades_prompts = extraer_actividades_desarrollo(st.session_state['resultado_md'], problema_contexto)
-                            lista_imgs = []
-                            for act in actividades_prompts:
-                                img_gen = generar_imagen_nano_banana(client_img, act["desc"])
-                                if img_gen:
-                                    lista_imgs.append({
-                                        "fase": act["fase"],
-                                        "desc": act["desc"],
-                                        "imagen": img_gen
-                                    })
-                            st.session_state['imagenes_desarrollo'] = lista_imgs
-                            st.rerun()
-
-            if st.session_state['imagenes_desarrollo']:
-                cols_img = st.columns(2)
-                for idx, item in enumerate(st.session_state['imagenes_desarrollo']):
-                    col_idx = idx % 2
-                    with cols_img[col_idx]:
-                        st.markdown(f"#### 🏅 {item['fase']}")
-                        st.image(item['imagen'], caption=item['desc'], use_container_width=True)
-                        
-                        buf = io.BytesIO()
-                        item['imagen'].save(buf, format="PNG")
-                        st.download_button(
-                            label=f"⬇️ Descargar ({item['fase'].split(' ')[1]})",
-                            data=buf.getvalue(),
-                            file_name=f"actividad_desarrollo_{idx+1}.png",
-                            mime="image/png",
-                            key=f"dl_img_{idx}"
-                        )
-                        st.markdown("---")
-            else:
-                st.warning("⚠️ Haz clic en el botón '🎨 Regenerar / Crear Imágenes Ahora' para generar las ilustraciones de esta sesión.")
-
     with tab_download:
         es_horizontal_doc = st.session_state['tipo_doc_generado'] in ["Unidad de Aprendizaje", "Proyecto de Aprendizaje"]
         
