@@ -5,7 +5,6 @@ import base64
 import urllib.parse
 import requests
 from PIL import Image
-from openai import OpenAI
 import docx
 from docx.enum.section import WD_ORIENT
 from docx.enum.table import WD_TABLE_ALIGNMENT
@@ -271,10 +270,10 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# MOTOR DE GENERACIÓN DE IMÁGENES CON CHATGPT (OPENAI DALL-E 3)
+# MOTOR DE GENERACIÓN DE IMÁGENES CON CHATGPT (OPENAI DALL-E 3 DIRECTO)
 # ==============================================================================
 def generar_imagen_actividad_chatgpt(openai_key, prompt_actividad):
-    """Genera la ilustración pedagógica usando el motor oficial de ChatGPT (DALL-E 3)"""
+    """Genera la ilustración pedagógica usando el motor oficial de ChatGPT (DALL-E 3) sin dependencias externas"""
     prompt_completo = (
         f"A clear 2D pedagogical educational illustration for a primary school Physical Education class in Peru: "
         f"{prompt_actividad}. Outdoors school sports court, cones, sports balls, agility drills, bright daylight, vibrant cartoon vector style."
@@ -284,20 +283,32 @@ def generar_imagen_actividad_chatgpt(openai_key, prompt_actividad):
         return None, "Por favor, ingresa tu OpenAI API Key en la barra lateral izquierda."
         
     try:
-        client_oai = OpenAI(api_key=openai_key)
-        res = client_oai.images.generate(
-            model="dall-e-3",
-            prompt=prompt_completo,
-            size="1024x1024",
-            quality="standard",
-            n=1
-        )
-        img_url = res.data[0].url
-        resp = requests.get(img_url, timeout=30)
-        if resp.status_code == 200:
-            return Image.open(io.BytesIO(resp.content)), None
+        headers = {
+            "Authorization": f"Bearer {openai_key.strip()}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "model": "dall-e-3",
+            "prompt": prompt_completo,
+            "n": 1,
+            "size": "1024x1024",
+            "quality": "standard"
+        }
+        
+        resp = requests.post("https://api.openai.com/v1/images/generations", headers=headers, json=payload, timeout=60)
+        data = resp.json()
+        
+        if "data" in data and len(data["data"]) > 0:
+            img_url = data["data"][0]["url"]
+            resp_img = requests.get(img_url, timeout=30)
+            if resp_img.status_code == 200:
+                return Image.open(io.BytesIO(resp_img.content)), None
+            else:
+                return None, f"Error al descargar la imagen (Status: {resp_img.status_code})"
         else:
-            return None, f"Error al descargar la imagen (Status: {resp.status_code})"
+            error_msg = data.get("error", {}).get("message", "Error desconocido de OpenAI")
+            return None, error_msg
+            
     except Exception as e:
         return None, str(e)
 
