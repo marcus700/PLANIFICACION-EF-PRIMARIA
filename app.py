@@ -270,13 +270,15 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# MOTOR UNIVERSAL DIRECTO DE ILUSTRACIONES (OPENAI DALL-E / MOTOR GRATUITO IA)
+# MOTOR DE ILUSTRACIONES TIPO CARICATURA INFANTIL DE NIÑOS
 # ==============================================================================
 def generar_imagen_actividad_universal(openai_key, prompt_actividad):
-    """Genera la ilustración pedagógica de forma automática e inmediata"""
+    """Genera una ilustración estilo caricatura infantil a todo color con niños en clase de EF"""
     prompt_completo = (
-        f"A clear 2D pedagogical educational illustration for a primary school Physical Education exercise in Peru: "
-        f"{prompt_actividad}. School sports court with cones, balls, agility hoops, bright daylight, vibrant cartoon vector style."
+        f"A lovely, charming, high quality 2D children's book cartoon illustration. "
+        f"Cute smiling primary school boys and girls wearing PE sports uniforms playing in a sunny schoolyard: "
+        f"{prompt_actividad}. Colorful sports equipment with cones, balls, hoops, dynamic cartoon characters, "
+        f"friendly expressions, bright vibrant colors, clean educational storybook art style, highly detailed."
     )
     
     # 1. Si el usuario ingresó clave de OpenAI, intenta generar con DALL-E 3
@@ -303,7 +305,7 @@ def generar_imagen_actividad_universal(openai_key, prompt_actividad):
         except Exception:
             pass
 
-    # 2. Generador Directo e Ilimitado (No requiere clave y no se bloquea)
+    # 2. Generador Directo e Ilimitado (Estilo Caricatura Infantil)
     try:
         encoded_prompt = urllib.parse.quote(prompt_completo)
         url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=800&height=600&nologo=true"
@@ -313,7 +315,7 @@ def generar_imagen_actividad_universal(openai_key, prompt_actividad):
     except Exception as e:
         return None, str(e)
 
-    return None, "Error al generar la imagen."
+    return None, "Error al generar la caricatura."
 
 # ==============================================================================
 # CONVERTIDOR DE MARKDOWN A WORD CON TABLAS EN TONOS PASTELES
@@ -987,7 +989,7 @@ if st.session_state['resultado_md'] is not None:
     if es_sesion:
         tab_preview, tab_img, tab_download = st.tabs([
             "📄 Vista Previa (Permanente)",
-            "🖼️ Ilustraciones del Desarrollo",
+            "🖼️ Caricaturas del Desarrollo",
             "📥 Descargar en Word (.docx)"
         ])
     else:
@@ -1001,14 +1003,14 @@ if st.session_state['resultado_md'] is not None:
         
     if es_sesion:
         with tab_img:
-            st.markdown("### 🏃‍♂️ Ilustraciones Pedagógicas de las Actividades del Desarrollo")
-            st.info("💡 Haz clic en el botón de cada actividad para generar su ilustración visual para el patio escolar.")
+            st.markdown("### 🏃‍♂️ Caricaturas Infantiles de las Actividades del Desarrollo")
+            st.info("💡 Haz clic en el botón de cada actividad para generar su ilustración estilo caricatura infantil a todo color.")
             
             actividades = [
-                ("1. Activación Fisiológica (Calentamiento)", f"Estudiantes de primaria realizando calentamiento dinámico, movilidad articular y trote con conos en el patio para {problema_contexto}"),
-                ("2. Actividad Básica (Exploración)", f"Estudiantes realizando ejercicios básicos de coordinación motriz con aros y pelotas en la cancha para {problema_contexto}"),
-                ("3. Actividad Avanzada (Progresión)", f"Circuito motriz escolar con obstáculos, conos en zigzag y retos de coordinación para {problema_contexto}"),
-                ("4. Actividad de Aplicación (Juego Final)", f"Juego cooperativo y deportivo grupal en el patio escolar delimitado para {problema_contexto}")
+                ("1. Activación Fisiológica (Calentamiento)", f"Niños de primaria sonrientes realizando calentamiento dinámico, movilidad articular y trote con conos en el patio para {problema_contexto}"),
+                ("2. Actividad Básica (Exploración)", f"Niños y niñas en parejas realizando divertidos ejercicios de coordinación motriz con aros y pelotas en la cancha para {problema_contexto}"),
+                ("3. Actividad Avanzada (Progresión)", f"Grupo de niños en circuito motriz superando obstáculos, conos en zigzag y saltando aros para {problema_contexto}"),
+                ("4. Actividad de Aplicación (Juego Final)", f"Gran juego cooperativo en equipo de niños y niñas jugando felices en el patio escolar delimitado para {problema_contexto}")
             ]
             
             cols_img = st.columns(2)
@@ -1024,16 +1026,16 @@ if st.session_state['resultado_md'] is not None:
                         buf = io.BytesIO()
                         item["img"].save(buf, format="PNG")
                         st.download_button(
-                            label=f"⬇️ Descargar Ilustración ({fase.split(' ')[1]})",
+                            label=f"⬇️ Descargar Caricatura ({fase.split(' ')[1]})",
                             data=buf.getvalue(),
-                            file_name=f"actividad_{idx+1}.png",
+                            file_name=f"caricatura_actividad_{idx+1}.png",
                             mime="image/png",
                             key=f"dl_act_{idx}"
                         )
                     else:
                         st.caption(desc)
-                        if st.button(f"🎨 Generar Ilustración ({fase.split(' ')[1]})", key=f"btn_indiv_{idx}", use_container_width=True):
-                            with st.spinner(f"Generando ilustración de {fase}..."):
+                        if st.button(f"🎨 Generar Caricatura ({fase.split(' ')[1]})", key=f"btn_indiv_{idx}", use_container_width=True):
+                            with st.spinner(f"Dibujando caricatura de {fase}..."):
                                 img_res, err = generar_imagen_actividad_universal(openai_api_key, desc)
                                 if img_res:
                                     st.session_state['imagenes_dict'][fase] = {"img": img_res, "desc": desc}
