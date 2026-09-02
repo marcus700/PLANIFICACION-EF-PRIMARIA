@@ -5,6 +5,7 @@ import base64
 import urllib.parse
 import requests
 from PIL import Image
+from openai import OpenAI
 import docx
 from docx.enum.section import WD_ORIENT
 from docx.enum.table import WD_TABLE_ALIGNMENT
@@ -207,7 +208,7 @@ if 'tipo_documento' not in st.session_state:
 if 'imagenes_dict' not in st.session_state:
     st.session_state['imagenes_dict'] = {}
 
-# SIDEBAR CON MODELOS ESTABLES DE GOOGLE STUDIO
+# SIDEBAR CON MODELOS ESTABLES DE GOOGLE STUDIO Y OPENAI
 st.sidebar.title("⚙️ Configuración EF")
 if st.sidebar.button("🔒 Cerrar Sesión"):
     st.session_state["password_correct"] = False
@@ -216,9 +217,15 @@ if st.sidebar.button("🔒 Cerrar Sesión"):
 st.sidebar.markdown("---")
 if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_API_KEY"]:
     api_key = st.secrets["GEMINI_API_KEY"]
-    st.sidebar.success("🔑 API Key activada.")
+    st.sidebar.success("🔑 Gemini API Key activada.")
 else:
     api_key = st.sidebar.text_input("🔑 Google AI Studio API Key:", type="password")
+
+if "OPENAI_API_KEY" in st.secrets and st.secrets["OPENAI_API_KEY"]:
+    openai_api_key = st.secrets["OPENAI_API_KEY"]
+    st.sidebar.success("🎨 OpenAI (ChatGPT) Key activada.")
+else:
+    openai_api_key = st.sidebar.text_input("🎨 OpenAI API Key (para imágenes ChatGPT):", type="password")
 
 # OPCIONES DE MODELOS OFICIALES Y ESTABLES
 model_choice = st.sidebar.selectbox(
@@ -264,44 +271,35 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# MOTOR HÍBRIDO DE GENERACIÓN DE IMÁGENES (NANO BANANA + MOTOR LIBRE)
+# MOTOR DE GENERACIÓN DE IMÁGENES CON CHATGPT (OPENAI DALL-E 3)
 # ==============================================================================
-def generar_imagen_actividad(client, prompt_actividad):
-    """
-    Intenta generar la imagen primero con Nano Banana (Google AI Studio).
-    Si la clave no tiene facturación activada (limit: 0), genera la ilustración 
-    con el motor libre de alta resolución para garantizar que siempre funcione.
-    """
+def generar_imagen_actividad_chatgpt(openai_key, prompt_actividad):
+    """Genera la ilustración pedagógica usando el motor oficial de ChatGPT (DALL-E 3)"""
     prompt_completo = (
-        f"A clear 2D pedagogical educational illustration for a primary school Physical Education exercise in Peru: "
-        f"{prompt_actividad}. School sports court, cones, sports balls, agility drills, bright daylight, 2D vector style."
+        f"A clear 2D pedagogical educational illustration for a primary school Physical Education class in Peru: "
+        f"{prompt_actividad}. Outdoors school sports court, cones, sports balls, agility drills, bright daylight, vibrant cartoon vector style."
     )
     
-    # 1. Intento con Nano Banana (gemini-2.5-flash-image)
-    if client is not None:
-        try:
-            res = client.models.generate_content(
-                model="gemini-2.5-flash-image",
-                contents=[prompt_completo]
-            )
-            if res and hasattr(res, 'parts') and res.parts:
-                for part in res.parts:
-                    if getattr(part, 'inline_data', None) is not None:
-                        return part.as_image(), "Nano Banana (Gemini)"
-        except Exception:
-            pass
-
-    # 2. Motor Libre de Alta Resolución (Sin límite de cuota)
+    if not openai_key:
+        return None, "Por favor, ingresa tu OpenAI API Key en la barra lateral izquierda."
+        
     try:
-        encoded_prompt = urllib.parse.quote(prompt_completo)
-        url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=800&height=600&nologo=true"
-        resp = requests.get(url, timeout=25)
+        client_oai = OpenAI(api_key=openai_key)
+        res = client_oai.images.generate(
+            model="dall-e-3",
+            prompt=prompt_completo,
+            size="1024x1024",
+            quality="standard",
+            n=1
+        )
+        img_url = res.data[0].url
+        resp = requests.get(img_url, timeout=30)
         if resp.status_code == 200:
-            return Image.open(io.BytesIO(resp.content)), "Motor Libre I.A."
+            return Image.open(io.BytesIO(resp.content)), None
+        else:
+            return None, f"Error al descargar la imagen (Status: {resp.status_code})"
     except Exception as e:
         return None, str(e)
-
-    return None, "Error al generar la imagen."
 
 # ==============================================================================
 # CONVERTIDOR DE MARKDOWN A WORD CON TABLAS EN TONOS PASTELES
@@ -975,7 +973,7 @@ if st.session_state['resultado_md'] is not None:
     if es_sesion:
         tab_preview, tab_img, tab_download = st.tabs([
             "📄 Vista Previa (Permanente)",
-            "🖼️ Ilustraciones del Desarrollo",
+            "🖼️ Ilustraciones del Desarrollo (ChatGPT DALL-E)",
             "📥 Descargar en Word (.docx)"
         ])
     else:
@@ -989,8 +987,8 @@ if st.session_state['resultado_md'] is not None:
         
     if es_sesion:
         with tab_img:
-            st.markdown("### 🏃‍♂️ Ilustraciones Pedagógicas de las Actividades del Desarrollo")
-            st.info("💡 Haz clic en el botón de cada actividad para generar su ilustración visual para el patio escolar.")
+            st.markdown("### 🏃‍♂️ Ilustraciones Pedagógicas de las Actividades del Desarrollo (ChatGPT DALL-E 3)")
+            st.info("💡 Haz clic en el botón de cada actividad para generar su ilustración oficial con **ChatGPT (OpenAI DALL-E 3)**.")
             
             actividades = [
                 ("1. Activación Fisiológica (Calentamiento)", f"Estudiantes de primaria realizando calentamiento dinámico, movilidad articular y trote con conos en el patio para {problema_contexto}"),
@@ -1007,7 +1005,7 @@ if st.session_state['resultado_md'] is not None:
                     
                     if fase in st.session_state['imagenes_dict']:
                         item = st.session_state['imagenes_dict'][fase]
-                        st.image(item["img"], caption=f"{item['desc']} (Generado por {item['motor']})", use_container_width=True)
+                        st.image(item["img"], caption=item["desc"], use_container_width=True)
                         
                         buf = io.BytesIO()
                         item["img"].save(buf, format="PNG")
@@ -1020,15 +1018,17 @@ if st.session_state['resultado_md'] is not None:
                         )
                     else:
                         st.caption(desc)
-                        if st.button(f"🎨 Generar Ilustración ({fase.split(' ')[1]})", key=f"btn_indiv_{idx}", use_container_width=True):
-                            with st.spinner(f"Generando ilustración de {fase}..."):
-                                client_img = genai.Client(api_key=api_key) if api_key else None
-                                img_res, motor_usado = generar_imagen_actividad(client_img, desc)
-                                if img_res:
-                                    st.session_state['imagenes_dict'][fase] = {"img": img_res, "desc": desc, "motor": motor_usado}
-                                    st.rerun()
-                                else:
-                                    st.error(f"Error al generar la imagen: {motor_usado}")
+                        if st.button(f"🎨 Generar Ilustración con ChatGPT ({fase.split(' ')[1]})", key=f"btn_indiv_{idx}", use_container_width=True):
+                            if not openai_api_key:
+                                st.error("⚠️ Ingresa tu OpenAI API Key en la barra lateral izquierda.")
+                            else:
+                                with st.spinner(f"ChatGPT (DALL-E 3) generando {fase}..."):
+                                    img_res, err = generar_imagen_actividad_chatgpt(openai_api_key, desc)
+                                    if img_res:
+                                        st.session_state['imagenes_dict'][fase] = {"img": img_res, "desc": desc}
+                                        st.rerun()
+                                    else:
+                                        st.error(f"Error de OpenAI: {err}")
                     st.markdown("---")
 
     with tab_download:
