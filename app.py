@@ -2,8 +2,6 @@ import io
 import re
 import time
 import base64
-import urllib.parse
-import requests
 from PIL import Image
 import docx
 from docx.enum.section import WD_ORIENT
@@ -204,10 +202,10 @@ if 'fname_clean' not in st.session_state:
     st.session_state['fname_clean'] = None
 if 'tipo_documento' not in st.session_state:
     st.session_state['tipo_documento'] = "Unidad de Aprendizaje"
-if 'imagenes_dict' not in st.session_state:
-    st.session_state['imagenes_dict'] = {}
+if 'imagenes_desarrollo' not in st.session_state:
+    st.session_state['imagenes_desarrollo'] = []
 
-# SIDEBAR CON MODELOS ESTABLES DE GOOGLE STUDIO Y OPENAI (OPCIONAL)
+# SIDEBAR CON MODELOS ESTABLES DE GOOGLE STUDIO
 st.sidebar.title("⚙️ Configuración EF")
 if st.sidebar.button("🔒 Cerrar Sesión"):
     st.session_state["password_correct"] = False
@@ -216,15 +214,9 @@ if st.sidebar.button("🔒 Cerrar Sesión"):
 st.sidebar.markdown("---")
 if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_API_KEY"]:
     api_key = st.secrets["GEMINI_API_KEY"]
-    st.sidebar.success("🔑 Gemini API Key activada.")
+    st.sidebar.success("🔑 API Key activada.")
 else:
     api_key = st.sidebar.text_input("🔑 Google AI Studio API Key:", type="password")
-
-if "OPENAI_API_KEY" in st.secrets and st.secrets["OPENAI_API_KEY"]:
-    openai_api_key = st.secrets["OPENAI_API_KEY"]
-    st.sidebar.success("🎨 OpenAI Key activada.")
-else:
-    openai_api_key = st.sidebar.text_input("🎨 OpenAI API Key (Opcional):", type="password")
 
 # OPCIONES DE MODELOS OFICIALES Y ESTABLES
 model_choice = st.sidebar.selectbox(
@@ -242,16 +234,19 @@ col_b1, col_b2, col_b3 = st.columns(3)
 with col_b1:
     if st.button("📘 Unidad de Aprendizaje", key="btn_unidad", use_container_width=True):
         st.session_state['tipo_documento'] = "Unidad de Aprendizaje"
+        st.session_state['imagenes_desarrollo'] = []
         st.rerun()
 
 with col_b2:
     if st.button("🚀 Proyecto de Aprendizaje", key="btn_proyecto", use_container_width=True):
         st.session_state['tipo_documento'] = "Proyecto de Aprendizaje"
+        st.session_state['imagenes_desarrollo'] = []
         st.rerun()
 
 with col_b3:
     if st.button("🏃 Sesión de Aprendizaje de Ed. Física", key="btn_sesion", use_container_width=True):
         st.session_state['tipo_documento'] = "Sesión de Aprendizaje de Ed. Física"
+        st.session_state['imagenes_desarrollo'] = []
         st.rerun()
 
 tipo_documento = st.session_state['tipo_documento']
@@ -268,89 +263,6 @@ st.markdown(f"""
     📍 Área Exclusiva: EDUCACIÓN FÍSICA | Herramienta: {tipo_documento.upper()}
 </div>
 """, unsafe_allow_html=True)
-
-# ==============================================================================
-# MOTOR DE ILUSTRACIONES INFOGRÁFICAS TIPO FICHA MINEDU PERÚ
-# ==============================================================================
-def construir_prompt_minedu(tipo_actividad, desc_actividad):
-    """Crea la estructura del prompt para imitar la lámina infográfica educativa del MINEDU"""
-    base = (
-        "MINEDU Peru primary school Physical Education textbook infographic sheet. "
-        "Official Peruvian curriculum 2D vector storybook style, white background card with clean border. "
-        "Peruvian primary school children wearing PE sports uniforms (white t-shirt, blue athletic shorts, sneakers). "
-        "Pedagogical exercise diagrams with cones, hoops, sports balls, clear dashed movement arrows, step numbers (1, 2, 3), "
-        "and clear instructional visual panels. "
-    )
-    
-    if "1." in tipo_actividad or "Activación" in tipo_actividad:
-        return (
-            f"{base} Blue themed header banner: '1. ACTIVACIÓN FISIOLÓGICA'. "
-            f"Top panel: Physical education teacher with whistle and smiling Peruvian kids running in groups around orange cones, "
-            f"with an inset diagram box for 'MOVILIDAD ARTICULAR' showing neck, shoulders, hips and ankle rotations. "
-            f"Bottom panel: Kids doing skipping, lunges, and heel kicks, with a wrist pulse checking cartoon and a 15-second stopwatch icon. "
-            f"{desc_actividad}."
-        )
-    elif "2." in tipo_actividad or "Básica" in tipo_actividad:
-        return (
-            f"{base} Green themed header banner: '2. ACTIVIDAD BÁSICA (FAMILIARIZACIÓN Y EXPLORACIÓN MOTRIZ)'. "
-            f"Top panel: 'Pases con obstáculos' with two Peruvian students passing a ball through an upright hoop stand with cones and distance markers '5m'. "
-            f"Bottom panel: 'Mini-fútbol de pases' showing small court, cone goalposts, dashed passing arrows, and teamwork banner. "
-            f"{desc_actividad}."
-        )
-    elif "3." in tipo_actividad or "Avanzada" in tipo_actividad:
-        return (
-            f"{base} Orange themed header banner: '3. ACTIVIDAD AVANZADA (PROGRESIÓN PEDAGÓGICA Y COMPLEJIZACIÓN)'. "
-            f"Top panel: 'Circuito de precisión y velocidad' with step numbers (1) Zigzag between orange cones, (2) Jumping inside 3 consecutive floor hoops, (3) Throwing into an elevated hanging hoop target. "
-            f"Bottom panel: Tactical divided court diagram with children playing in two teams. "
-            f"{desc_actividad}."
-        )
-    else:
-        return (
-            f"{base} Magenta/Pink themed header banner: '4. ACTIVIDAD DE APLICACIÓN (JUEGO MODIFICADO)'. "
-            f"Main panel: Isometric court diagram with two pitches 'CAMPO A' and 'CAMPO B', small goals, Peruvian school children playing in teams, rules panel, rotation arrows, "
-            f"and a bottom inset box for 'PAUSA DE HIDRATACIÓN' showing a student drinking from a water bottle with a 2-minute timer icon. "
-            f"{desc_actividad}."
-        )
-
-def generar_imagen_actividad_universal(openai_key, tipo_actividad, prompt_actividad):
-    """Genera la lámina infográfica didáctica estilo MINEDU Perú de forma inmediata"""
-    prompt_completo = construir_prompt_minedu(tipo_actividad, prompt_actividad)
-    
-    # 1. Si el usuario ingresó clave de OpenAI, intenta generar con DALL-E 3
-    if openai_key and len(openai_key.strip()) > 10:
-        try:
-            headers = {
-                "Authorization": f"Bearer {openai_key.strip()}",
-                "Content-Type": "application/json"
-            }
-            payload = {
-                "model": "dall-e-3",
-                "prompt": prompt_completo,
-                "n": 1,
-                "size": "1024x1024",
-                "quality": "standard"
-            }
-            resp = requests.post("https://api.openai.com/v1/images/generations", headers=headers, json=payload, timeout=35)
-            data = resp.json()
-            if "data" in data and len(data["data"]) > 0:
-                img_url = data["data"][0]["url"]
-                resp_img = requests.get(img_url, timeout=25)
-                if resp_img.status_code == 200:
-                    return Image.open(io.BytesIO(resp_img.content)), None
-        except Exception:
-            pass
-
-    # 2. Generador Directo e Ilimitado (Estilo Ficha MINEDU Perú)
-    try:
-        encoded_prompt = urllib.parse.quote(prompt_completo)
-        url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1024&height=768&nologo=true"
-        resp = requests.get(url, timeout=30)
-        if resp.status_code == 200:
-            return Image.open(io.BytesIO(resp.content)), None
-    except Exception as e:
-        return None, str(e)
-
-    return None, "Error al generar la infografía MINEDU."
 
 # ==============================================================================
 # CONVERTIDOR DE MARKDOWN A WORD CON TABLAS EN TONOS PASTELES
@@ -472,6 +384,92 @@ def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
     doc.save(buffer)
     buffer.seek(0)
     return buffer
+
+# ==============================================================================
+# MOTOR ROBUSTO DE GENERACIÓN DE IMÁGENES CON NANO BANANA (GEMINI / IMAGEN)
+# ==============================================================================
+def decodificar_imagen_bytes(raw_data):
+    """Convierte bytes o base64 a imagen PIL de forma segura"""
+    try:
+        if isinstance(raw_data, bytes):
+            return Image.open(io.BytesIO(raw_data))
+        elif isinstance(raw_data, str):
+            img_bytes = base64.b64decode(raw_data)
+            return Image.open(io.BytesIO(img_bytes))
+    except Exception:
+        pass
+    return None
+
+def generar_imagen_nano_banana(client, prompt_actividad):
+    """Genera imagen con motor Nano Banana (gemini-2.5-flash-image / imagen-3.0)"""
+    prompt_completo = (
+        f"A clear, colorful 2D pedagogical educational illustration for primary school Physical Education class: "
+        f"{prompt_actividad}. School children doing sports activities on an outdoor sports court with cones, balls, "
+        f"and sports equipment. Bright daylight, active motion, friendly and safe school environment."
+    )
+
+    # 1. Intento con Nano Banana nativo (gemini-2.5-flash-image y gemini-3.1-flash-image)
+    modelos_nano_banana = ["gemini-2.5-flash-image", "gemini-3.1-flash-image", "gemini-2.0-flash-exp-image-generation"]
+    for m in modelos_nano_banana:
+        try:
+            res = client.models.generate_content(
+                model=m,
+                contents=[prompt_completo],
+                config=types.GenerateContentConfig(
+                    response_modalities=["IMAGE", "TEXT"]
+                )
+            )
+            if res and res.candidates:
+                for part in res.candidates[0].content.parts:
+                    if getattr(part, 'inline_data', None) is not None:
+                        img = decodificar_imagen_bytes(part.inline_data.data)
+                        if img:
+                            return img
+        except Exception:
+            continue
+
+    # 2. Intento con motor Imagen dedicado
+    modelos_imagen = ["imagen-3.0-generate-002", "imagen-4.0-generate-001", "imagen-3.0-fast-generate-001"]
+    for m in modelos_imagen:
+        try:
+            res_img = client.models.generate_images(
+                model=m,
+                prompt=prompt_completo,
+                config=types.GenerateImagesConfig(
+                    number_of_images=1,
+                    output_mime_type="image/jpeg",
+                    aspect_ratio="4:3"
+                )
+            )
+            if res_img and res_img.generated_images:
+                img = decodificar_imagen_bytes(res_img.generated_images[0].image.image_bytes)
+                if img:
+                    return img
+        except Exception:
+            continue
+
+    return None
+
+def extraer_actividades_desarrollo(md_text, tema_sesion):
+    """Extrae las 4 fases didácticas del desarrollo de la sesión"""
+    return [
+        {
+            "fase": "1. Activación Fisiológica (Calentamiento)",
+            "desc": f"Niños de primaria en círculo y desplazándose por el patio realizando movilidad articular y calentamiento dinámico para {tema_sesion}."
+        },
+        {
+            "fase": "2. Actividad Básica (Exploración Motriz)",
+            "desc": f"Estudiantes en parejas y grupos pequeños explorando habilidades motrices y ejercicios básicos con aros y conos sobre {tema_sesion}."
+        },
+        {
+            "fase": "3. Actividad Avanzada (Reto y Progresión)",
+            "desc": f"Estudiantes en circuito motriz superando obstáculos y realizando combinaciones de movimientos con balones y conos para {tema_sesion}."
+        },
+        {
+            "fase": "4. Actividad de Aplicación (Gran Juego Final)",
+            "desc": f"Gran juego colectivo y cooperativo en el patio escolar aplicando lo aprendido en la clase de Educación Física sobre {tema_sesion}."
+        }
+    ]
 
 # ==============================================================================
 # FORMULARIO DE DATOS
@@ -949,7 +947,7 @@ if st.button(f"✨ Generar {tipo_documento}"):
     else:
         try:
             client = genai.Client(api_key=api_key)
-            st.session_state['imagenes_dict'] = {}
+            st.session_state['imagenes_desarrollo'] = []
             
             if tipo_documento == "Unidad de Aprendizaje":
                 prompt_maestro = generar_prompt_unidad_ef_10_secciones()
@@ -1003,7 +1001,27 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                 st.session_state['resultado_md'] = response.text
                 st.session_state['tipo_doc_generado'] = tipo_documento
                 st.session_state['fname_clean'] = f"{tipo_documento.replace(' ', '_')}_EF_{ciclo_actual.replace(' ', '_')}.docx"
+
+            # GENERACIÓN VISUAL AUTOMÁTICA CON NANO BANANA SI ES SESIÓN DE APRENDIZAJE
+            if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
+                with st.spinner("🎨 Nano Banana está generando las 4 ilustraciones de las actividades del Desarrollo..."):
+                    actividades_prompts = extraer_actividades_desarrollo(st.session_state['resultado_md'], problema_contexto)
+                    lista_imgs = []
+                    for act in actividades_prompts:
+                        img_gen = generar_imagen_nano_banana(client, act["desc"])
+                        if img_gen:
+                            lista_imgs.append({
+                                "fase": act["fase"],
+                                "desc": act["desc"],
+                                "imagen": img_gen
+                            })
+                    st.session_state['imagenes_desarrollo'] = lista_imgs
                 
+                if lista_imgs:
+                    st.success(f"✅ ¡{tipo_documento} de Educación Física y {len(lista_imgs)} ilustraciones generadas con éxito!")
+                else:
+                    st.success(f"✅ ¡{tipo_documento} generado! (Puedes pulsar el botón 'Generar Ilustraciones' en la pestaña de imágenes).")
+            else:
                 st.success(f"✅ ¡{tipo_documento} de Educación Física generado con éxito!")
 
         except Exception as e:
@@ -1014,7 +1032,7 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                 st.error(f"❌ Ocurrió un error con la API de Google AI Studio: {err_str}")
 
 # ==============================================================================
-# DESPLIEGUE DE RESULTADOS Y DESCARGA EN WORD
+# DESPLIEGUE DE RESULTADOS, IMÁGENES Y DESCARGA EN WORD
 # ==============================================================================
 if st.session_state['resultado_md'] is not None:
     st.markdown("---")
@@ -1024,7 +1042,7 @@ if st.session_state['resultado_md'] is not None:
     if es_sesion:
         tab_preview, tab_img, tab_download = st.tabs([
             "📄 Vista Previa (Permanente)",
-            "🖼️ Láminas Infográficas MINEDU",
+            "🖼️ Imágenes del Desarrollo (Nano Banana)",
             "📥 Descargar en Word (.docx)"
         ])
     else:
@@ -1032,64 +1050,57 @@ if st.session_state['resultado_md'] is not None:
             "📄 Vista Previa (Permanente)",
             "📥 Descargar en Word (.docx)"
         ])
-    
+
     with tab_preview:
         st.markdown(st.session_state['resultado_md'])
         
     if es_sesion:
         with tab_img:
-            st.markdown("### 🏃‍♂️ Láminas Infográficas Ilustradas del Desarrollo (Fichas MINEDU Perú)")
-            st.info("💡 Haz clic en cada botón para generar la lámina didáctica completa con diagramas de cancha, flechas tácticas, caricaturas escolares y recuadros de pulso/hidratación.")
+            st.markdown("### 🏃‍♂️ Ilustraciones Pedagógicas del Desarrollo (Nano Banana AI)")
             
-            actividades = [
-                (
-                    "1. ACTIVACIÓN FISIOLÓGICA (CALENTAMIENTO DINÁMICO Y PREVENTIVO)",
-                    f"Calentamiento dinámico en el patio escolar: trote grupal con conos, panel de movilidad articular y toma de pulso cardíaco para {problema_contexto}"
-                ),
-                (
-                    "2. ACTIVIDAD BÁSICA (FAMILIARIZACIÓN Y EXPLORACIÓN MOTRIZ)",
-                    f"Pases con obstáculos con aros verticales en soporte con cotas de 5m y mini-fútbol de pases obligatorios con banner de trabajo en equipo para {problema_contexto}"
-                ),
-                (
-                    "3. ACTIVIDAD AVANZADA (PROGRESIÓN PEDAGÓGICA Y COMPLEJIZACIÓN)",
-                    f"Circuito de agilidad numerado 1 Zigzag con conos, 2 Saltos en 3 aros, 3 Lanzamiento a diana alta, y juego táctico de balón torre para {problema_contexto}"
-                ),
-                (
-                    "4. ACTIVIDAD DE APLICACIÓN (TRANSFERENCIA Y JUEGO MODIFICADO)",
-                    f"Losa deportiva dividida en Campo A y Campo B con arcos y juego deportivo cooperativo por equipos, rotación y pausa de hidratación consciente con botella de agua y cronómetro para {problema_contexto}"
-                )
-            ]
-            
-            cols_img = st.columns(2)
-            for idx, (fase, desc) in enumerate(actividades):
-                col_idx = idx % 2
-                with cols_img[col_idx]:
-                    st.markdown(f"#### 🏅 {fase}")
-                    
-                    if fase in st.session_state['imagenes_dict']:
-                        item = st.session_state['imagenes_dict'][fase]
-                        st.image(item["img"], caption=item["desc"], use_container_width=True)
+            c_btn1, c_btn2 = st.columns([2, 1])
+            with c_btn1:
+                st.info("💡 Ilustraciones visuales de los momentos de la clase: Calentamiento, Actividad Básica, Avanzada y Aplicación.")
+            with c_btn2:
+                if st.button("🎨 Regenerar / Crear Imágenes Ahora", key="btn_manual_gen_img", use_container_width=True):
+                    if not api_key:
+                        st.error("⚠️ Ingresa tu API Key en la barra lateral.")
+                    else:
+                        with st.spinner("🎨 Nano Banana está procesando las imágenes..."):
+                            client_img = genai.Client(api_key=api_key)
+                            actividades_prompts = extraer_actividades_desarrollo(st.session_state['resultado_md'], problema_contexto)
+                            lista_imgs = []
+                            for act in actividades_prompts:
+                                img_gen = generar_imagen_nano_banana(client_img, act["desc"])
+                                if img_gen:
+                                    lista_imgs.append({
+                                        "fase": act["fase"],
+                                        "desc": act["desc"],
+                                        "imagen": img_gen
+                                    })
+                            st.session_state['imagenes_desarrollo'] = lista_imgs
+                            st.rerun()
+
+            if st.session_state['imagenes_desarrollo']:
+                cols_img = st.columns(2)
+                for idx, item in enumerate(st.session_state['imagenes_desarrollo']):
+                    col_idx = idx % 2
+                    with cols_img[col_idx]:
+                        st.markdown(f"#### 🏅 {item['fase']}")
+                        st.image(item['imagen'], caption=item['desc'], use_container_width=True)
                         
                         buf = io.BytesIO()
-                        item["img"].save(buf, format="PNG")
+                        item['imagen'].save(buf, format="PNG")
                         st.download_button(
-                            label=f"⬇️ Descargar Lámina MINEDU ({fase.split(' ')[1]})",
+                            label=f"⬇️ Descargar ({item['fase'].split(' ')[1]})",
                             data=buf.getvalue(),
-                            file_name=f"lamina_minedu_{idx+1}.png",
+                            file_name=f"actividad_desarrollo_{idx+1}.png",
                             mime="image/png",
-                            key=f"dl_act_{idx}"
+                            key=f"dl_img_{idx}"
                         )
-                    else:
-                        st.caption(desc)
-                        if st.button(f"🎨 Generar Lámina MINEDU ({fase.split(' ')[1]})", key=f"btn_indiv_{idx}", use_container_width=True):
-                            with st.spinner(f"Diseñando lámina infográfica de {fase}..."):
-                                img_res, err = generar_imagen_actividad_universal(openai_api_key, fase, desc)
-                                if img_res:
-                                    st.session_state['imagenes_dict'][fase] = {"img": img_res, "desc": desc}
-                                    st.rerun()
-                                else:
-                                    st.error(f"Error al generar: {err}")
-                    st.markdown("---")
+                        st.markdown("---")
+            else:
+                st.warning("⚠️ Haz clic en el botón '🎨 Regenerar / Crear Imágenes Ahora' para generar las ilustraciones de esta sesión.")
 
     with tab_download:
         es_horizontal_doc = st.session_state['tipo_doc_generado'] in ["Unidad de Aprendizaje", "Proyecto de Aprendizaje"]
