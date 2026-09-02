@@ -1031,7 +1031,13 @@ if st.session_state['resultado_md'] is not None:
                                         st.session_state['imagenes_dict'][fase] = {"img": img_res, "desc": desc}
                                         st.rerun()
                                     else:
-                                        st.error(f"Error de Google AI Studio: {err}")
+                                        if err and "limit: 0" in err:
+                                            st.error(
+                                                "⚠️ **Aviso de Google AI Studio:** Esta API Key está en el plan gratuito donde Google fija la cuota de imágenes en cero (`limit: 0`). "
+                                                "Para generar imágenes con Nano Banana, vincula un método de facturación (*Pay-as-you-go*) a tu proyecto en [Google AI Studio](https://aistudio.google.com/)."
+                                            )
+                                        else:
+                                            st.error(f"Error de Google AI Studio: {err}")
                     st.markdown("---")
 
     with tab_download:
