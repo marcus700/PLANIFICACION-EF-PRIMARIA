@@ -2,6 +2,8 @@ import io
 import re
 import time
 import base64
+import urllib.parse
+import requests
 from PIL import Image
 import docx
 from docx.enum.section import WD_ORIENT
@@ -262,46 +264,44 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# MOTOR NANO BANANA OFICIAL DE GOOGLE AI STUDIO
+# MOTOR HÍBRIDO DE GENERACIÓN DE IMÁGENES (NANO BANANA + MOTOR LIBRE)
 # ==============================================================================
-def generar_imagen_actividad_nano_banana(client, prompt_actividad):
-    """Genera imagen con la API oficial de Nano Banana (gemini-2.5-flash-image / gemini-3.1-flash-image)"""
+def generar_imagen_actividad(client, prompt_actividad):
+    """
+    Intenta generar la imagen primero con Nano Banana (Google AI Studio).
+    Si la clave no tiene facturación activada (limit: 0), genera la ilustración 
+    con el motor libre de alta resolución para garantizar que siempre funcione.
+    """
     prompt_completo = (
-        f"A clear 2D pedagogical educational illustration for a primary school Physical Education exercise: "
-        f"{prompt_actividad}. School sports court, cones, balls, agility drills, bright daylight, 2D vector style."
+        f"A clear 2D pedagogical educational illustration for a primary school Physical Education exercise in Peru: "
+        f"{prompt_actividad}. School sports court, cones, sports balls, agility drills, bright daylight, 2D vector style."
     )
     
-    modelos_nano = ["gemini-2.5-flash-image", "gemini-3.1-flash-image"]
-    ultimo_error = None
-    
-    for mod in modelos_nano:
+    # 1. Intento con Nano Banana (gemini-2.5-flash-image)
+    if client is not None:
         try:
             res = client.models.generate_content(
-                model=mod,
+                model="gemini-2.5-flash-image",
                 contents=[prompt_completo]
             )
             if res and hasattr(res, 'parts') and res.parts:
                 for part in res.parts:
                     if getattr(part, 'inline_data', None) is not None:
-                        return part.as_image(), None
-            
-            if res and hasattr(res, 'candidates') and res.candidates:
-                cand = res.candidates[0]
-                if hasattr(cand, 'content') and hasattr(cand.content, 'parts'):
-                    for part in cand.content.parts:
-                        if getattr(part, 'inline_data', None) is not None:
-                            try:
-                                return part.as_image(), None
-                            except Exception:
-                                raw = part.inline_data.data
-                                if isinstance(raw, str):
-                                    raw = base64.b64decode(raw)
-                                return Image.open(io.BytesIO(raw)), None
-        except Exception as e:
-            ultimo_error = str(e)
-            continue
+                        return part.as_image(), "Nano Banana (Gemini)"
+        except Exception:
+            pass
 
-    return None, ultimo_error
+    # 2. Motor Libre de Alta Resolución (Sin límite de cuota)
+    try:
+        encoded_prompt = urllib.parse.quote(prompt_completo)
+        url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=800&height=600&nologo=true"
+        resp = requests.get(url, timeout=25)
+        if resp.status_code == 200:
+            return Image.open(io.BytesIO(resp.content)), "Motor Libre I.A."
+    except Exception as e:
+        return None, str(e)
+
+    return None, "Error al generar la imagen."
 
 # ==============================================================================
 # CONVERTIDOR DE MARKDOWN A WORD CON TABLAS EN TONOS PASTELES
@@ -975,7 +975,7 @@ if st.session_state['resultado_md'] is not None:
     if es_sesion:
         tab_preview, tab_img, tab_download = st.tabs([
             "📄 Vista Previa (Permanente)",
-            "🖼️ Ilustraciones del Desarrollo (Nano Banana)",
+            "🖼️ Ilustraciones del Desarrollo",
             "📥 Descargar en Word (.docx)"
         ])
     else:
@@ -990,7 +990,7 @@ if st.session_state['resultado_md'] is not None:
     if es_sesion:
         with tab_img:
             st.markdown("### 🏃‍♂️ Ilustraciones Pedagógicas de las Actividades del Desarrollo")
-            st.info("💡 Haz clic en el botón de cada actividad para generar su ilustración con **Nano Banana** (`gemini-2.5-flash-image`).")
+            st.info("💡 Haz clic en el botón de cada actividad para generar su ilustración visual para el patio escolar.")
             
             actividades = [
                 ("1. Activación Fisiológica (Calentamiento)", f"Estudiantes de primaria realizando calentamiento dinámico, movilidad articular y trote con conos en el patio para {problema_contexto}"),
@@ -1007,7 +1007,7 @@ if st.session_state['resultado_md'] is not None:
                     
                     if fase in st.session_state['imagenes_dict']:
                         item = st.session_state['imagenes_dict'][fase]
-                        st.image(item["img"], caption=item["desc"], use_container_width=True)
+                        st.image(item["img"], caption=f"{item['desc']} (Generado por {item['motor']})", use_container_width=True)
                         
                         buf = io.BytesIO()
                         item["img"].save(buf, format="PNG")
@@ -1021,23 +1021,14 @@ if st.session_state['resultado_md'] is not None:
                     else:
                         st.caption(desc)
                         if st.button(f"🎨 Generar Ilustración ({fase.split(' ')[1]})", key=f"btn_indiv_{idx}", use_container_width=True):
-                            if not api_key:
-                                st.error("⚠️ Ingresa tu API Key en la barra lateral.")
-                            else:
-                                with st.spinner(f"Nano Banana generando {fase}..."):
-                                    client_img = genai.Client(api_key=api_key)
-                                    img_res, err = generar_imagen_actividad_nano_banana(client_img, desc)
-                                    if img_res:
-                                        st.session_state['imagenes_dict'][fase] = {"img": img_res, "desc": desc}
-                                        st.rerun()
-                                    else:
-                                        if err and "limit: 0" in err:
-                                            st.error(
-                                                "⚠️ **Aviso de Google AI Studio:** Esta API Key está en el plan gratuito donde Google fija la cuota de imágenes en cero (`limit: 0`). "
-                                                "Para generar imágenes con Nano Banana, vincula un método de facturación (*Pay-as-you-go*) a tu proyecto en [Google AI Studio](https://aistudio.google.com/)."
-                                            )
-                                        else:
-                                            st.error(f"Error de Google AI Studio: {err}")
+                            with st.spinner(f"Generando ilustración de {fase}..."):
+                                client_img = genai.Client(api_key=api_key) if api_key else None
+                                img_res, motor_usado = generar_imagen_actividad(client_img, desc)
+                                if img_res:
+                                    st.session_state['imagenes_dict'][fase] = {"img": img_res, "desc": desc, "motor": motor_usado}
+                                    st.rerun()
+                                else:
+                                    st.error(f"Error al generar la imagen: {motor_usado}")
                     st.markdown("---")
 
     with tab_download:
