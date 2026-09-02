@@ -262,47 +262,46 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# MOTOR NANO BANANA OFICIAL CON REINTENTO AUTOMÁTICO
+# MOTOR NANO BANANA OFICIAL DE GOOGLE AI STUDIO
 # ==============================================================================
 def generar_imagen_actividad_nano_banana(client, prompt_actividad):
-    """Genera imagen con el modelo oficial gemini-2.5-flash-image (Nano Banana)"""
+    """Genera imagen con la API oficial de Nano Banana (gemini-2.5-flash-image / gemini-3.1-flash-image)"""
     prompt_completo = (
         f"A clear 2D pedagogical educational illustration for a primary school Physical Education exercise: "
         f"{prompt_actividad}. School sports court, cones, balls, agility drills, bright daylight, 2D vector style."
     )
     
-    modelos_a_probar = ["gemini-2.5-flash-image", "gemini-3.1-flash-image"]
+    modelos_nano = ["gemini-2.5-flash-image", "gemini-3.1-flash-image"]
+    ultimo_error = None
     
-    for mod in modelos_a_probar:
-        for intento in range(2):
-            try:
-                res = client.models.generate_content(
-                    model=mod,
-                    contents=prompt_completo
-                )
-                if res and hasattr(res, 'parts') and res.parts:
-                    for part in res.parts:
+    for mod in modelos_nano:
+        try:
+            res = client.models.generate_content(
+                model=mod,
+                contents=[prompt_completo]
+            )
+            if res and hasattr(res, 'parts') and res.parts:
+                for part in res.parts:
+                    if getattr(part, 'inline_data', None) is not None:
+                        return part.as_image(), None
+            
+            if res and hasattr(res, 'candidates') and res.candidates:
+                cand = res.candidates[0]
+                if hasattr(cand, 'content') and hasattr(cand.content, 'parts'):
+                    for part in cand.content.parts:
                         if getattr(part, 'inline_data', None) is not None:
-                            return part.as_image(), None
-                
-                # Respaldo por si viene en candidates
-                if res and hasattr(res, 'candidates') and res.candidates:
-                    cand = res.candidates[0]
-                    if hasattr(cand, 'content') and hasattr(cand.content, 'parts'):
-                        for part in cand.content.parts:
-                            if getattr(part, 'inline_data', None) is not None and part.inline_data.data:
-                                raw_data = part.inline_data.data
-                                if isinstance(raw_data, str):
-                                    raw_data = base64.b64decode(raw_data)
-                                return Image.open(io.BytesIO(raw_data)), None
-            except Exception as e:
-                err_msg = str(e)
-                if "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg:
-                    time.sleep(20)
-                    continue
-                return None, err_msg
+                            try:
+                                return part.as_image(), None
+                            except Exception:
+                                raw = part.inline_data.data
+                                if isinstance(raw, str):
+                                    raw = base64.b64decode(raw)
+                                return Image.open(io.BytesIO(raw)), None
+        except Exception as e:
+            ultimo_error = str(e)
+            continue
 
-    return None, "La cuota gratuita de tu API Key está en pausa de refresco. Por favor espera 30 segundos y vuelve a presionar el botón."
+    return None, ultimo_error
 
 # ==============================================================================
 # CONVERTIDOR DE MARKDOWN A WORD CON TABLAS EN TONOS PASTELES
@@ -991,7 +990,7 @@ if st.session_state['resultado_md'] is not None:
     if es_sesion:
         with tab_img:
             st.markdown("### 🏃‍♂️ Ilustraciones Pedagógicas de las Actividades del Desarrollo")
-            st.info("💡 **Consejo:** Genera cada ilustración individualmente para obtenerla al instante sin esperar la cola de límite de velocidad gratuita.")
+            st.info("💡 Haz clic en el botón de cada actividad para generar su ilustración con **Nano Banana** (`gemini-2.5-flash-image`).")
             
             actividades = [
                 ("1. Activación Fisiológica (Calentamiento)", f"Estudiantes de primaria realizando calentamiento dinámico, movilidad articular y trote con conos en el patio para {problema_contexto}"),
@@ -1032,7 +1031,7 @@ if st.session_state['resultado_md'] is not None:
                                         st.session_state['imagenes_dict'][fase] = {"img": img_res, "desc": desc}
                                         st.rerun()
                                     else:
-                                        st.error(f"Aviso: {err}")
+                                        st.error(f"Error de Google AI Studio: {err}")
                     st.markdown("---")
 
     with tab_download:
