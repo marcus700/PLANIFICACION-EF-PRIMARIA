@@ -262,45 +262,47 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# MOTOR NANO BANANA CON MANEJO INTELIGENTE DE CUOTA Y REINTENTO
+# MOTOR NANO BANANA OFICIAL CON REINTENTO AUTOMÁTICO
 # ==============================================================================
-def generar_imagen_actividad_nano_banana(client, prompt_actividad, reintentos=3):
-    """Genera imagen con gemini-2.5-flash-image con control de tasa de refresco de cuota"""
+def generar_imagen_actividad_nano_banana(client, prompt_actividad):
+    """Genera imagen con el modelo oficial gemini-2.5-flash-image (Nano Banana)"""
     prompt_completo = (
         f"A clear 2D pedagogical educational illustration for a primary school Physical Education exercise: "
         f"{prompt_actividad}. School sports court, cones, balls, agility drills, bright daylight, 2D vector style."
     )
     
-    for intento in range(reintentos):
-        try:
-            res = client.models.generate_content(
-                model="gemini-2.5-flash-image",
-                contents=prompt_completo,
-                config=types.GenerateContentConfig(
-                    response_modalities=["IMAGE"]
+    modelos_a_probar = ["gemini-2.5-flash-image", "gemini-3.1-flash-image"]
+    
+    for mod in modelos_a_probar:
+        for intento in range(2):
+            try:
+                res = client.models.generate_content(
+                    model=mod,
+                    contents=prompt_completo
                 )
-            )
-            if res and hasattr(res, 'candidates') and res.candidates:
-                candidate = res.candidates[0]
-                if hasattr(candidate, 'content') and hasattr(candidate.content, 'parts'):
-                    for part in candidate.content.parts:
-                        if getattr(part, 'inline_data', None) is not None and part.inline_data.data:
-                            raw_data = part.inline_data.data
-                            if isinstance(raw_data, str):
-                                raw_data = base64.b64decode(raw_data)
-                            return Image.open(io.BytesIO(raw_data)), None
-            return None, "La respuesta no incluyó datos de imagen."
-        except Exception as e:
-            err_str = str(e)
-            if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
-                if intento < reintentos - 1:
-                    time.sleep(15)
+                if res and hasattr(res, 'parts') and res.parts:
+                    for part in res.parts:
+                        if getattr(part, 'inline_data', None) is not None:
+                            return part.as_image(), None
+                
+                # Respaldo por si viene en candidates
+                if res and hasattr(res, 'candidates') and res.candidates:
+                    cand = res.candidates[0]
+                    if hasattr(cand, 'content') and hasattr(cand.content, 'parts'):
+                        for part in cand.content.parts:
+                            if getattr(part, 'inline_data', None) is not None and part.inline_data.data:
+                                raw_data = part.inline_data.data
+                                if isinstance(raw_data, str):
+                                    raw_data = base64.b64decode(raw_data)
+                                return Image.open(io.BytesIO(raw_data)), None
+            except Exception as e:
+                err_msg = str(e)
+                if "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg:
+                    time.sleep(20)
                     continue
-                else:
-                    return None, "Límite de velocidad de la cuenta alcanzado. Por favor, espera 30 segundos y vuelve a pulsar el botón."
-            return None, err_str
+                return None, err_msg
 
-    return None, "No se pudo generar la imagen."
+    return None, "La cuota gratuita de tu API Key está en pausa de refresco. Por favor espera 30 segundos y vuelve a presionar el botón."
 
 # ==============================================================================
 # CONVERTIDOR DE MARKDOWN A WORD CON TABLAS EN TONOS PASTELES
@@ -989,7 +991,7 @@ if st.session_state['resultado_md'] is not None:
     if es_sesion:
         with tab_img:
             st.markdown("### 🏃‍♂️ Ilustraciones Pedagógicas de las Actividades del Desarrollo")
-            st.info("💡 Genera las ilustraciones del momento de Desarrollo con **Nano Banana** (`gemini-2.5-flash-image`). Puedes generar todas en lote o individualmente.")
+            st.info("💡 **Consejo:** Genera cada ilustración individualmente para obtenerla al instante sin esperar la cola de límite de velocidad gratuita.")
             
             actividades = [
                 ("1. Activación Fisiológica (Calentamiento)", f"Estudiantes de primaria realizando calentamiento dinámico, movilidad articular y trote con conos en el patio para {problema_contexto}"),
@@ -998,24 +1000,6 @@ if st.session_state['resultado_md'] is not None:
                 ("4. Actividad de Aplicación (Juego Final)", f"Juego cooperativo y deportivo grupal en el patio escolar delimitado para {problema_contexto}")
             ]
             
-            if st.button("🎨 Generar las 4 Ilustraciones en Lote", key="btn_gen_todas_nano", use_container_width=True):
-                if not api_key:
-                    st.error("⚠️ Ingresa tu API Key en la barra lateral.")
-                else:
-                    client_img = genai.Client(api_key=api_key)
-                    progreso = st.progress(0, text="Iniciando Nano Banana...")
-                    for idx, (fase, desc) in enumerate(actividades):
-                        progreso.progress((idx + 1) / len(actividades), text=f"Generando: {fase}...")
-                        img_res, err = generar_imagen_actividad_nano_banana(client_img, desc)
-                        if img_res:
-                            st.session_state['imagenes_dict'][fase] = {"img": img_res, "desc": desc}
-                        elif err:
-                            st.warning(f"Aviso en {fase}: {err}")
-                        time.sleep(5)  # Pausa preventiva para evitar límites de tasa
-                    progreso.empty()
-                    st.rerun()
-
-            st.markdown("---")
             cols_img = st.columns(2)
             for idx, (fase, desc) in enumerate(actividades):
                 col_idx = idx % 2
@@ -1037,9 +1021,9 @@ if st.session_state['resultado_md'] is not None:
                         )
                     else:
                         st.caption(desc)
-                        if st.button(f"🎨 Generar Ilustración ({fase.split(' ')[1]})", key=f"btn_indiv_{idx}"):
+                        if st.button(f"🎨 Generar Ilustración ({fase.split(' ')[1]})", key=f"btn_indiv_{idx}", use_container_width=True):
                             if not api_key:
-                                st.error("⚠️ Ingresa tu API Key.")
+                                st.error("⚠️ Ingresa tu API Key en la barra lateral.")
                             else:
                                 with st.spinner(f"Nano Banana generando {fase}..."):
                                     client_img = genai.Client(api_key=api_key)
@@ -1048,7 +1032,7 @@ if st.session_state['resultado_md'] is not None:
                                         st.session_state['imagenes_dict'][fase] = {"img": img_res, "desc": desc}
                                         st.rerun()
                                     else:
-                                        st.error(f"Error: {err}")
+                                        st.error(f"Aviso: {err}")
                     st.markdown("---")
 
     with tab_download:
