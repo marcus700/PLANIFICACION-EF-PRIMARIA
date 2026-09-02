@@ -270,15 +270,16 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# MOTOR DE ILUSTRACIONES TIPO CARICATURA INFANTIL DE NIÑOS
+# MOTOR DE ILUSTRACIONES CARICATURA TIPO MINEDU PERÚ (LIBROS ESCOLARES)
 # ==============================================================================
 def generar_imagen_actividad_universal(openai_key, prompt_actividad):
-    """Genera una ilustración estilo caricatura infantil a todo color con niños en clase de EF"""
+    """Genera una ilustración estilo caricatura pedagógica oficial MINEDU Perú"""
     prompt_completo = (
-        f"A lovely, charming, high quality 2D children's book cartoon illustration. "
-        f"Cute smiling primary school boys and girls wearing PE sports uniforms playing in a sunny schoolyard: "
-        f"{prompt_actividad}. Colorful sports equipment with cones, balls, hoops, dynamic cartoon characters, "
-        f"friendly expressions, bright vibrant colors, clean educational storybook art style, highly detailed."
+        f"MINEDU Peru primary school textbook cartoon illustration style. "
+        f"Charming 2D vector graphic art of friendly Peruvian elementary school children (boys and girls in PE sports uniform) "
+        f"playing on a sunny outdoor school sports court (losa deportiva escolar): {prompt_actividad}. "
+        f"Official MINEDU Peru textbook illustration style, clean outlines, warm and bright vibrant colors, happy smiling Peruvian kids, "
+        f"plastic cones, colorful hoops, sports balls, clear educational storybook flat art style."
     )
     
     # 1. Si el usuario ingresó clave de OpenAI, intenta generar con DALL-E 3
@@ -305,7 +306,7 @@ def generar_imagen_actividad_universal(openai_key, prompt_actividad):
         except Exception:
             pass
 
-    # 2. Generador Directo e Ilimitado (Estilo Caricatura Infantil)
+    # 2. Generador Directo e Ilimitado (Estilo MINEDU Perú)
     try:
         encoded_prompt = urllib.parse.quote(prompt_completo)
         url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=800&height=600&nologo=true"
@@ -315,7 +316,7 @@ def generar_imagen_actividad_universal(openai_key, prompt_actividad):
     except Exception as e:
         return None, str(e)
 
-    return None, "Error al generar la caricatura."
+    return None, "Error al generar la caricatura MINEDU."
 
 # ==============================================================================
 # CONVERTIDOR DE MARKDOWN A WORD CON TABLAS EN TONOS PASTELES
@@ -989,7 +990,7 @@ if st.session_state['resultado_md'] is not None:
     if es_sesion:
         tab_preview, tab_img, tab_download = st.tabs([
             "📄 Vista Previa (Permanente)",
-            "🖼️ Caricaturas del Desarrollo",
+            "🖼️ Caricaturas MINEDU del Desarrollo",
             "📥 Descargar en Word (.docx)"
         ])
     else:
@@ -1003,14 +1004,14 @@ if st.session_state['resultado_md'] is not None:
         
     if es_sesion:
         with tab_img:
-            st.markdown("### 🏃‍♂️ Caricaturas Infantiles de las Actividades del Desarrollo")
-            st.info("💡 Haz clic en el botón de cada actividad para generar su ilustración estilo caricatura infantil a todo color.")
+            st.markdown("### 🏃‍♂️ Caricaturas Pedagógicas del Desarrollo (Estilo Cuadernos MINEDU Perú)")
+            st.info("💡 Haz clic en el botón de cada actividad para generar su ilustración oficial estilo textos del **MINEDU** con niños en la losa deportiva.")
             
             actividades = [
-                ("1. Activación Fisiológica (Calentamiento)", f"Niños de primaria sonrientes realizando calentamiento dinámico, movilidad articular y trote con conos en el patio para {problema_contexto}"),
-                ("2. Actividad Básica (Exploración)", f"Niños y niñas en parejas realizando divertidos ejercicios de coordinación motriz con aros y pelotas en la cancha para {problema_contexto}"),
-                ("3. Actividad Avanzada (Progresión)", f"Grupo de niños en circuito motriz superando obstáculos, conos en zigzag y saltando aros para {problema_contexto}"),
-                ("4. Actividad de Aplicación (Juego Final)", f"Gran juego cooperativo en equipo de niños y niñas jugando felices en el patio escolar delimitado para {problema_contexto}")
+                ("1. Activación Fisiológica (Calentamiento)", f"Estudiantes peruanos en buzo deportivo escolar realizando calentamiento dinámico, movilidad articular y trote con conos en la losa del patio para {problema_contexto}"),
+                ("2. Actividad Básica (Exploración)", f"Niños y niñas peruanos en parejas realizando ejercicios de coordinación motriz con aros y pelotas en la cancha escolar para {problema_contexto}"),
+                ("3. Actividad Avanzada (Progresión)", f"Grupo de escolares en circuito motriz superando obstáculos, conos en zigzag y saltando aros en el patio para {problema_contexto}"),
+                ("4. Actividad de Aplicación (Juego Final)", f"Gran juego cooperativo en equipo de niños y niñas jugando felices en la losa deportiva escolar delimitada para {problema_contexto}")
             ]
             
             cols_img = st.columns(2)
@@ -1026,16 +1027,16 @@ if st.session_state['resultado_md'] is not None:
                         buf = io.BytesIO()
                         item["img"].save(buf, format="PNG")
                         st.download_button(
-                            label=f"⬇️ Descargar Caricatura ({fase.split(' ')[1]})",
+                            label=f"⬇️ Descargar Caricatura MINEDU ({fase.split(' ')[1]})",
                             data=buf.getvalue(),
-                            file_name=f"caricatura_actividad_{idx+1}.png",
+                            file_name=f"caricatura_minedu_{idx+1}.png",
                             mime="image/png",
                             key=f"dl_act_{idx}"
                         )
                     else:
                         st.caption(desc)
-                        if st.button(f"🎨 Generar Caricatura ({fase.split(' ')[1]})", key=f"btn_indiv_{idx}", use_container_width=True):
-                            with st.spinner(f"Dibujando caricatura de {fase}..."):
+                        if st.button(f"🎨 Generar Caricatura MINEDU ({fase.split(' ')[1]})", key=f"btn_indiv_{idx}", use_container_width=True):
+                            with st.spinner(f"Dibujando ilustración estilo MINEDU para {fase}..."):
                                 img_res, err = generar_imagen_actividad_universal(openai_api_key, desc)
                                 if img_res:
                                     st.session_state['imagenes_dict'][fase] = {"img": img_res, "desc": desc}
