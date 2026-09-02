@@ -207,7 +207,7 @@ if 'tipo_documento' not in st.session_state:
 if 'imagenes_dict' not in st.session_state:
     st.session_state['imagenes_dict'] = {}
 
-# SIDEBAR CON MODELOS ESTABLES DE GOOGLE STUDIO Y OPENAI
+# SIDEBAR CON MODELOS ESTABLES DE GOOGLE STUDIO Y OPENAI (OPCIONAL)
 st.sidebar.title("⚙️ Configuración EF")
 if st.sidebar.button("🔒 Cerrar Sesión"):
     st.session_state["password_correct"] = False
@@ -222,9 +222,9 @@ else:
 
 if "OPENAI_API_KEY" in st.secrets and st.secrets["OPENAI_API_KEY"]:
     openai_api_key = st.secrets["OPENAI_API_KEY"]
-    st.sidebar.success("🎨 OpenAI (ChatGPT) Key activada.")
+    st.sidebar.success("🎨 OpenAI Key activada.")
 else:
-    openai_api_key = st.sidebar.text_input("🎨 OpenAI API Key (para imágenes ChatGPT):", type="password")
+    openai_api_key = st.sidebar.text_input("🎨 OpenAI API Key (Opcional):", type="password")
 
 # OPCIONES DE MODELOS OFICIALES Y ESTABLES
 model_choice = st.sidebar.selectbox(
@@ -270,47 +270,50 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# MOTOR DE GENERACIÓN DE IMÁGENES CON CHATGPT (OPENAI DALL-E 3 DIRECTO)
+# MOTOR UNIVERSAL DIRECTO DE ILUSTRACIONES (OPENAI DALL-E / MOTOR GRATUITO IA)
 # ==============================================================================
-def generar_imagen_actividad_chatgpt(openai_key, prompt_actividad):
-    """Genera la ilustración pedagógica usando el motor oficial de ChatGPT (DALL-E 3) sin dependencias externas"""
+def generar_imagen_actividad_universal(openai_key, prompt_actividad):
+    """Genera la ilustración pedagógica de forma automática e inmediata"""
     prompt_completo = (
-        f"A clear 2D pedagogical educational illustration for a primary school Physical Education class in Peru: "
-        f"{prompt_actividad}. Outdoors school sports court, cones, sports balls, agility drills, bright daylight, vibrant cartoon vector style."
+        f"A clear 2D pedagogical educational illustration for a primary school Physical Education exercise in Peru: "
+        f"{prompt_actividad}. School sports court with cones, balls, agility hoops, bright daylight, vibrant cartoon vector style."
     )
     
-    if not openai_key:
-        return None, "Por favor, ingresa tu OpenAI API Key en la barra lateral izquierda."
-        
+    # 1. Si el usuario ingresó clave de OpenAI, intenta generar con DALL-E 3
+    if openai_key and len(openai_key.strip()) > 10:
+        try:
+            headers = {
+                "Authorization": f"Bearer {openai_key.strip()}",
+                "Content-Type": "application/json"
+            }
+            payload = {
+                "model": "dall-e-3",
+                "prompt": prompt_completo,
+                "n": 1,
+                "size": "1024x1024",
+                "quality": "standard"
+            }
+            resp = requests.post("https://api.openai.com/v1/images/generations", headers=headers, json=payload, timeout=35)
+            data = resp.json()
+            if "data" in data and len(data["data"]) > 0:
+                img_url = data["data"][0]["url"]
+                resp_img = requests.get(img_url, timeout=25)
+                if resp_img.status_code == 200:
+                    return Image.open(io.BytesIO(resp_img.content)), None
+        except Exception:
+            pass
+
+    # 2. Generador Directo e Ilimitado (No requiere clave y no se bloquea)
     try:
-        headers = {
-            "Authorization": f"Bearer {openai_key.strip()}",
-            "Content-Type": "application/json"
-        }
-        payload = {
-            "model": "dall-e-3",
-            "prompt": prompt_completo,
-            "n": 1,
-            "size": "1024x1024",
-            "quality": "standard"
-        }
-        
-        resp = requests.post("https://api.openai.com/v1/images/generations", headers=headers, json=payload, timeout=60)
-        data = resp.json()
-        
-        if "data" in data and len(data["data"]) > 0:
-            img_url = data["data"][0]["url"]
-            resp_img = requests.get(img_url, timeout=30)
-            if resp_img.status_code == 200:
-                return Image.open(io.BytesIO(resp_img.content)), None
-            else:
-                return None, f"Error al descargar la imagen (Status: {resp_img.status_code})"
-        else:
-            error_msg = data.get("error", {}).get("message", "Error desconocido de OpenAI")
-            return None, error_msg
-            
+        encoded_prompt = urllib.parse.quote(prompt_completo)
+        url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=800&height=600&nologo=true"
+        resp = requests.get(url, timeout=30)
+        if resp.status_code == 200:
+            return Image.open(io.BytesIO(resp.content)), None
     except Exception as e:
         return None, str(e)
+
+    return None, "Error al generar la imagen."
 
 # ==============================================================================
 # CONVERTIDOR DE MARKDOWN A WORD CON TABLAS EN TONOS PASTELES
@@ -984,7 +987,7 @@ if st.session_state['resultado_md'] is not None:
     if es_sesion:
         tab_preview, tab_img, tab_download = st.tabs([
             "📄 Vista Previa (Permanente)",
-            "🖼️ Ilustraciones del Desarrollo (ChatGPT DALL-E)",
+            "🖼️ Ilustraciones del Desarrollo",
             "📥 Descargar en Word (.docx)"
         ])
     else:
@@ -998,8 +1001,8 @@ if st.session_state['resultado_md'] is not None:
         
     if es_sesion:
         with tab_img:
-            st.markdown("### 🏃‍♂️ Ilustraciones Pedagógicas de las Actividades del Desarrollo (ChatGPT DALL-E 3)")
-            st.info("💡 Haz clic en el botón de cada actividad para generar su ilustración oficial con **ChatGPT (OpenAI DALL-E 3)**.")
+            st.markdown("### 🏃‍♂️ Ilustraciones Pedagógicas de las Actividades del Desarrollo")
+            st.info("💡 Haz clic en el botón de cada actividad para generar su ilustración visual para el patio escolar.")
             
             actividades = [
                 ("1. Activación Fisiológica (Calentamiento)", f"Estudiantes de primaria realizando calentamiento dinámico, movilidad articular y trote con conos en el patio para {problema_contexto}"),
@@ -1029,17 +1032,14 @@ if st.session_state['resultado_md'] is not None:
                         )
                     else:
                         st.caption(desc)
-                        if st.button(f"🎨 Generar Ilustración con ChatGPT ({fase.split(' ')[1]})", key=f"btn_indiv_{idx}", use_container_width=True):
-                            if not openai_api_key:
-                                st.error("⚠️ Ingresa tu OpenAI API Key en la barra lateral izquierda.")
-                            else:
-                                with st.spinner(f"ChatGPT (DALL-E 3) generando {fase}..."):
-                                    img_res, err = generar_imagen_actividad_chatgpt(openai_api_key, desc)
-                                    if img_res:
-                                        st.session_state['imagenes_dict'][fase] = {"img": img_res, "desc": desc}
-                                        st.rerun()
-                                    else:
-                                        st.error(f"Error de OpenAI: {err}")
+                        if st.button(f"🎨 Generar Ilustración ({fase.split(' ')[1]})", key=f"btn_indiv_{idx}", use_container_width=True):
+                            with st.spinner(f"Generando ilustración de {fase}..."):
+                                img_res, err = generar_imagen_actividad_universal(openai_api_key, desc)
+                                if img_res:
+                                    st.session_state['imagenes_dict'][fase] = {"img": img_res, "desc": desc}
+                                    st.rerun()
+                                else:
+                                    st.error(f"Error al generar: {err}")
                     st.markdown("---")
 
     with tab_download:
