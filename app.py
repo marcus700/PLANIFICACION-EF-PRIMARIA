@@ -215,10 +215,10 @@ if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_API_KEY"]:
 else:
     api_key = st.sidebar.text_input("🔑 Google AI Studio API Key:", type="password")
 
-# OPCIONES DE MODELOS OFICIALES Y ESTABLES
+# OPCIONES DE MODELOS OFICIALES Y ACTIVOS
 model_choice = st.sidebar.selectbox(
     "Modelo de Gemini:", 
-    ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
+    ["gemini-3.7-flash", "3.5-flash-lite", "gemini-3.1-pro-preview", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-pro", "gemini-2.0-flash-lite", "gemini-1.5-flash"]
 )
 
 # ==============================================================================
@@ -881,7 +881,7 @@ Elabora un cuadro detallado considerando los siguientes materiales indicados:
 """
 
 # ==============================================================================
-# EJECUCIÓN CON SISTEMA DUAL ROBUSTO ANTI-404 Y COMPLETITUD
+# EJECUCIÓN CON MODELOS ACTIVOS DE GOOGLE STUDIO
 # ==============================================================================
 st.markdown("---")
 
@@ -913,14 +913,20 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                     max_output_tokens=8192
                 )
                 
+                # Lista de modelos activos y soportados
                 modelos_a_probar = [
                     model_choice,
+                    "gemini-3.7-flash",
+                    "3.5-flash-lite",
+                    "gemini-3.1-pro-preview",
                     "gemini-2.5-flash",
-                    "gemini-2.5-pro",
                     "gemini-2.0-flash",
-                    "gemini-1.5-flash",
-                    "gemini-1.5-pro"
+                    "gemini-2.5-pro",
+                    "gemini-2.0-flash-lite",
+                    "gemini-1.5-flash"
                 ]
+                # Elimina duplicados manteniendo el orden
+                modelos_a_probar = list(dict.fromkeys(modelos_a_probar))
                 
                 response = None
                 ultimo_err = None
