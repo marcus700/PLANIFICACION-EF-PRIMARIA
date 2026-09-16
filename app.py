@@ -215,10 +215,17 @@ if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_API_KEY"]:
 else:
     api_key = st.sidebar.text_input("🔑 Google AI Studio API Key:", type="password")
 
-# OPCIONES DE MODELOS OFICIALES Y ACTIVOS
+# OPCIONES DE MODELOS OFICIALES Y ACTIVOS EN GOOGLE AI STUDIO
 model_choice = st.sidebar.selectbox(
     "Modelo de Gemini:", 
-    ["gemini-3.7-flash", "3.5-flash-lite", "gemini-3.1-pro-preview", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-pro", "gemini-2.0-flash-lite"]
+    [
+        "gemini-2.5-flash",
+        "gemini-2.0-flash", 
+        "gemini-2.5-pro",
+        "gemini-2.0-flash-lite",
+        "gemini-3.5-flash-lite",
+        "gemini-3.7-flash"
+    ]
 )
 
 # ==============================================================================
@@ -881,7 +888,7 @@ Elabora un cuadro detallado considerando los siguientes materiales indicados:
 """
 
 # ==============================================================================
-# EJECUCIÓN CON MODELOS ACTIVOS DE GOOGLE STUDIO
+# EJECUCIÓN CON AUTODETECCIÓN Y BLINDAJE DE MODELOS
 # ==============================================================================
 st.markdown("---")
 
@@ -913,19 +920,33 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                     max_output_tokens=8192
                 )
                 
-                # Lista de modelos activos y soportados
-                modelos_a_probar = [
+                # 1. Detectar dinámicamente qué modelos están habilitados en la cuenta del usuario
+                modelos_activos_cuenta = []
+                try:
+                    for m in client.models.list():
+                        nombre_limpio = m.name.replace("models/", "")
+                        modelos_activos_cuenta.append(nombre_limpio)
+                except Exception:
+                    pass
+
+                # 2. Priorizar modelos modernos y estables
+                candidatos = [
                     model_choice,
-                    "gemini-3.7-flash",
-                    "3.5-flash-lite",
-                    "gemini-3.1-pro-preview",
                     "gemini-2.5-flash",
                     "gemini-2.0-flash",
                     "gemini-2.5-pro",
-                    "gemini-2.0-flash-lite"
+                    "gemini-2.0-flash-lite",
+                    "gemini-3.5-flash-lite",
+                    "gemini-3.7-flash"
                 ]
-                # Elimina duplicados manteniendo el orden
-                modelos_a_probar = list(dict.fromkeys(modelos_a_probar))
+
+                # Si obtuvimos la lista oficial de la cuenta, probar solo los que existen realmente
+                if modelos_activos_cuenta:
+                    modelos_a_probar = [m for m in candidatos if m in modelos_activos_cuenta]
+                    if not modelos_a_probar:
+                        modelos_a_probar = [m for m in modelos_activos_cuenta if "flash" in m or "pro" in m]
+                else:
+                    modelos_a_probar = list(dict.fromkeys(candidatos))
                 
                 response = None
                 ultimo_err = None
@@ -940,6 +961,10 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                         if response and response.text:
                             break
                     except Exception as err:
+                        err_msg = str(err)
+                        # Si es límite de cuota (429), avisar de inmediato sin enmascarar el error
+                        if "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg:
+                            raise err
                         ultimo_err = err
                         continue
                 
@@ -955,7 +980,9 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
         except Exception as e:
             err_str = str(e)
             if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
-                st.warning("⏳ Límite de velocidad alcanzado. Por favor, espera 60 segundos y vuelve a intentarlo.")
+                st.warning("⏳ Límite de velocidad / cuota alcanzado. Por favor, espera 60 segundos y vuelve a intentarlo.")
+            elif "404" in err_str or "NOT_FOUND" in err_str:
+                st.error("❌ Error 404: La clave API no tiene acceso a este modelo o la API no está habilitada. Asegúrate de generar tu clave directamente en Google AI Studio: https://aistudio.google.com/apikey")
             else:
                 st.error(f"❌ Ocurrió un error con la API de Google AI Studio: {err_str}")
 
