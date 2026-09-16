@@ -218,7 +218,7 @@ else:
 # OPCIONES DE MODELOS OFICIALES Y ACTIVOS
 model_choice = st.sidebar.selectbox(
     "Modelo de Gemini:", 
-    ["gemini-3.7-flash", "3.5-flash-lite", "gemini-3.1-pro-preview", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-pro", "gemini-2.0-flash-lite", "gemini-1.5-flash"]
+    ["gemini-3.7-flash", "3.5-flash-lite", "gemini-3.1-pro-preview", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-pro", "gemini-2.0-flash-lite"]
 )
 
 # ==============================================================================
@@ -922,8 +922,7 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                     "gemini-2.5-flash",
                     "gemini-2.0-flash",
                     "gemini-2.5-pro",
-                    "gemini-2.0-flash-lite",
-                    "gemini-1.5-flash"
+                    "gemini-2.0-flash-lite"
                 ]
                 # Elimina duplicados manteniendo el orden
                 modelos_a_probar = list(dict.fromkeys(modelos_a_probar))
