@@ -218,7 +218,7 @@ else:
 # OPCIONES DE MODELOS OFICIALES Y ESTABLES
 model_choice = st.sidebar.selectbox(
     "Modelo de Gemini:", 
-    ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
+    ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
 )
 
 # ==============================================================================
@@ -423,7 +423,7 @@ with c3:
         grado_seccion = st.selectbox("Grado y Sección:", ["1er Grado A", "2do Grado A", "3er Grado A", "4to Grado A", "5to Grado A", "6to Grado A"], index=1)
         grado_normalizado_cneb = normalizar_grado_cneb(grado_seccion)
         ciclo_actual = obtener_ciclo_primaria(grado_normalizado_cneb)
-        st.info(f"Ciclo CNEB Detectado: **{ciclo_actual}**")
+        st.info(f"Ciclo CNEB Detectado: **{ciclo_actual}** | Grado CNEB: **{grado_normalizado_cneb}**")
 
 # VARIABLES ESPECÍFICAS PARA CADA HERRAMIENTA
 if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
@@ -458,15 +458,35 @@ if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
             help="Selecciona las capacidades que se trabajarán en esta sesión."
         )
 
-        estandar_custom = st.text_area("Estándar de la Competencia (Opcional - Blanco para automático):", value="", height=70, placeholder="Texto del estándar...")
+        estandar_custom = st.text_area(
+            "Estándar de la Competencia (Opcional - En blanco toma de cneb_datos.py):", 
+            value="", 
+            height=65, 
+            placeholder=f"En blanco para usar el estándar oficial del {ciclo_actual}..."
+        )
+        desempeno_custom = st.text_area(
+            "Desempeño Precisado del Grado (Opcional - En blanco toma de cneb_datos.py):", 
+            value="", 
+            height=65, 
+            placeholder=f"En blanco para usar y precisar el desempeño oficial de {grado_normalizado_cneb}..."
+        )
     with col_s2:
         tipo_motivacion = st.selectbox(
             "Tipo de Motivación para el Inicio de la Clase:",
             ["A través de una actividad física", "A través de una imagen", "A través de una historia"],
             index=0
         )
-        criterios_custom = st.text_area("Criterios de Evaluación (Opcional - Blanco para automático):", value="", height=70, placeholder="Ej. 1. Ejecuta desplazamientos orientados en el patio. 2. Identifica nociones de derecha e izquierda.")
-        evidencia_custom = st.text_input("Evidencia de Aprendizaje (Opcional - Blanco para automático):", value="", placeholder="Ej. Ejecución de desplazamientos coordinados hacia señales leídas.")
+        criterios_custom = st.text_area(
+            "Criterios de Evaluación (Opcional - En blanco para automático):", 
+            value="", 
+            height=65, 
+            placeholder="Ej. 1. Ejecuta desplazamientos orientados en el patio. 2. Identifica nociones de derecha e izquierda."
+        )
+        evidencia_custom = st.text_input(
+            "Evidencia de Aprendizaje (Opcional - En blanco para automático):", 
+            value="", 
+            placeholder="Ej. Ejecución de desplazamientos coordinados hacia señales leídas en el patio."
+        )
 
     # CUADRO DE MATERIALES A UTILIZAR EN LA SESIÓN
     st.markdown("##### 🎒 Cuadro de Recursos y Materiales a Utilizar en la Sesión:")
@@ -491,6 +511,7 @@ if tipo_documento == "Sesión de Aprendizaje de Ed. Física":
     problema_contexto = titulo_sesion_input.strip() if titulo_sesion_input.strip() else "Desarrollo de nociones espaciales, coordinación motriz y convivencia en juegos de Educación Física."
 
 else:  # Unidad o Proyecto EF
+    desempeno_custom = ""
     f1, f2, f3, f4, f5 = st.columns(5)
     with f1:
         num_doc = st.text_input("N.° de Unidad / Proyecto:", "04")
@@ -687,7 +708,7 @@ Redacta una situación basada en un contexto real de la escuela en 4 bloques sin
 IV. CUADRO DE ENFOQUES TRANSVERSALES
 Elabora una tabla con 1 o 2 enfoques transversales más pertinentes (Enfoque, Valores, Actitudes observables).
 
-V. CUADRO DE NEGOCIACIÓN Y PLANIFICACIÓN CON LOS ESTUDIantes
+V. CUADRO DE NEGOCIACIÓN Y PLANIFICACIÓN CON LOS ESTUDIANTES
 Tabla sintética de 4 columnas (¿Qué queremos hacer?, ¿Cómo lo haremos?, ¿Qué necesitamos?, ¿Cómo nos daremos cuenta de que lo logramos?) con respuestas realistas de asamblea.
 
 VI. CUADRO DE PROPÓSITOS DE APRENDIZAJE Y EVALUACIÓN MATRIZADA (ORGANIZADO COMPETENCIA POR COMPETENCIA)
@@ -730,33 +751,49 @@ IX. RECURSOS Y MATERIALES
 """
 
 def generar_prompt_sesion_ef():
-    comps_str = ", ".join(comps_seleccionadas) if comps_seleccionadas else "Seleccionar automáticamente según el tema del CNEB"
+    comps_str = ", ".join(comps_seleccionadas) if comps_seleccionadas else "Se desenvuelve de manera autónoma a través de su motricidad"
     
+    # Extraer información oficial de cneb_datos.py para las competencias seleccionadas
+    cneb_datos_sesion_txt = ""
+    for comp in comps_seleccionadas:
+        if comp in CNEB_PRIMARIA:
+            est_oficial = CNEB_PRIMARIA[comp]["estandares"].get(ciclo_actual, "")
+            des_oficiales = CNEB_PRIMARIA[comp]["desempenos"].get(grado_normalizado_cneb, [])
+            cneb_datos_sesion_txt += f"\n\n--- COMPETENCIA: {comp} ---"
+            cneb_datos_sesion_txt += f"\nESTÁNDAR OFICIAL PARA {ciclo_actual}:\n{est_oficial}"
+            cneb_datos_sesion_txt += f"\nDESEMPEÑOS OFICIALES PARA {grado_normalizado_cneb}:\n" + "\n".join(des_oficiales)
+
     if capacidades_seleccionadas:
         cap_str = "\n".join([f"- {c}" for c in capacidades_seleccionadas])
     else:
         cap_str = "Generar automáticamente según la(s) competencia(s) elegida(s)"
 
-    est_str = estandar_custom.strip() if estandar_custom.strip() else "Transcribir el Estándar COMPLETO oficial del ciclo del CNEB con negrita en la parte movilizada"
-    crit_str = criterios_custom.strip() if criterios_custom.strip() else "Formular automáticamente mínimo 3 criterios claros con la estructura Acción + Contenido + Condición"
-    evid_str = evidencia_custom.strip() if evidencia_custom.strip() else "Generar automáticamente la evidencia motriz o demostración práctica adecuada"
+    est_str = estandar_custom.strip() if estandar_custom.strip() else f"Tomar literalmente el Estándar Oficial del {ciclo_actual} proporcionado desde cneb_datos.py (resaltando en negrita la parte movilizada)."
+    desemp_str = desempeno_custom.strip() if desempeno_custom.strip() else f"Tomar como base y precisar el Desempeño Oficial de {grado_normalizado_cneb} proporcionado desde cneb_datos.py (resaltando en negrita la parte precisada)."
+    crit_str = criterios_custom.strip() if criterios_custom.strip() else "Formular automáticamente mínimo 3 criterios claros con la estructura Acción + Contenido + Condición (integrados en una sola frase sin etiquetas)."
+    evid_str = evidencia_custom.strip() if evidencia_custom.strip() else "Generar automáticamente la evidencia motriz o demostración práctica adecuada."
     
     mat_patio_str = materiales_patio.strip() if materiales_patio.strip() else "Conos, aros, balones, silbato, colchonetas."
     mat_est_str = materiales_estudiante.strip() if materiales_estudiante.strip() else "Botella de agua personal, toalla pequeña, jabón, polo de cambio."
 
     return f"""
 Actúa como Docente Experto en Educación Física para Primaria bajo el enfoque oficial del CNEB del MINEDU Perú.
-Elabora una SESIÓN DE CLASE PRÁCTICA DE EDUCACIÓN FÍSICA completa para {grado_seccion} ({ciclo_actual}).
+Elabora una SESIÓN DE CLASE PRÁCTICA DE EDUCACIÓN FÍSICA completa para {grado_seccion} ({ciclo_actual} - {grado_normalizado_cneb}).
+
+DATOS OFICIALES EXTRAÍDOS DE cneb_datos.py PARA ESTA SESIÓN:
+{cneb_datos_sesion_txt}
 
 DATOS INGRESADOS PARA LA SESIÓN:
 - N.° de Sesión: {num_doc}
 - Título de la actividad: "{problema_contexto}"
 - IE: {ie_nombre} | Docente: {docente} | Fecha: {fecha_sugerida} | Duración: {duracion_sesion}
+- Grado y Ciclo: {grado_seccion} - {ciclo_actual} ({grado_normalizado_cneb})
 - Tipo de Motivación elegida: {tipo_motivacion}
 - Competencia(s) solicitada(s): {comps_str}
 - Capacidades solicitadas:
 {cap_str}
-- Estándar solicitado: {est_str}
+- Estándar a aplicar: {est_str}
+- Desempeño a aplicar / precisado: {desemp_str}
 - Criterios solicitados: {crit_str}
 - Evidencia solicitada: {evid_str}
 - Materiales Deportivos y del Patio: {mat_patio_str}
@@ -784,9 +821,10 @@ Muestra EXACTAMENTE la siguiente estructura en la parte superior:
 > **ESTÁNDAR CNEB COMPLETO ({ciclo_actual}):** [Texto íntegro del estándar del ciclo con **negrita** en la parte aplicada]
 
 | ÁREA | COMPETENCIA Y CAPACIDADES | DESEMPEÑO PRECISADO COMPLETO (con **negrita**) | EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN (Integrados sin etiquetas) | PROPÓSITO DE LA CLASE | EVIDENCIA | INSTRUMENTO |
+- **Desempeño:** Extrae y precisa el desempeño oficial del CNEB correspondiente a {grado_normalizado_cneb} (o el configurado: {desemp_str}), resaltando en negrita lo movilizado.
 - **Capacidades a incluir:** Incluye textualmente las capacidades indicadas:
 {cap_str}
-- **Criterios de Evaluación:** Redacta OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles que integren de forma fluida e implícita los tres elementos pedagógicos (**Acción + Contenido + Condición**), pero QUIDA STRICTAMENTE PROHIBIDO escribir o visualizar las palabras/etiquetas 'Acción:', 'Contenido:' o 'Condición:' en el texto (debe ser una sola oración continua y natural por criterio).
+- **Criterios de Evaluación:** Redacta OBLIGATORIAMENTE EXACTAMENTE 3 CRITERIOS DE EVALUACIÓN claros, observables y medibles que integren de forma fluida e implícita los tres elementos pedagógicos (**Acción + Contenido + Condición**), pero QUEDA STRICTAMENTE PROHIBIDO escribir o visualizar las palabras/etiquetas 'Acción:', 'Contenido:' o 'Condición:' en el texto (debe ser una sola oración continua y natural por criterio).
 
 4. III: ENFOQUE TRANSVERSAL (ÚNICO Y ESPECÍFICO)
 | ENFOQUE TRANSVERSAL PRIORIZADO | VALOR(ES) | ACTITUDES OBSERVABLES |
@@ -877,10 +915,8 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                 
                 modelos_a_probar = [
                     model_choice,
-                    "gemini-3.6-flash",
-                    "gemini-3.5-flash",
-                    "gemini-2.5-pro",
                     "gemini-2.5-flash",
+                    "gemini-2.5-pro",
                     "gemini-2.0-flash",
                     "gemini-1.5-flash",
                     "gemini-1.5-pro"
