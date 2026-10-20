@@ -269,7 +269,7 @@ st.markdown(f"""
 # CONVERTIDOR DE MARKDOWN A WORD TIPO AFICHE COLORIDO (APTOS 10.5 PT JUSTIFICADO)
 # ==============================================================================
 def format_run_aptos(run, font_size=Pt(10.5), color_rgb=None, bold=False):
-    """Aplica estrictamente la fuente Aptos en Word mediante atributos y XML."""
+    """Aplica fuente Aptos e idioma Español (Perú) mediante atributos y XML."""
     run.font.name = 'Aptos'
     if font_size:
         run.font.size = font_size
@@ -285,6 +285,15 @@ def format_run_aptos(run, font_size=Pt(10.5), color_rgb=None, bold=False):
     rFonts.set(qn('w:ascii'), 'Aptos')
     rFonts.set(qn('w:hAnsi'), 'Aptos')
     rFonts.set(qn('w:cs'), 'Aptos')
+
+    # Establecer idioma Español (Perú) en la ejecución del texto
+    lang = rPr.find(qn('w:lang'))
+    if lang is None:
+        lang = OxmlElement('w:lang')
+        rPr.append(lang)
+    lang.set(qn('w:val'), 'es-PE')
+    lang.set(qn('w:eastAsia'), 'es-PE')
+    lang.set(qn('w:bidi'), 'es-PE')
 
 def add_formatted_text(paragraph, text, font_size=Pt(10.5), font_color=RGBColor(30, 41, 59), bold_color=RGBColor(15, 23, 42)):
     """Añade texto procesando negritas (**), en fuente Aptos 10.5, justificado y sin espacio posterior."""
@@ -326,14 +335,14 @@ def set_cell_margins(cell, top=100, bottom=100, left=140, right=140):
         tcMar.append(node)
     tcPr.append(tcMar)
 
-def set_table_borders(table, color="93C5FD", sz="4", val="single"):
-    """Bordes nítidos y modernos para tablas tipo infografía / afiche."""
+def set_table_borders(table, color="93C5FD", sz="8", val="single"):
+    """Bordes en 1 punto (sz='8' equivale a 1 pt en Word) para tablas tipo afiche."""
     tblPr = table._tbl.tblPr
     tblBorders = OxmlElement('w:tblBorders')
     for border_name in ['top', 'left', 'bottom', 'right', 'insideH', 'insideV']:
         border = OxmlElement(f'w:{border_name}')
         border.set(qn('w:val'), val)
-        border.set(qn('w:sz'), sz)
+        border.set(qn('w:sz'), sz)  # sz="8" son 8 octavos de punto = 1 pt exacto
         border.set(qn('w:space'), '0')
         border.set(qn('w:color'), color)
         tblBorders.append(border)
@@ -354,7 +363,7 @@ def set_paragraph_shading(p, fill_hex):
 def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
     doc = docx.Document()
     
-    # 1. Configuración de estilo Normal (Aptos, 10.5 pt, Justificado, sin espacio posterior)
+    # 1. Configuración de estilo Normal (Aptos, 10.5 pt, Justificado, sin espacio posterior, Español Perú)
     style = doc.styles['Normal']
     style.font.name = 'Aptos'
     style.font.size = Pt(10.5)
@@ -372,6 +381,15 @@ def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
     rFonts.set(qn('w:ascii'), 'Aptos')
     rFonts.set(qn('w:hAnsi'), 'Aptos')
     rFonts.set(qn('w:cs'), 'Aptos')
+
+    # Idioma general del documento a Español (Perú)
+    lang = rPr.find(qn('w:lang'))
+    if lang is None:
+        lang = OxmlElement('w:lang')
+        rPr.append(lang)
+    lang.set(qn('w:val'), 'es-PE')
+    lang.set(qn('w:eastAsia'), 'es-PE')
+    lang.set(qn('w:bidi'), 'es-PE')
 
     # Paletas de colores vibrantes tipo AFICHE para tablas
     AFICHE_THEMES = [
@@ -409,7 +427,8 @@ def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
         if rows > 0 and cols > 0:
             t = doc.add_table(rows=rows, cols=cols)
             t.alignment = WD_TABLE_ALIGNMENT.CENTER
-            set_table_borders(t, color=theme["border"], sz="4", val="single")
+            # Líneas del cuadro configuradas exactamente en 1 punto (sz="8")
+            set_table_borders(t, color=theme["border"], sz="8", val="single")
             
             for r_idx, row_cells in enumerate(t_data):
                 is_header = (r_idx == 0)
@@ -434,6 +453,9 @@ def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
                         else:
                             add_formatted_text(p_cell, cell_value, font_size=Pt(10.0), font_color=RGBColor(30, 41, 59), bold_color=RGBColor(15, 23, 42))
 
+    # Color definido para subtítulos y sub-subtítulos en letras de color
+    COLOR_SUBTITULOS = RGBColor(30, 64, 175)  # Azul Rey vibrante tipo afiche
+
     for line in lines:
         line_str = line.strip()
         line_str = re.sub(r'<br\s*/?>', ' ', line_str)
@@ -454,7 +476,7 @@ def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
             in_table = False
             table_data = []
 
-        # Títulos y Encabezados con Banners Coloridos Tipo Afiche
+        # Títulos, Subtítulos y Sub-subtítulos Tipo Afiche
         heading_match = re.match(r'^(#{1,6})\s*(.*)$', line_str)
         if heading_match:
             hashes = heading_match.group(1)
@@ -462,36 +484,32 @@ def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
             level = len(hashes)
             
             p = doc.add_paragraph()
+            p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
             p.paragraph_format.space_after = Pt(0)
             p.paragraph_format.space_before = Pt(2)
             
             if level == 1:
-                set_paragraph_shading(p, "1E3A8A")  # Banner Azul Marino Intenso
-                p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+                set_paragraph_shading(p, "1E3A8A")  # Banner Azul Marino para Título Principal
                 run = p.add_run(f" ⚽  {title_text.replace('**', '')}  ")
                 format_run_aptos(run, font_size=Pt(13.0), color_rgb=RGBColor(255, 255, 255), bold=True)
             elif level == 2:
-                set_paragraph_shading(p, "0D9488")  # Banner Verde Azulado Vibrante
-                p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-                run = p.add_run(f" 📌  {title_text.replace('**', '')} ")
-                format_run_aptos(run, font_size=Pt(11.5), color_rgb=RGBColor(255, 255, 255), bold=True)
-            elif level == 3:
-                set_paragraph_shading(p, "E0E7FF")  # Fondo Pastel Azul Violeta
-                p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-                run = p.add_run(f" ➤ {title_text.replace('**', '')}")
-                format_run_aptos(run, font_size=Pt(11.0), color_rgb=RGBColor(30, 58, 138), bold=True)
+                # Subtítulo en letras de color
+                run = p.add_run(f"📌 {title_text.replace('**', '')}")
+                format_run_aptos(run, font_size=Pt(12.0), color_rgb=COLOR_SUBTITULOS, bold=True)
+            elif level in [3, 4]:
+                # Sub-subtítulos en las mismas letras de color que los subtítulos
+                run = p.add_run(f"➤ {title_text.replace('**', '')}")
+                format_run_aptos(run, font_size=Pt(11.0), color_rgb=COLOR_SUBTITULOS, bold=True)
             else:
-                set_paragraph_shading(p, "FEF3C7")  # Fondo Pastel Ámbar
-                p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-                run = p.add_run(f" • {title_text.replace('**', '')}")
-                format_run_aptos(run, font_size=Pt(10.5), color_rgb=RGBColor(146, 64, 14), bold=True)
+                run = p.add_run(f"• {title_text.replace('**', '')}")
+                format_run_aptos(run, font_size=Pt(10.5), color_rgb=COLOR_SUBTITULOS, bold=True)
             continue
 
         # Cajas destacadas tipo afiche (para blockquotes de estándares y notas)
         if line_str.startswith('>'):
             clean_quote = re.sub(r'^>\s*', '', line_str)
             p = doc.add_paragraph()
-            set_paragraph_shading(p, "F1F5F9")  # Fondo Slate muy suave
+            set_paragraph_shading(p, "F1F5F9")  # Fondo suave
             p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
             p.paragraph_format.space_after = Pt(0)
             p.paragraph_format.space_before = Pt(0)
@@ -511,7 +529,7 @@ def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
             clean_bullet = line_str[2:].strip()
             add_formatted_text(p, clean_bullet, font_size=Pt(10.5))
         elif line_str != "":
-            # Párrafo ordinario
+            # Párrafo ordinario justificado
             p = doc.add_paragraph()
             p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
             p.paragraph_format.space_after = Pt(0)
@@ -1158,4 +1176,4 @@ if st.session_state['resultado_md'] is not None:
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             use_container_width=True
         )
-        st.info("💡 **Nota:** El archivo Word se descarga en formato tipo afiche a todo color, con tipografía Aptos (10.5 pt), texto justificado y sin espaciado extra entre párrafos.")
+        st.info("💡 **Nota:** El archivo Word se descarga en formato tipo afiche a todo color, con tipografía Aptos (10.5 pt), texto justificado, subtítulos y sub-subtítulos en letras de color, líneas de cuadros en 1 pt e idioma configurado en Español (Perú).")
