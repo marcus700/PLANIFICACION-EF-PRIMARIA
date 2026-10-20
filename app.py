@@ -266,27 +266,129 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# CONVERTIDOR DE MARKDOWN A WORD CON TABLAS EN TONOS PASTELES
+# CONVERTIDOR DE MARKDOWN A WORD TIPO AFICHE COLORIDO (APTOS 10.5 PT JUSTIFICADO)
 # ==============================================================================
-def add_formatted_text(paragraph, text):
+def format_run_aptos(run, font_size=Pt(10.5), color_rgb=None, bold=False):
+    """Aplica estrictamente la fuente Aptos en Word mediante atributos y XML."""
+    run.font.name = 'Aptos'
+    if font_size:
+        run.font.size = font_size
+    if color_rgb:
+        run.font.color.rgb = color_rgb
+    if bold:
+        run.font.bold = True
+    rPr = run._r.get_or_add_rPr()
+    rFonts = rPr.find(qn('w:rFonts'))
+    if rFonts is None:
+        rFonts = OxmlElement('w:rFonts')
+        rPr.append(rFonts)
+    rFonts.set(qn('w:ascii'), 'Aptos')
+    rFonts.set(qn('w:hAnsi'), 'Aptos')
+    rFonts.set(qn('w:cs'), 'Aptos')
+
+def add_formatted_text(paragraph, text, font_size=Pt(10.5), font_color=RGBColor(30, 41, 59), bold_color=RGBColor(15, 23, 42)):
+    """Añade texto procesando negritas (**), en fuente Aptos 10.5, justificado y sin espacio posterior."""
+    paragraph.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    paragraph.paragraph_format.space_after = Pt(0)
+    paragraph.paragraph_format.space_before = Pt(0)
+    
     parts = re.split(r'(\*\*.*?\*\*)', text)
     for part in parts:
+        if not part:
+            continue
         if part.startswith('**') and part.endswith('**'):
             run = paragraph.add_run(part[2:-2])
-            run.font.bold = True
+            format_run_aptos(run, font_size=font_size, color_rgb=bold_color, bold=True)
         else:
-            paragraph.add_run(part)
+            run = paragraph.add_run(part)
+            format_run_aptos(run, font_size=font_size, color_rgb=font_color, bold=False)
+
+def set_cell_background(cell, fill_hex):
+    """Establece sombreado de color de fondo en una celda de tabla."""
+    tcPr = cell._tc.get_or_add_tcPr()
+    shd = tcPr.find(qn('w:shd'))
+    if shd is not None:
+        tcPr.remove(shd)
+    shading_elm = OxmlElement('w:shd')
+    shading_elm.set(qn('w:val'), 'clear')
+    shading_elm.set(qn('w:color'), 'auto')
+    shading_elm.set(qn('w:fill'), fill_hex)
+    tcPr.append(shading_elm)
+
+def set_cell_margins(cell, top=100, bottom=100, left=140, right=140):
+    """Configura márgenes internos de celda para estilo afiche compacto y limpio."""
+    tcPr = cell._tc.get_or_add_tcPr()
+    tcMar = OxmlElement('w:tcMar')
+    for m_name, val in [('w:top', top), ('w:bottom', bottom), ('w:left', left), ('w:right', right)]:
+        node = OxmlElement(m_name)
+        node.set(qn('w:w'), str(val))
+        node.set(qn('w:type'), 'dxa')
+        tcMar.append(node)
+    tcPr.append(tcMar)
+
+def set_table_borders(table, color="93C5FD", sz="4", val="single"):
+    """Bordes nítidos y modernos para tablas tipo infografía / afiche."""
+    tblPr = table._tbl.tblPr
+    tblBorders = OxmlElement('w:tblBorders')
+    for border_name in ['top', 'left', 'bottom', 'right', 'insideH', 'insideV']:
+        border = OxmlElement(f'w:{border_name}')
+        border.set(qn('w:val'), val)
+        border.set(qn('w:sz'), sz)
+        border.set(qn('w:space'), '0')
+        border.set(qn('w:color'), color)
+        tblBorders.append(border)
+    tblPr.append(tblBorders)
+
+def set_paragraph_shading(p, fill_hex):
+    """Añade fondo de color a un párrafo tipo banner de afiche."""
+    pPr = p._p.get_or_add_pPr()
+    shd = pPr.find(qn('w:shd'))
+    if shd is not None:
+        pPr.remove(shd)
+    shading_elm = OxmlElement('w:shd')
+    shading_elm.set(qn('w:val'), 'clear')
+    shading_elm.set(qn('w:color'), 'auto')
+    shading_elm.set(qn('w:fill'), fill_hex)
+    pPr.append(shading_elm)
 
 def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
     doc = docx.Document()
-    PASTEL_COLORS = ['D9E1F2', 'E2EFDA', 'FFF2CC', 'E8D8F8', 'E0F2FE', 'FCE4D6']
+    
+    # 1. Configuración de estilo Normal (Aptos, 10.5 pt, Justificado, sin espacio posterior)
+    style = doc.styles['Normal']
+    style.font.name = 'Aptos'
+    style.font.size = Pt(10.5)
+    style.font.color.rgb = RGBColor(15, 23, 42)
+    style.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    style.paragraph_format.space_after = Pt(0)
+    style.paragraph_format.space_before = Pt(0)
+    style.paragraph_format.line_spacing = 1.15
+    
+    rPr = style.element.get_or_add_rPr()
+    rFonts = rPr.find(qn('w:rFonts'))
+    if rFonts is None:
+        rFonts = OxmlElement('w:rFonts')
+        rPr.append(rFonts)
+    rFonts.set(qn('w:ascii'), 'Aptos')
+    rFonts.set(qn('w:hAnsi'), 'Aptos')
+    rFonts.set(qn('w:cs'), 'Aptos')
+
+    # Paletas de colores vibrantes tipo AFICHE para tablas
+    AFICHE_THEMES = [
+        {"header": "1E40AF", "text": RGBColor(255, 255, 255), "alt": "F0F7FF", "border": "93C5FD"},  # Azul Deportivo
+        {"header": "059669", "text": RGBColor(255, 255, 255), "alt": "F0FDF4", "border": "86EFAC"},  # Verde Esmeralda
+        {"header": "7C3AED", "text": RGBColor(255, 255, 255), "alt": "FAF5FF", "border": "C4B5FD"},  # Violeta Activo
+        {"header": "D97706", "text": RGBColor(255, 255, 255), "alt": "FFFBEB", "border": "FCD34D"},  # Ámbar Enérgico
+        {"header": "0891B2", "text": RGBColor(255, 255, 255), "alt": "ECFEFF", "border": "67E8F9"},  # Turquesa / Cian
+        {"header": "DC2626", "text": RGBColor(255, 255, 255), "alt": "FEF2F2", "border": "FCA5A5"}   # Rojo Dinámico
+    ]
     table_count = 0
     
     for section in doc.sections:
-        section.top_margin = Inches(0.8)
-        section.bottom_margin = Inches(0.8)
-        section.left_margin = Inches(0.8)
-        section.right_margin = Inches(0.8)
+        section.top_margin = Inches(0.6)
+        section.bottom_margin = Inches(0.6)
+        section.left_margin = Inches(0.6)
+        section.right_margin = Inches(0.6)
         
         if es_horizontal:
             section.orientation = WD_ORIENT.LANDSCAPE
@@ -301,35 +403,42 @@ def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
     in_table = False
     table_data = []
 
-    def render_table(t_data, color_hex):
+    def render_table(t_data, theme):
         rows = len(t_data)
         cols = max(len(r) for r in t_data) if rows > 0 else 0
         if rows > 0 and cols > 0:
             t = doc.add_table(rows=rows, cols=cols)
-            t.style = 'Table Grid'
+            t.alignment = WD_TABLE_ALIGNMENT.CENTER
+            set_table_borders(t, color=theme["border"], sz="4", val="single")
+            
             for r_idx, row_cells in enumerate(t_data):
+                is_header = (r_idx == 0)
+                row_bg = theme["header"] if is_header else (theme["alt"] if r_idx % 2 == 1 else "FFFFFF")
+                
                 for c_idx, cell_value in enumerate(row_cells):
                     if c_idx < cols:
                         cell = t.cell(r_idx, c_idx)
+                        set_cell_background(cell, row_bg)
+                        set_cell_margins(cell, top=90, bottom=90, left=130, right=130)
+                        
                         p_cell = cell.paragraphs[0]
                         p_cell.text = ""
-                        add_formatted_text(p_cell, cell_value)
+                        p_cell.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+                        p_cell.paragraph_format.space_after = Pt(0)
+                        p_cell.paragraph_format.space_before = Pt(0)
                         
-                        if r_idx == 0:
-                            shading_elm = OxmlElement('w:shd')
-                            shading_elm.set(qn('w:val'), 'clear')
-                            shading_elm.set(qn('w:color'), 'auto')
-                            shading_elm.set(qn('w:fill'), color_hex)
-                            cell._tc.get_or_add_tcPr().append(shading_elm)
-                            for paragraph in cell.paragraphs:
-                                for run in paragraph.runs:
-                                    run.font.color.rgb = RGBColor(30, 58, 138)
-                                    run.font.bold = True
+                        if is_header:
+                            add_formatted_text(p_cell, cell_value, font_size=Pt(10.0), font_color=theme["text"], bold_color=theme["text"])
+                            for r in p_cell.runs:
+                                r.font.bold = True
+                        else:
+                            add_formatted_text(p_cell, cell_value, font_size=Pt(10.0), font_color=RGBColor(30, 41, 59), bold_color=RGBColor(15, 23, 42))
 
     for line in lines:
         line_str = line.strip()
         line_str = re.sub(r'<br\s*/?>', ' ', line_str)
         
+        # Procesamiento de Tablas Markdown
         if line_str.startswith('|') and line_str.endswith('|'):
             in_table = True
             if re.match(r'^\|[\s\:\-\|]+\|$', line_str):
@@ -340,11 +449,12 @@ def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
         elif in_table:
             if table_data:
                 table_count += 1
-                header_color = PASTEL_COLORS[(table_count - 1) % len(PASTEL_COLORS)]
-                render_table(table_data, header_color)
+                theme_sel = AFICHE_THEMES[(table_count - 1) % len(AFICHE_THEMES)]
+                render_table(table_data, theme_sel)
             in_table = False
             table_data = []
 
+        # Títulos y Encabezados con Banners Coloridos Tipo Afiche
         heading_match = re.match(r'^(#{1,6})\s*(.*)$', line_str)
         if heading_match:
             hashes = heading_match.group(1)
@@ -352,32 +462,67 @@ def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
             level = len(hashes)
             
             p = doc.add_paragraph()
-            if level in [1, 2]:
-                run = p.add_run(title_text.replace('**', ''))
-                run.font.size = Pt(14)
-                run.font.bold = True
-                run.font.color.rgb = RGBColor(30, 58, 138)
-            elif level in [3, 4]:
-                run = p.add_run(title_text.replace('**', ''))
-                run.font.size = Pt(12)
-                run.font.bold = True
-                run.font.color.rgb = RGBColor(30, 58, 138)
+            p.paragraph_format.space_after = Pt(0)
+            p.paragraph_format.space_before = Pt(2)
+            
+            if level == 1:
+                set_paragraph_shading(p, "1E3A8A")  # Banner Azul Marino Intenso
+                p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+                run = p.add_run(f" ⚽  {title_text.replace('**', '')}  ")
+                format_run_aptos(run, font_size=Pt(13.0), color_rgb=RGBColor(255, 255, 255), bold=True)
+            elif level == 2:
+                set_paragraph_shading(p, "0D9488")  # Banner Verde Azulado Vibrante
+                p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+                run = p.add_run(f" 📌  {title_text.replace('**', '')} ")
+                format_run_aptos(run, font_size=Pt(11.5), color_rgb=RGBColor(255, 255, 255), bold=True)
+            elif level == 3:
+                set_paragraph_shading(p, "E0E7FF")  # Fondo Pastel Azul Violeta
+                p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+                run = p.add_run(f" ➤ {title_text.replace('**', '')}")
+                format_run_aptos(run, font_size=Pt(11.0), color_rgb=RGBColor(30, 58, 138), bold=True)
             else:
-                add_formatted_text(p, title_text)
+                set_paragraph_shading(p, "FEF3C7")  # Fondo Pastel Ámbar
+                p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+                run = p.add_run(f" • {title_text.replace('**', '')}")
+                format_run_aptos(run, font_size=Pt(10.5), color_rgb=RGBColor(146, 64, 14), bold=True)
             continue
 
-        if line_str.startswith('• ') or line_str.startswith('- '):
-            p = doc.add_paragraph(style='List Bullet')
-            clean_bullet = line_str[2:].strip()
-            add_formatted_text(p, clean_bullet)
-        elif line_str != "":
+        # Cajas destacadas tipo afiche (para blockquotes de estándares y notas)
+        if line_str.startswith('>'):
+            clean_quote = re.sub(r'^>\s*', '', line_str)
             p = doc.add_paragraph()
-            add_formatted_text(p, line_str)
+            set_paragraph_shading(p, "F1F5F9")  # Fondo Slate muy suave
+            p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            p.paragraph_format.space_after = Pt(0)
+            p.paragraph_format.space_before = Pt(0)
+            add_formatted_text(p, clean_quote, font_size=Pt(10.5), font_color=RGBColor(15, 23, 42), bold_color=RGBColor(30, 58, 138))
+            continue
 
+        # Viñetas tipo Afiche (Aptos 10.5 pt, justificado, sin espacio posterior)
+        if line_str.startswith('• ') or line_str.startswith('- '):
+            p = doc.add_paragraph()
+            p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            p.paragraph_format.space_after = Pt(0)
+            p.paragraph_format.space_before = Pt(0)
+            
+            bullet_run = p.add_run("▸ ")
+            format_run_aptos(bullet_run, font_size=Pt(10.5), color_rgb=RGBColor(37, 99, 235), bold=True)
+            
+            clean_bullet = line_str[2:].strip()
+            add_formatted_text(p, clean_bullet, font_size=Pt(10.5))
+        elif line_str != "":
+            # Párrafo ordinario
+            p = doc.add_paragraph()
+            p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            p.paragraph_format.space_after = Pt(0)
+            p.paragraph_format.space_before = Pt(0)
+            add_formatted_text(p, line_str, font_size=Pt(10.5))
+
+    # Cierre de tabla si el documento finaliza dentro de una
     if in_table and table_data:
         table_count += 1
-        header_color = PASTEL_COLORS[(table_count - 1) % len(PASTEL_COLORS)]
-        render_table(table_data, header_color)
+        theme_sel = AFICHE_THEMES[(table_count - 1) % len(AFICHE_THEMES)]
+        render_table(table_data, theme_sel)
         in_table = False
         table_data = []
             
@@ -933,7 +1078,7 @@ Para evitar que el documento se corte al final, debes ser SINTÉTICO, CONCISO Y 
                 candidatos = [
                     model_choice,
                     "gemini-2.5-flash",
-                    "gemini-2.0-flash",
+                    "gemini-2.0-flash", 
                     "gemini-2.5-pro",
                     "gemini-2.0-flash-lite",
                     "gemini-3.5-flash-lite",
@@ -1013,4 +1158,4 @@ if st.session_state['resultado_md'] is not None:
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             use_container_width=True
         )
-        st.info("💡 **Nota:** El documento Word incluye la insignia editable y las tablas en tonos pasteles.")
+        st.info("💡 **Nota:** El archivo Word se descarga en formato tipo afiche a todo color, con tipografía Aptos (10.5 pt), texto justificado y sin espaciado extra entre párrafos.")
