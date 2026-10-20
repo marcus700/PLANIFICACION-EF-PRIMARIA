@@ -286,7 +286,7 @@ def format_run_aptos(run, font_size=Pt(10.5), color_rgb=None, bold=False):
     rFonts.set(qn('w:hAnsi'), 'Aptos')
     rFonts.set(qn('w:cs'), 'Aptos')
 
-    # Establecer idioma Español (Perú) en la ejecución del texto
+    # Establecer idioma Español (Perú)
     lang = rPr.find(qn('w:lang'))
     if lang is None:
         lang = OxmlElement('w:lang')
@@ -295,22 +295,52 @@ def format_run_aptos(run, font_size=Pt(10.5), color_rgb=None, bold=False):
     lang.set(qn('w:eastAsia'), 'es-PE')
     lang.set(qn('w:bidi'), 'es-PE')
 
-def add_formatted_text(paragraph, text, font_size=Pt(10.5), font_color=RGBColor(30, 41, 59), bold_color=RGBColor(15, 23, 42)):
-    """Añade texto procesando negritas (**), en fuente Aptos 10.5, justificado y sin espacio posterior."""
+def limpiar_texto_asteriscos(text: str) -> str:
+    """Elimina secuencias como '* *', asteriscos sueltos o residuales de la redacción."""
+    if not text:
+        return ""
+    # Eliminar cualquier variante de asterisco-espacio-asterisco ('* *')
+    text = re.sub(r'\*\s+\*', ' ', text)
+    # Convertir '***' a '**'
+    text = text.replace('***', '**')
+    # Eliminar asteriscos sueltos que no pertenezcan a pares de negrita
+    text = re.sub(r'(?<!\*)\*(?!\*)', '', text)
+    # Limpiar pares vacíos como '** **'
+    text = re.sub(r'\*\*\s*\*\*', '', text)
+    return text
+
+# Color llamativo para actividades y elementos destacados en negrita
+COLOR_LLAMATIVO = RGBColor(29, 78, 216)  # Azul Real llamativo y enérgico
+COLOR_SUBTITULOS = RGBColor(30, 64, 175)  # Color uniforme para subtítulos y sub-subtítulos
+
+def add_formatted_text(paragraph, text, font_size=Pt(10.5), font_color=RGBColor(30, 41, 59), bold_color=COLOR_LLAMATIVO):
+    """Añade texto procesando negritas (**), en fuente Aptos 10.5, justificado, sin espacio posterior y sin asteriscos."""
     paragraph.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     paragraph.paragraph_format.space_after = Pt(0)
     paragraph.paragraph_format.space_before = Pt(0)
     
-    parts = re.split(r'(\*\*.*?\*\*)', text)
+    # Limpieza total previa de asteriscos conflictivos
+    text_limpio = limpiar_texto_asteriscos(text)
+    
+    # Asegurar balanceo de asteriscos dobles
+    if text_limpio.count('**') % 2 != 0:
+        text_limpio = text_limpio.replace('**', '')
+
+    parts = re.split(r'(\*\*.*?\*\*)', text_limpio)
     for part in parts:
         if not part:
             continue
         if part.startswith('**') and part.endswith('**'):
-            run = paragraph.add_run(part[2:-2])
-            format_run_aptos(run, font_size=font_size, color_rgb=bold_color, bold=True)
+            # Texto de la actividad o término en negrita con color llamativo
+            clean_part = part[2:-2].replace('*', '').strip()
+            if clean_part:
+                run = paragraph.add_run(clean_part)
+                format_run_aptos(run, font_size=font_size, color_rgb=bold_color, bold=True)
         else:
-            run = paragraph.add_run(part)
-            format_run_aptos(run, font_size=font_size, color_rgb=font_color, bold=False)
+            clean_part = part.replace('*', '')
+            if clean_part:
+                run = paragraph.add_run(clean_part)
+                format_run_aptos(run, font_size=font_size, color_rgb=font_color, bold=False)
 
 def set_cell_background(cell, fill_hex):
     """Establece sombreado de color de fondo en una celda de tabla."""
@@ -446,19 +476,18 @@ def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
                         p_cell.paragraph_format.space_after = Pt(0)
                         p_cell.paragraph_format.space_before = Pt(0)
                         
+                        cell_clean = limpiar_texto_asteriscos(cell_value)
                         if is_header:
-                            add_formatted_text(p_cell, cell_value, font_size=Pt(10.0), font_color=theme["text"], bold_color=theme["text"])
+                            add_formatted_text(p_cell, cell_clean, font_size=Pt(10.0), font_color=theme["text"], bold_color=theme["text"])
                             for r in p_cell.runs:
                                 r.font.bold = True
                         else:
-                            add_formatted_text(p_cell, cell_value, font_size=Pt(10.0), font_color=RGBColor(30, 41, 59), bold_color=RGBColor(15, 23, 42))
-
-    # Color definido para subtítulos y sub-subtítulos en letras de color
-    COLOR_SUBTITULOS = RGBColor(30, 64, 175)  # Azul Rey vibrante tipo afiche
+                            add_formatted_text(p_cell, cell_clean, font_size=Pt(10.0), font_color=RGBColor(30, 41, 59), bold_color=COLOR_LLAMATIVO)
 
     for line in lines:
         line_str = line.strip()
         line_str = re.sub(r'<br\s*/?>', ' ', line_str)
+        line_str = limpiar_texto_asteriscos(line_str)
         
         # Procesamiento de Tablas Markdown
         if line_str.startswith('|') and line_str.endswith('|'):
@@ -476,11 +505,51 @@ def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
             in_table = False
             table_data = []
 
+        line_upper = line_str.upper()
+
+        # DETECCIÓN DE MOMENTOS DE LA SESIÓN: INICIO, DESARROLLO Y CIERRE CON SOMBREADO
+        is_inicio = bool(re.search(r'\bINICIO\b', line_upper) and any(k in line_upper for k in ['APROX', 'MIN', 'MOMENTO', '1.', 'I.', ':']) or line_upper.startswith(('# INICIO', '## INICIO', '### INICIO', '- INICIO', 'INICIO')))
+        is_desarrollo = bool(re.search(r'\bDESARROLLO\b', line_upper) and any(k in line_upper for k in ['APROX', 'MIN', 'MOMENTO', '2.', 'II.', ':']) or line_upper.startswith(('# DESARROLLO', '## DESARROLLO', '### DESARROLLO', '- DESARROLLO', 'DESARROLLO')))
+        is_cierre = bool(re.search(r'\bCIERRE\b', line_upper) and any(k in line_upper for k in ['APROX', 'MIN', 'MOMENTO', '3.', 'III.', ':']) or line_upper.startswith(('# CIERRE', '## CIERRE', '### CIERRE', '- CIERRE', 'CIERRE')))
+
+        if is_inicio:
+            p = doc.add_paragraph()
+            set_paragraph_shading(p, "DBEAFE")  # Sombreado azul pastel deportivo
+            p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            p.paragraph_format.space_after = Pt(0)
+            p.paragraph_format.space_before = Pt(3)
+            clean_t = re.sub(r'^[#\-•\s]+', '', line_str).replace('*', '').strip()
+            run = p.add_run(f" 🚀  {clean_t} ")
+            format_run_aptos(run, font_size=Pt(11.5), color_rgb=RGBColor(30, 64, 175), bold=True)
+            continue
+
+        if is_desarrollo:
+            p = doc.add_paragraph()
+            set_paragraph_shading(p, "DCFCE7")  # Sombreado verde menta deportivo
+            p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            p.paragraph_format.space_after = Pt(0)
+            p.paragraph_format.space_before = Pt(3)
+            clean_t = re.sub(r'^[#\-•\s]+', '', line_str).replace('*', '').strip()
+            run = p.add_run(f" ⚡  {clean_t} ")
+            format_run_aptos(run, font_size=Pt(11.5), color_rgb=RGBColor(5, 150, 105), bold=True)
+            continue
+
+        if is_cierre:
+            p = doc.add_paragraph()
+            set_paragraph_shading(p, "FCE7F3")  # Sombreado rosa / violeta suave de relajación
+            p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            p.paragraph_format.space_after = Pt(0)
+            p.paragraph_format.space_before = Pt(3)
+            clean_t = re.sub(r'^[#\-•\s]+', '', line_str).replace('*', '').strip()
+            run = p.add_run(f" 🏁  {clean_t} ")
+            format_run_aptos(run, font_size=Pt(11.5), color_rgb=RGBColor(157, 23, 77), bold=True)
+            continue
+
         # Títulos, Subtítulos y Sub-subtítulos Tipo Afiche
         heading_match = re.match(r'^(#{1,6})\s*(.*)$', line_str)
         if heading_match:
             hashes = heading_match.group(1)
-            title_text = heading_match.group(2).strip()
+            title_text = heading_match.group(2).strip().replace('*', '')
             level = len(hashes)
             
             p = doc.add_paragraph()
@@ -490,33 +559,33 @@ def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
             
             if level == 1:
                 set_paragraph_shading(p, "1E3A8A")  # Banner Azul Marino para Título Principal
-                run = p.add_run(f" ⚽  {title_text.replace('**', '')}  ")
+                run = p.add_run(f" ⚽  {title_text}  ")
                 format_run_aptos(run, font_size=Pt(13.0), color_rgb=RGBColor(255, 255, 255), bold=True)
             elif level == 2:
                 # Subtítulo en letras de color
-                run = p.add_run(f"📌 {title_text.replace('**', '')}")
+                run = p.add_run(f"📌 {title_text}")
                 format_run_aptos(run, font_size=Pt(12.0), color_rgb=COLOR_SUBTITULOS, bold=True)
             elif level in [3, 4]:
                 # Sub-subtítulos en las mismas letras de color que los subtítulos
-                run = p.add_run(f"➤ {title_text.replace('**', '')}")
+                run = p.add_run(f"➤ {title_text}")
                 format_run_aptos(run, font_size=Pt(11.0), color_rgb=COLOR_SUBTITULOS, bold=True)
             else:
-                run = p.add_run(f"• {title_text.replace('**', '')}")
+                run = p.add_run(f"• {title_text}")
                 format_run_aptos(run, font_size=Pt(10.5), color_rgb=COLOR_SUBTITULOS, bold=True)
             continue
 
         # Cajas destacadas tipo afiche (para blockquotes de estándares y notas)
         if line_str.startswith('>'):
-            clean_quote = re.sub(r'^>\s*', '', line_str)
+            clean_quote = re.sub(r'^>\s*', '', line_str).replace('*', '')
             p = doc.add_paragraph()
             set_paragraph_shading(p, "F1F5F9")  # Fondo suave
             p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
             p.paragraph_format.space_after = Pt(0)
             p.paragraph_format.space_before = Pt(0)
-            add_formatted_text(p, clean_quote, font_size=Pt(10.5), font_color=RGBColor(15, 23, 42), bold_color=RGBColor(30, 58, 138))
+            add_formatted_text(p, clean_quote, font_size=Pt(10.5), font_color=RGBColor(15, 23, 42), bold_color=COLOR_LLAMATIVO)
             continue
 
-        # Viñetas tipo Afiche (Aptos 10.5 pt, justificado, sin espacio posterior)
+        # Viñetas tipo Afiche y Actividades (Aptos 10.5 pt, justificado, sin espacio posterior ni asteriscos)
         if line_str.startswith('• ') or line_str.startswith('- '):
             p = doc.add_paragraph()
             p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
@@ -527,14 +596,14 @@ def markdown_to_docx(md_text, ie_nombre="I.E. N° 22314", es_horizontal=False):
             format_run_aptos(bullet_run, font_size=Pt(10.5), color_rgb=RGBColor(37, 99, 235), bold=True)
             
             clean_bullet = line_str[2:].strip()
-            add_formatted_text(p, clean_bullet, font_size=Pt(10.5))
+            add_formatted_text(p, clean_bullet, font_size=Pt(10.5), bold_color=COLOR_LLAMATIVO)
         elif line_str != "":
-            # Párrafo ordinario justificado
+            # Párrafo ordinario justificado (con actividades en negrita y color llamativo)
             p = doc.add_paragraph()
             p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
             p.paragraph_format.space_after = Pt(0)
             p.paragraph_format.space_before = Pt(0)
-            add_formatted_text(p, line_str, font_size=Pt(10.5))
+            add_formatted_text(p, line_str, font_size=Pt(10.5), bold_color=COLOR_LLAMATIVO)
 
     # Cierre de tabla si el documento finaliza dentro de una
     if in_table and table_data:
@@ -1176,4 +1245,4 @@ if st.session_state['resultado_md'] is not None:
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             use_container_width=True
         )
-        st.info("💡 **Nota:** El archivo Word se descarga en formato tipo afiche a todo color, con tipografía Aptos (10.5 pt), texto justificado, subtítulos y sub-subtítulos en letras de color, líneas de cuadros en 1 pt e idioma configurado en Español (Perú).")
+        st.info("💡 **Nota:** El archivo Word incluye sombreado en Inicio, Desarrollo y Cierre, actividades en negrita con letras de color llamativo, sin asteriscos ('* *'), tipografía Aptos (10.5 pt), justificado y bordes en 1 pt.")
